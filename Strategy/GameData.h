@@ -1,5 +1,7 @@
 #pragma once
 #include "ei/SDL/SDL.h"
+#include "ei/glm/glm.hpp"
+#include "EntityManager.h"
 
 class Update;
 
@@ -10,6 +12,8 @@ private:
 
 	bool KeyboardState[256];
 	bool MouseBtnState[256];
+
+	EntityManager entities;
 public:
 	GameData()
 	{

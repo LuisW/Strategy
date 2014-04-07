@@ -27,5 +27,8 @@ bool Update::UpdateTick()
 		}
 	}
 
+	if (data.getKeyboardState(SDLK_ESCAPE))
+		return false;
+
 	return true;
 }

@@ -22,6 +22,15 @@
     <Filter Include="Headerdateien\InGame\DataStorage">
       <UniqueIdentifier>{06768b76-7262-4f98-9956-35d6d93afd0e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Quelldateien\InGame">
+      <UniqueIdentifier>{b4f99cc2-ad16-4935-9428-ca902e838a6e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\InGame\DataStorage">
+      <UniqueIdentifier>{65a55061-594d-445d-9ada-17de5173eab4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\InGame\DataStorage\Components">
+      <UniqueIdentifier>{9d98fbcb-44f4-42f5-b21d-ca239f330f3c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -31,13 +40,22 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="GameData.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Update.cpp">
-      <Filter>Quelldateien</Filter>
+      <Filter>Quelldateien\InGame</Filter>
     </ClCompile>
     <ClCompile Include="Render.cpp">
-      <Filter>Quelldateien</Filter>
+      <Filter>Quelldateien\InGame</Filter>
+    </ClCompile>
+    <ClCompile Include="Update.cpp">
+      <Filter>Quelldateien\InGame</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity.cpp">
+      <Filter>Quelldateien\InGame\DataStorage</Filter>
+    </ClCompile>
+    <ClCompile Include="Transform.cpp">
+      <Filter>Quelldateien\InGame\DataStorage</Filter>
+    </ClCompile>
+    <ClCompile Include="EntityManager.cpp">
+      <Filter>Quelldateien\InGame\DataStorage</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -58,6 +76,21 @@
     </ClInclude>
     <ClInclude Include="InGame.h">
       <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity.h">
+      <Filter>Headerdateien\InGame\DataStorage</Filter>
+    </ClInclude>
+    <ClInclude Include="Component.h">
+      <Filter>Headerdateien\InGame\DataStorage</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityManager.h">
+      <Filter>Headerdateien\InGame\DataStorage</Filter>
+    </ClInclude>
+    <ClInclude Include="Transform.h">
+      <Filter>Headerdateien\InGame\DataStorage</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshComponent.h">
+      <Filter>Headerdateien\InGame\DataStorage\Components</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
