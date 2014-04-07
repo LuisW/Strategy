@@ -92,5 +92,14 @@
     <ClInclude Include="MeshComponent.h">
       <Filter>Headerdateien\InGame\DataStorage\Components</Filter>
     </ClInclude>
+    <ClInclude Include="TransformComponent.h">
+      <Filter>Headerdateien\InGame\DataStorage\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Headerdateien\InGame\DataStorage</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraComponent.h">
+      <Filter>Headerdateien\InGame\DataStorage\Components</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

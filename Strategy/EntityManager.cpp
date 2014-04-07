@@ -1,9 +1,10 @@
 #include "EntityManager.h"
 
-#include "MeshComponent.h"
+#include "CameraComponent.h"
 
-void EntityManager::RectangleRecipe()
+Entity& EntityManager::newPlayer()
 {
 	entities.push_back(Entity(mkID()));
-	entities.back().AddComponent(new MeshComponent(6,)
+	entities.back().AddComponent(new CameraComponent(entities.back().getID(), "PlayerCam", 60.0f, 4.0f / 3.0f, 1.0f, 10000.0f));
+	return entities.back();
 }

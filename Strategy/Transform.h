@@ -11,57 +11,61 @@ private:
 	glm::vec3 Scale;
 	glm::quat Rotation;
 
-	glm::mat4 Matrix;
+	mutable glm::mat4 Matrix;
 
-	bool update;
+	mutable bool update;
 
-	void makeMat();
+	void makeMat() const;
 	void makePRS();
 public:
 	Transform();
-	Transform(glm::vec3& Pos, glm::quat& Rot, glm::vec3& Scl);
+	Transform(const glm::vec3& Pos, const glm::quat& Rot, const glm::vec3& Scl);
 
-	inline const glm::vec3& getPos()
+	inline const glm::vec3& getPos() const
 	{
 		return Position;
 	}
 
-	inline const glm::quat& getRot()
+	inline const glm::quat& getRot() const
 	{
 		return Rotation;
 	}
 
-	inline const glm::vec3& getScl()
+	inline const glm::vec3& getScl() const
 	{
 		return Scale;
 	}
 
-	inline void setPos(glm::vec3& Pos)
+	inline void setPos(const glm::vec3& Pos)
 	{
 		Position = Pos;
 		update = true;
 	}
 
-	inline void setRot(glm::quat& Rot)
+	inline void setRot(const glm::quat& Rot)
 	{
 		Rotation = Rot;
 		update = true;
 	}
 
-	inline void setScl(glm::vec3& Scl)
+	inline void setScl(const glm::vec3& Scl)
 	{
 		Scale = Scl;
 		update = true;
 	}
 
-	inline glm::mat4& getMat()
+	inline const glm::mat4& getMat() const
 	{
-		if(update)
+		if (update)
+		{
 			makeMat();
+			update = false;
+		}
+
 		return Matrix;
 	}
 
-	inline void setMat(glm::mat4& Mat)
+	inline void setMat(const glm::mat4& Mat)
 	{
 		Matrix = Mat;
 		makePRS();

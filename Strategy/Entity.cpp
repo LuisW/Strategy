@@ -3,7 +3,7 @@
 
 void Entity::RemoveComponent(ComponentType type)
 {
-	for (int n = 0; n < Components.size(); n++)
+	for (unsigned int n = 0; n < Components.size(); n++)
 	{
 		if (Components[n]->getType() == type)
 		{
@@ -16,7 +16,7 @@ void Entity::RemoveComponent(ComponentType type)
 
 void Entity::RemoveComponent(ComponentType type, const std::string& name)
 {
-	for (int n = 0; n < Components.size(); n++)
+	for (unsigned int n = 0; n < Components.size(); n++)
 	{
 		if (Components[n]->getType() == type && Components[n]->getName() == name)
 		{
@@ -29,7 +29,7 @@ void Entity::RemoveComponent(ComponentType type, const std::string& name)
 
 bool Entity::hasComponent(ComponentType type)
 {
-	for (int n = 0; n < Components.size(); n++)
+	for (unsigned int n = 0; n < Components.size(); n++)
 	{
 		if (Components[n]->getType() == type)
 		{
@@ -42,7 +42,7 @@ bool Entity::hasComponent(ComponentType type)
 
 bool Entity::hasComponent(const std::string& name)
 {
-	for (int n = 0; n < Components.size(); n++)
+	for (unsigned int n = 0; n < Components.size(); n++)
 	{
 		if (Components[n]->getName() == name)
 		{
@@ -55,7 +55,7 @@ bool Entity::hasComponent(const std::string& name)
 
 Component& Entity::getComponent(ComponentType type)
 {
-	for (int n = 0; n < Components.size(); n++)
+	for (unsigned int n = 0; n < Components.size(); n++)
 	{
 		if (Components[n]->getType() == type)
 		{
@@ -66,7 +66,7 @@ Component& Entity::getComponent(ComponentType type)
 
 Component& Entity::getComponent(const std::string& name)
 {
-	for (int n = 0; n < Components.size(); n++)
+	for (unsigned int n = 0; n < Components.size(); n++)
 	{
 		if (Components[n]->getName() == name)
 		{

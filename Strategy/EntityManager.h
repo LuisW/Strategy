@@ -2,7 +2,7 @@
 
 #include "Entity.h"
 
-enum EntityBaseType {ET_Triangle, ET_Rectangle};
+enum EntityBaseType {ET_Player};
 
 class EntityManager
 {
@@ -17,8 +17,8 @@ private:
 
 public:
 	EntityManager() : idCounter(0)
-	{}
+	{
+	}
 
-	void RectangleRecipe();
-	void TriangleRecipe();
+	Entity& newPlayer();
 };

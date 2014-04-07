@@ -3,7 +3,7 @@
 #include "ei/glm/glm.hpp"
 #include "Component.h"
 
-class MeshComponent : Component
+class MeshComponent : public Component
 {
 private:
 	glm::vec3 color;

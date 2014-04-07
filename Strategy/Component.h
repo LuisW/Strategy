@@ -2,7 +2,7 @@
 
 #include <string>
 
-enum ComponentType {CT_Mesh, CT_Shape};
+enum ComponentType {CT_Mesh, CT_Transform, CT_Camera};
 
 typedef unsigned int EntityID;
 

@@ -4,12 +4,12 @@ Transform::Transform() : update(false), Position(0.0f),Rotation(),Scale(1.0f),Ma
 {
 }
 
-Transform::Transform(glm::vec3& Pos, glm::quat& Rot, glm::vec3& Scl) : update(false), Position(Pos),Rotation(Rot),Scale(Scl)
+Transform::Transform(const glm::vec3& Pos, const glm::quat& Rot, const glm::vec3& Scl) : update(false), Position(Pos),Rotation(Rot),Scale(Scl)
 {
 	makeMat();
 }
 
-void Transform::makeMat()
+void Transform::makeMat() const
 {
 	Matrix = glm::scale(glm::translate(glm::mat4(1.0f),Position) * glm::toMat4(Rotation),Scale);
 }

@@ -78,6 +78,8 @@
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Camera.h" />
+    <ClInclude Include="CameraComponent.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="EntityManager.h" />
@@ -87,6 +89,7 @@
     <ClInclude Include="Render.h" />
     <ClInclude Include="GameState.h" />
     <ClInclude Include="Transform.h" />
+    <ClInclude Include="TransformComponent.h" />
     <ClInclude Include="Update.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
