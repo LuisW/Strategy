@@ -3,7 +3,6 @@
 #include "Component.h"
 #include <vector>
 
-
 class Entity
 {
 private:
@@ -11,6 +10,9 @@ private:
 	EntityID id;
 
 public:
+	inline Entity()
+	{}
+
 	inline Entity(EntityID _id) : id(_id)
 	{
 	}
@@ -27,6 +29,7 @@ public:
 
 	void RemoveComponent(ComponentType type);
 	void RemoveComponent(ComponentType type, const std::string& name);
+	void RemoveAllComponents();
 	bool hasComponent(ComponentType type);
 	bool hasComponent(const std::string& name);
 	Component& getComponent(ComponentType type);

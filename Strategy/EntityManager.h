@@ -7,18 +7,22 @@ enum EntityBaseType {ET_Player};
 class EntityManager
 {
 private:
-	std::vector<Entity> entities;
-	EntityID idCounter;
-	
-	inline EntityID mkID()
+	struct EntityListElem
 	{
-		return idCounter++;
-	}
+		Entity entity;
+		bool used;
+	};
+
+	std::vector<EntityListElem> entities;
 
 public:
-	EntityManager() : idCounter(0)
+	EntityManager()
 	{
 	}
 
-	Entity& newPlayer();
+	EntityID newEntity();
+	void deleteEntity(EntityID entity);
+	EntityID newPlayer();
+	Entity& getEntity(EntityID entity);
+	~EntityManager();
 };

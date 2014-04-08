@@ -2,9 +2,36 @@
 
 #include "CameraComponent.h"
 
-Entity& EntityManager::newPlayer()
+EntityID EntityManager::newEntity()
 {
-	entities.push_back(Entity(mkID()));
-	entities.back().AddComponent(new CameraComponent(entities.back().getID(), "PlayerCam", 60.0f, 4.0f / 3.0f, 1.0f, 10000.0f));
-	return entities.back();
+	for (int n = 0; n < entities.size(); n++)
+	{
+		if (!entities[n].used)
+		{
+			entities[n].used = true;
+			return n;
+		}
+	}
+
+	EntityListElem newElem;
+	newElem.entity = Entity(entities.size());
+	newElem.used = true;
+	entities.push_back(newElem);
+	return newElem.entity.getID();
+}
+
+void EntityManager::deleteEntity(EntityID entity)
+{
+	entities[entity].entity.RemoveAllComponents();
+	entities[entity].used = false;
+}
+
+Entity& EntityManager::getEntity(EntityID entity)
+{
+	return entities[entity].entity;
+}
+
+EntityID EntityManager::newPlayer()
+{
+	EntityID ent = newEntity();
 }

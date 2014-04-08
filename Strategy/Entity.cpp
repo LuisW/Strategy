@@ -1,6 +1,5 @@
 #include "Entity.h"
 
-
 void Entity::RemoveComponent(ComponentType type)
 {
 	for (unsigned int n = 0; n < Components.size(); n++)
@@ -73,4 +72,14 @@ Component& Entity::getComponent(const std::string& name)
 			return *Components[n];
 		}
 	}
+}
+
+void Entity::RemoveAllComponents()
+{
+	for (unsigned int n = 0; n < Components.size(); n++)
+	{
+		delete Components[n];
+	}
+
+	Components.clear();
 }
