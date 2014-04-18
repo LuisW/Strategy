@@ -31,6 +31,12 @@
     <Filter Include="Headerdateien\InGame\DataStorage\Components">
       <UniqueIdentifier>{9d98fbcb-44f4-42f5-b21d-ca239f330f3c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\Content">
+      <UniqueIdentifier>{21b88734-ae4d-4d1c-b8c4-b4e85f89529d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Content">
+      <UniqueIdentifier>{353c8283-fe1f-4853-afc3-eb91850b25a6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -56,6 +62,15 @@
     </ClCompile>
     <ClCompile Include="EntityManager.cpp">
       <Filter>Quelldateien\InGame\DataStorage</Filter>
+    </ClCompile>
+    <ClCompile Include="SubShader.cpp">
+      <Filter>Quelldateien\Content</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>Quelldateien\Content</Filter>
+    </ClCompile>
+    <ClCompile Include="AssetManager.cpp">
+      <Filter>Quelldateien\Content</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -100,6 +115,24 @@
     </ClInclude>
     <ClInclude Include="CameraComponent.h">
       <Filter>Headerdateien\InGame\DataStorage\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Asset.h">
+      <Filter>Headerdateien\Content</Filter>
+    </ClInclude>
+    <ClInclude Include="ReferenceCounter.h">
+      <Filter>Headerdateien\Content</Filter>
+    </ClInclude>
+    <ClInclude Include="AssetManager.h">
+      <Filter>Headerdateien\Content</Filter>
+    </ClInclude>
+    <ClInclude Include="SubShader.h">
+      <Filter>Headerdateien\Content</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>Headerdateien\Content</Filter>
+    </ClInclude>
+    <ClInclude Include="AssetSubManagerBase.h">
+      <Filter>Headerdateien\Content</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -9,20 +9,28 @@ class EntityManager
 private:
 	struct EntityListElem
 	{
-		Entity entity;
+		Entity* entity;
 		bool used;
 	};
 
 	std::vector<EntityListElem> entities;
+
+	EntityManager(const EntityManager& other)
+	{}
+
+	const EntityManager& operator=(const EntityManager& rhs)
+	{}
 
 public:
 	EntityManager()
 	{
 	}
 
-	EntityID newEntity();
+	Entity& newEntity();
 	void deleteEntity(EntityID entity);
-	EntityID newPlayer();
 	Entity& getEntity(EntityID entity);
+	const Entity& getEntityConst(EntityID entity) const;
 	~EntityManager();
+
+	Entity& newPlayer();
 };

@@ -4,9 +4,14 @@
 #include <stack>
 #include "GameState.h"
 #include "InGame.h"
+#include "SubShader.h"
 
 int main(int argc, const char* argv[])
 {
+	SubShaderAssetManager ssam;
+	SubShaderAsset_const ss = ssam.GetAsset(SubShaderKey());
+	SubShaderAsset_const ss2 = ss;
+
 	Window wnd(1024, 768, "Test", false);
 	std::stack<GameState*> states;
 

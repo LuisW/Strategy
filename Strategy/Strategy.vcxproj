@@ -68,16 +68,22 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AssetManager.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="EntityManager.cpp" />
     <ClCompile Include="GameData.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Render.cpp" />
+    <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="SubShader.cpp" />
     <ClCompile Include="Transform.cpp" />
     <ClCompile Include="Update.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Asset.h" />
+    <ClInclude Include="AssetManager.h" />
+    <ClInclude Include="AssetSubManagerBase.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CameraComponent.h" />
     <ClInclude Include="Component.h" />
@@ -86,8 +92,11 @@
     <ClInclude Include="GameData.h" />
     <ClInclude Include="InGame.h" />
     <ClInclude Include="MeshComponent.h" />
+    <ClInclude Include="ReferenceCounter.h" />
     <ClInclude Include="Render.h" />
     <ClInclude Include="GameState.h" />
+    <ClInclude Include="Shader.h" />
+    <ClInclude Include="SubShader.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="TransformComponent.h" />
     <ClInclude Include="Update.h" />
