@@ -26,7 +26,7 @@ protected:
 
 public:
 
-	const Asset<T> GetAsset(AssetKey<T> key)
+	const Asset<T> GetAsset(const AssetKey<T>& key)
 	{
 		auto it = assets.find(key);
 		if (it != assets.end())
@@ -57,6 +57,7 @@ public:
 		{
 			if (!it->second.refCnt.isReferencer())
 			{
+				Unload(it);
 				delete it->second.data;
 				assets.erase(it++);
 			}
@@ -73,6 +74,7 @@ public:
 
 		while (it != assets.end())
 		{
+			Unload(it);
 			delete it->second.data;
 			assets.erase(it++);
 		}

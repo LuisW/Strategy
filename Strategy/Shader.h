@@ -11,7 +11,12 @@ private:
 	const Asset<SubShader> vertex;
 
 public:
-	inline GLuint getShader()
+	Shader(GLuint _shader, SubShaderAsset_const frag, SubShaderAsset_const vert) : shader(_shader), fragment(frag), vertex(vert)
+	{
+
+	}
+
+	inline GLuint getShader() const
 	{
 		return shader;
 	}
@@ -44,7 +49,8 @@ public:
 	}
 };
 
-namespace std {
+namespace std
+{
 
 	template <>
 	struct hash<ShaderKey>

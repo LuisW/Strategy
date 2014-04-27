@@ -72,6 +72,9 @@
     <ClCompile Include="AssetManager.cpp">
       <Filter>Quelldateien\Content</Filter>
     </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Quelldateien\Content</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h">
@@ -132,6 +135,9 @@
       <Filter>Headerdateien\Content</Filter>
     </ClInclude>
     <ClInclude Include="AssetSubManagerBase.h">
+      <Filter>Headerdateien\Content</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
       <Filter>Headerdateien\Content</Filter>
     </ClInclude>
   </ItemGroup>

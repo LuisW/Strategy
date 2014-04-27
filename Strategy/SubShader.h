@@ -10,12 +10,16 @@ private:
 	bool isFragment;
 
 public:
+	inline SubShader(GLuint _shader, bool _isFragment) : shader(_shader), isFragment(_isFragment)
+	{
+	}
+
 	inline bool isFrag()
 	{
 		return isFragment;
 	}
 
-	inline GLuint getShader()
+	inline GLuint getShader() const
 	{
 		return shader;
 	}
@@ -37,9 +41,15 @@ public:
 	{
 		return name == other.name && isfrag == other.isfrag;
 	}
+
+	AssetKey(std::string& _name, bool _isfrag) : name(_name), isfrag(_isfrag)
+	{
+
+	}
 };
 
-namespace std {
+namespace std
+{
 
 	template <>
 	struct hash<SubShaderKey>
