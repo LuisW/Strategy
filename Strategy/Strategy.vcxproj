@@ -69,14 +69,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AssetManager.cpp" />
-    <ClCompile Include="Entity.cpp" />
     <ClCompile Include="EntityManager.cpp" />
     <ClCompile Include="GameData.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Render.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="ShaderTypes.cpp" />
     <ClCompile Include="SubShader.cpp" />
+    <ClCompile Include="RenderSystem.cpp" />
     <ClCompile Include="Transform.cpp" />
     <ClCompile Include="Update.cpp" />
     <ClCompile Include="Window.cpp" />
@@ -93,16 +94,25 @@
     <ClInclude Include="GameData.h" />
     <ClInclude Include="InGame.h" />
     <ClInclude Include="Mesh.h" />
-    <ClInclude Include="MeshComponent.h" />
+    <ClInclude Include="RenderComponent.h" />
     <ClInclude Include="ReferenceCounter.h" />
     <ClInclude Include="Render.h" />
     <ClInclude Include="GameState.h" />
+    <ClInclude Include="RenderSystem.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="ShaderTypes.h" />
     <ClInclude Include="SubShader.h" />
+    <ClInclude Include="System.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="TransformComponent.h" />
     <ClInclude Include="Update.h" />
+    <ClInclude Include="VertexFormat.h" />
     <ClInclude Include="Window.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="forLuis.tem" />
+    <None Include="test.frag" />
+    <None Include="test.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -31,6 +31,12 @@ int main(int argc, const char* argv[])
 		}
 	}
 
+	while (!states.empty())
+	{
+		delete states.top();
+		states.pop();
+	}
+
 	AssetManager::deinit();
 	return 0;
 }

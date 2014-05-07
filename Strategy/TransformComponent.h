@@ -15,4 +15,9 @@ public:
 
 	TransformComponent(EntityID owner, const std::string& name) : Component(CT_Transform, owner, name)
 	{}
+
+	static ComponentType getComponentType()
+	{
+		return CT_Transform;
+	}
 };

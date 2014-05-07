@@ -1,51 +1,117 @@
 #include "EntityManager.h"
 
 #include "CameraComponent.h"
+#include "RenderComponent.h"
+#include "AssetManager.h"
 
-Entity& EntityManager::newEntity()
+void EntityManager::NotifyEntityChanged(EntityID entity, ComponentType type, bool added)
 {
-	for (int n = 0; n < entities.size(); n++)
+	for (unsigned int n = 0; n < systems.size(); n++)
+	{
+		systems[n]->onEntityChanged(entity, type, added);
+	}
+}
+
+void EntityManager::NotifyEntityRemoved(EntityID entity)
+{
+	for (unsigned int n = 0; n < systems.size(); n++)
+	{
+		systems[n]->onEntityRemoved(entity);
+	}
+}
+
+
+EntityID EntityManager::newEntity()
+{
+	for (unsigned int n = 1; n < entities.size(); n++)
 	{
 		if (!entities[n].used)
 		{
 			entities[n].used = true;
-			return *entities[n].entity;
+			return n;
 		}
 	}
 
-	EntityListElem newElem;
-	newElem.entity = new Entity(entities.size());
-	newElem.used = true;
-	entities.push_back(newElem);
-	return *entities.back().entity;
+	entities.push_back(EntityListElem(new Entity(entities.size()), true));
+	return entities.size() - 1;
 }
 
-void EntityManager::deleteEntity(EntityID entity)
+bool EntityManager::entityHasComponent(EntityID entity, ComponentType type)
 {
-	entities[entity].entity->RemoveAllComponents();
-	entities[entity].used = false;
+	if (entities[entity].used)
+	{
+		return entities[entity].entity->hasComponent(type);
+	}
+	else
+	{
+		throw InvalidEntityException(entity);
+	}
 }
 
-Entity& EntityManager::getEntity(EntityID entity)
+void EntityManager::entityAddComponent(EntityID entity, Component* component)
 {
-	return *entities[entity].entity;
+	if (entities[entity].used)
+	{
+		entities[entity].entity->AddComponent(component);
+		NotifyEntityChanged(entity, component->getType(), true);
+	}
+	else
+	{
+		throw InvalidEntityException(entity);
+	}
 }
 
-const Entity& EntityManager::getEntityConst(EntityID entity) const
+void EntityManager::entityRemoveComponent(EntityID entity, ComponentType type)
 {
-	return *entities[entity].entity;
+	if (entities[entity].used)
+	{
+		entities[entity].entity->RemoveComponent(type);
+		NotifyEntityChanged(entity, type, false);
+	}
+	else
+	{
+		throw InvalidEntityException(entity);
+	}
 }
 
-Entity& EntityManager::newPlayer()
+void EntityManager::RegisterSystem(System* system)
 {
-	Entity& ent = newEntity();
-	//ent.AddComponent(new CameraComponent());
+	systems.push_back(system);
+}
+
+void EntityManager::UnregisterSystem(System* system)
+{
+	for (unsigned int n = 0; n < systems.size(); n++)
+	{
+		if (systems[n] == system)
+		{
+			systems.erase(systems.begin() + n);
+		}
+	}
+}
+
+void EntityManager::UnregisterAllSystems()
+{
+	systems.clear();
+}
+
+EntityID EntityManager::newPlayer()
+{
+	EntityID ent = newEntity();
+	entityAddComponent(ent, new CameraComponent(ent, "Cam", 60.0f, 4.0f/3.0f, 0.1f, 1000.0f, Transform(glm::vec3(0.0f, 0.0f, -10.0f), glm::angleAxis(0.0f,glm::vec3(0.0f,1.0f,0.0f)), glm::vec3(1.0f))));
+	return ent;
+}
+
+EntityID EntityManager::newTestObject()
+{
+	EntityID ent = newEntity();
+	entityAddComponent(ent, new RenderComponent(AssetManager::getAsset<Mesh>(MeshKey("forLuis.tem")), ent, "TestMesh"));
 	return ent;
 }
 
 EntityManager::~EntityManager()
 {
-	for (int n = 0; n < entities.size(); n++)
+	for (unsigned int n = 0; n < entities.size(); n++)
 	{
 		delete entities[n].entity;
 	}

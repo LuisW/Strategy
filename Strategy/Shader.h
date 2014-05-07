@@ -43,6 +43,11 @@ public:
 	std::string frag;
 	std::string vert;
 
+	AssetKey(const std::string& _frag, const std::string& _vert) : frag(_frag), vert(_vert)
+	{
+
+	}
+
 	bool operator==(const AssetKey<Shader>& other) const
 	{
 		return frag == other.frag && vert == other.vert;

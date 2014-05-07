@@ -3,6 +3,8 @@
 #include "ei/glm/glm.hpp"
 #include "EntityManager.h"
 #include "CameraComponent.h"
+#include "AssetManager.h"
+#include "RenderSystem.h"
 
 class Update;
 
@@ -16,8 +18,11 @@ private:
 
 	EntityManager entities;
 	Camera* activeCamera;
+	ShaderAsset_const shader;
+	RenderSystem renderSystem;
+
 public:
-	GameData() : activeCamera(NULL)
+	GameData() : activeCamera(NULL), shader(AssetManager::getAsset<Shader>(ShaderKey("test.frag", "test.vert"))), renderSystem(entities)
 	{
 		for (int n = 0; n < 256; n++)
 		{
@@ -25,8 +30,11 @@ public:
 			MouseBtnState[n] = false;
 		}
 
-		Entity& player1 = entities.newPlayer();
-		activeCamera = (CameraComponent*)(&player1.getComponent(CT_Camera));
+		entities.RegisterSystem(&renderSystem);
+
+		entities.newTestObject();
+		EntityID player1 = entities.newPlayer();
+		activeCamera = (Camera*)(&entities.entityGetComponent<CameraComponent>(player1));  
 	}
 
 	inline bool getKeyboardState(SDLKey key) const
@@ -47,5 +55,15 @@ public:
 	inline const Camera* getActiveCam() const
 	{
 		return activeCamera;
+	}	  
+
+	inline ShaderAsset_const getShader() const
+	{
+		return shader;
+	}
+
+	inline const RenderSystem& getRenderSystem() const
+	{
+		return renderSystem;
 	}
 };

@@ -1,10 +1,11 @@
 #include "AssetManager.h"
 
-AssetManager::AssetManager() : shaders(), subShaders()
+AssetManager* AssetManager::instance;
+
+AssetManager::AssetManager()
 {
 
 }
-
 
 void AssetManager::init()
 {
@@ -23,8 +24,17 @@ const Asset<SubShader> AssetManager::getAsset<SubShader>(const AssetKey<SubShade
 	return instance->subShaders.GetAsset(key);
 }
 
+template<>
+const Asset<Mesh> AssetManager::getAsset<Mesh>(const AssetKey<Mesh>& key)
+{
+	return instance->meshes.GetAsset(key);
+}
+
 void AssetManager::deinit()
 {
+	instance->meshes.DeleteAll();
+	instance->shaders.DeleteAll();
+	instance->subShaders.DeleteAll();
 	delete instance;
 }
 

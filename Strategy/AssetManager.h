@@ -1,12 +1,14 @@
 #pragma once
 
 #include "Shader.h"
+#include "Mesh.h"
 
 class AssetManager
 {
 private:
 	SubShaderAssetManager	subShaders;
 	ShaderAssetManager		shaders;
+	MeshAssetManager		meshes;
 
 	static AssetManager* instance;
 

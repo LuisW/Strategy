@@ -22,7 +22,7 @@ protected:
 	std::unordered_map<AssetKey<T>, AssetSubManagerStorage<T>> assets;
 
 	virtual T* Load(AssetKey<T> key) = 0;
-	virtual void Unload(AssetIterator it) = 0;
+	virtual void Unload(AssetIterator it){};
 
 public:
 
@@ -55,7 +55,7 @@ public:
 
 		while (it != assets.end())
 		{
-			if (!it->second.refCnt.isReferencer())
+			if (!it->second.refCnt.isReferenced())
 			{
 				Unload(it);
 				delete it->second.data;
@@ -82,6 +82,5 @@ public:
 
 	~AssetSubManagerBase()
 	{
-		DeleteAll();
 	}
 };

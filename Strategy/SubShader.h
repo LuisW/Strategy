@@ -42,7 +42,7 @@ public:
 		return name == other.name && isfrag == other.isfrag;
 	}
 
-	AssetKey(std::string& _name, bool _isfrag) : name(_name), isfrag(_isfrag)
+	AssetKey(const std::string& _name, bool _isfrag) : name(_name), isfrag(_isfrag)
 	{
 
 	}

@@ -6,7 +6,7 @@
 class Entity
 {
 private:
-	std::vector<Component*> Components;
+	Component* Components[CT_Unused];
 	EntityID id;
 
 public:
@@ -15,6 +15,7 @@ public:
 
 	inline Entity(EntityID _id) : id(_id)
 	{
+		memset(Components, 0, sizeof(Component*) * CT_Unused);
 	}
 
 	inline EntityID getID()
@@ -24,14 +25,45 @@ public:
 
 	inline void AddComponent(Component* comp)
 	{
-		Components.push_back(comp);
+		if (Components[comp->getType()])
+		{
+			delete Components[comp->getType()];
+		}
+		
+		Components[comp->getType()] = comp;
 	}
 
-	void RemoveComponent(ComponentType type);
-	void RemoveComponent(ComponentType type, const std::string& name);
-	void RemoveAllComponents();
-	bool hasComponent(ComponentType type);
-	bool hasComponent(const std::string& name);
-	Component& getComponent(ComponentType type);
-	Component& getComponent(const std::string& name);
+	~Entity()
+	{
+		RemoveAllComponents();
+	}
+
+	inline void RemoveComponent(ComponentType type)
+	{
+		delete Components[type];
+		Components[type] = NULL;
+	}
+
+	void RemoveAllComponents()
+	{
+		for (unsigned int n = 0; n < CT_Unused; n++)
+		{
+			RemoveComponent((ComponentType)n);
+		}
+	}
+
+	inline bool hasComponent(ComponentType type)
+	{
+		return Components[type] != NULL;
+	}
+
+	inline Component* getComponent(ComponentType type)
+	{
+		return Components[type];
+	}
+
+	inline const Component* getComponent(ComponentType type) const
+	{
+		return Components[type];
+	}
 };

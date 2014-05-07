@@ -30,14 +30,14 @@ public:
 	Camera(float _fov, float _aspect, float _near, float _far) : 
 		fov(_fov), aspect(_aspect), near(_near), far(_far), projection(glm::perspective(fov, aspect, near, far)), update(false)
 	{
-		vp = view.getMat() * projection;
+		vp = projection * view.getMat();
 		makeLocalSystem();
 	}
 
 	Camera(float _fov, float _aspect, float _near, float _far, const Transform& _view) :
 		fov(_fov), aspect(_aspect), near(_near), far(_far), projection(glm::perspective(fov, aspect, near, far)), view(_view), update(false)
 	{
-		vp = view.getMat() * projection;
+		vp = projection * view.getMat();
 		makeLocalSystem();
 	}
 
@@ -82,7 +82,7 @@ public:
 	{
 		if (update || updatevp)
 		{
-			vp = view.getMat() * getProjection();
+			vp = getProjection() * view.getMat();
 			updatevp = false;
 		}
 

@@ -37,6 +37,18 @@
     <Filter Include="Quelldateien\Content">
       <UniqueIdentifier>{353c8283-fe1f-4853-afc3-eb91850b25a6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Ressourcendateien\Shader">
+      <UniqueIdentifier>{9b2f0119-9720-4917-ae0b-330d0ce7d106}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Ressourcendateien\Model">
+      <UniqueIdentifier>{db200b41-c4cc-457c-94ec-6224e63c3ced}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\InGame\Systems">
+      <UniqueIdentifier>{14b9ed1a-9319-435a-9be2-1becc8c581ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\InGame\Systems">
+      <UniqueIdentifier>{eb0d8292-b7b0-4934-aeaf-0a2c2413cc7c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -53,9 +65,6 @@
     </ClCompile>
     <ClCompile Include="Update.cpp">
       <Filter>Quelldateien\InGame</Filter>
-    </ClCompile>
-    <ClCompile Include="Entity.cpp">
-      <Filter>Quelldateien\InGame\DataStorage</Filter>
     </ClCompile>
     <ClCompile Include="Transform.cpp">
       <Filter>Quelldateien\InGame\DataStorage</Filter>
@@ -74,6 +83,12 @@
     </ClCompile>
     <ClCompile Include="Mesh.cpp">
       <Filter>Quelldateien\Content</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderTypes.cpp">
+      <Filter>Quelldateien\Content</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystem.cpp">
+      <Filter>Quelldateien\InGame\Systems</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -107,9 +122,6 @@
     <ClInclude Include="Transform.h">
       <Filter>Headerdateien\InGame\DataStorage</Filter>
     </ClInclude>
-    <ClInclude Include="MeshComponent.h">
-      <Filter>Headerdateien\InGame\DataStorage\Components</Filter>
-    </ClInclude>
     <ClInclude Include="TransformComponent.h">
       <Filter>Headerdateien\InGame\DataStorage\Components</Filter>
     </ClInclude>
@@ -140,5 +152,31 @@
     <ClInclude Include="Mesh.h">
       <Filter>Headerdateien\Content</Filter>
     </ClInclude>
+    <ClInclude Include="VertexFormat.h">
+      <Filter>Headerdateien\Content</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderTypes.h">
+      <Filter>Headerdateien\Content</Filter>
+    </ClInclude>
+    <ClInclude Include="System.h">
+      <Filter>Headerdateien\InGame\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderComponent.h">
+      <Filter>Headerdateien\InGame\DataStorage\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystem.h">
+      <Filter>Headerdateien\InGame\Systems</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="test.frag">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="test.vert">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="forLuis.tem">
+      <Filter>Ressourcendateien\Model</Filter>
+    </None>
   </ItemGroup>
 </Project>
