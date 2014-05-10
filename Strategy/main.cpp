@@ -16,6 +16,9 @@ int main(int argc, const char* argv[])
 
 	bool running = true;
 
+	unsigned int fpsint = 0;
+	long t0 = SDL_GetTicks();
+
 	while (running)
 	{
 		if(!states.top()->LoopTick())
@@ -28,6 +31,17 @@ int main(int argc, const char* argv[])
 		if (states.empty())
 		{
 			running = false;
+		}
+
+		fpsint++;
+
+		if (fpsint == 1000)
+		{
+			fpsint = 0;
+			float dt = (float)(SDL_GetTicks() - t0) / 1000.0f;
+			float fps = 1000.0f / dt;
+			t0 = SDL_GetTicks();
+			SDL_WM_SetCaption(std::to_string(fps).c_str(), NULL);
 		}
 	}
 

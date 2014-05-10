@@ -11,8 +11,8 @@ public:
 		: Component(CT_Camera, owner, name), Camera(_fov, _aspect, _near, _far)
 	{}
 
-	CameraComponent(EntityID owner, const std::string& name, float _fov, float _aspect, float _near, float _far, const Transform& _view)
-		: Component(CT_Camera, owner, name), Camera(_fov, _aspect, _near, _far, _view)
+	CameraComponent(EntityID owner, const std::string& name, float _fov, float _aspect, float _near, float _far, glm::vec3 pos, glm::quat rot)
+		: Component(CT_Camera, owner, name), Camera(_fov, _aspect, _near, _far, pos, rot)
 	{}
 
 	static ComponentType getComponentType()

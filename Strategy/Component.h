@@ -2,7 +2,7 @@
 
 #include <string>
 
-enum ComponentType {CT_Render, CT_Transform, CT_Camera, CT_Unused};
+enum ComponentType {CT_Render, CT_Transform, CT_Camera, CT_SceneGraph, CT_Visibility, CT_Unused};
 
 typedef unsigned int EntityID;
 

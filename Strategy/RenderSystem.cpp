@@ -1,7 +1,8 @@
 #include "RenderSystem.h"
 #include "EntityManager.h"
-#include "ei/GL/glew.h"
 #include "RenderComponent.h"
+#include "TransformComponent.h"
+#include "ei/glm/gtc/type_ptr.hpp"
 
 void RenderSystem::onEntityChanged(EntityID entity, ComponentType type, bool added)
 {
@@ -36,10 +37,20 @@ void RenderSystem::onEntityRemoved(EntityID entity)
 	}
 }
 
-void RenderSystem::Tick() const
+void RenderSystem::Tick(const glm::mat4& VP, GLbyte sp_WVP) const
 {
 	for (unsigned int n = 0; n < entities.size(); n++)
 	{
+		if (entityManager.entityHasComponent(entities[n], CT_Transform))
+		{
+			TransformComponent& trans = entityManager.entityGetComponent<TransformComponent>(entities[n]);
+			glUniformMatrix4fv(sp_WVP, 1, GL_FALSE, glm::value_ptr(VP * trans.getMat()));
+		}
+		else
+		{
+			glUniformMatrix4fv(sp_WVP, 1, GL_FALSE, glm::value_ptr(VP));
+		}
+
 		RenderComponent& Comp = entityManager.entityGetComponent<RenderComponent>(entities[n]);
 
 		const Mesh& mesh = Comp.getMesh().get();

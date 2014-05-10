@@ -73,6 +73,7 @@
     <ClCompile Include="GameData.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="PlayerControlSystem.cpp" />
     <ClCompile Include="Render.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderTypes.cpp" />
@@ -86,27 +87,35 @@
     <ClInclude Include="Asset.h" />
     <ClInclude Include="AssetManager.h" />
     <ClInclude Include="AssetSubManagerBase.h" />
+    <ClInclude Include="BoundingBox.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CameraComponent.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="EntityManager.h" />
+    <ClInclude Include="Frustrum.h" />
     <ClInclude Include="GameData.h" />
     <ClInclude Include="InGame.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="PlayerControlSystem.h" />
     <ClInclude Include="RenderComponent.h" />
     <ClInclude Include="ReferenceCounter.h" />
     <ClInclude Include="Render.h" />
     <ClInclude Include="GameState.h" />
     <ClInclude Include="RenderSystem.h" />
+    <ClInclude Include="SceneGraphComponent.h" />
+    <ClInclude Include="SceneGraphSystem.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderTypes.h" />
+    <ClInclude Include="DataStructs.h" />
     <ClInclude Include="SubShader.h" />
     <ClInclude Include="System.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="TransformComponent.h" />
     <ClInclude Include="Update.h" />
     <ClInclude Include="VertexFormat.h" />
+    <ClInclude Include="VisibilityComponent.h" />
+    <ClInclude Include="VisibilitySystem.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>

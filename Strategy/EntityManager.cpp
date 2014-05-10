@@ -2,6 +2,7 @@
 
 #include "CameraComponent.h"
 #include "RenderComponent.h"
+#include "TransformComponent.h"
 #include "AssetManager.h"
 
 void EntityManager::NotifyEntityChanged(EntityID entity, ComponentType type, bool added)
@@ -65,8 +66,8 @@ void EntityManager::entityRemoveComponent(EntityID entity, ComponentType type)
 {
 	if (entities[entity].used)
 	{
-		entities[entity].entity->RemoveComponent(type);
 		NotifyEntityChanged(entity, type, false);
+		entities[entity].entity->RemoveComponent(type);
 	}
 	else
 	{
@@ -98,7 +99,7 @@ void EntityManager::UnregisterAllSystems()
 EntityID EntityManager::newPlayer()
 {
 	EntityID ent = newEntity();
-	entityAddComponent(ent, new CameraComponent(ent, "Cam", 60.0f, 4.0f/3.0f, 0.1f, 1000.0f, Transform(glm::vec3(0.0f, 0.0f, -10.0f), glm::angleAxis(0.0f,glm::vec3(0.0f,1.0f,0.0f)), glm::vec3(1.0f))));
+	entityAddComponent(ent, new CameraComponent(ent, "Cam", 60.0f, 4.0f/3.0f, 0.1f, 1000.0f, glm::vec3(0.0f, 0.0f, 0.0f), glm::angleAxis(0.0f,glm::vec3(0.0f,1.0f,0.0f))));
 	return ent;
 }
 
@@ -106,6 +107,7 @@ EntityID EntityManager::newTestObject()
 {
 	EntityID ent = newEntity();
 	entityAddComponent(ent, new RenderComponent(AssetManager::getAsset<Mesh>(MeshKey("forLuis.tem")), ent, "TestMesh"));
+	entityAddComponent(ent, new TransformComponent(ent, "TestTrans", glm::vec3(0.0f, 0.0f, -10.0f), glm::angleAxis(90.0f, glm::vec3(0.0f, 1.0f, 0.0f)), glm::vec3(1.0f)));
 	return ent;
 }
 

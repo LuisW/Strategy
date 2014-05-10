@@ -30,5 +30,10 @@ bool Update::UpdateTick()
 	if (data.getKeyboardState(SDLK_ESCAPE))
 		return false;
 
+	if (data.activeCamera != NULL)
+	{
+		playerControl.Tick(*(data.activeCamera));
+	}
+
 	return true;
 }

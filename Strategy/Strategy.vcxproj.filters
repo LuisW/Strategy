@@ -90,6 +90,9 @@
     <ClCompile Include="RenderSystem.cpp">
       <Filter>Quelldateien\InGame\Systems</Filter>
     </ClCompile>
+    <ClCompile Include="PlayerControlSystem.cpp">
+      <Filter>Quelldateien\InGame\Systems</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h">
@@ -166,6 +169,30 @@
     </ClInclude>
     <ClInclude Include="RenderSystem.h">
       <Filter>Headerdateien\InGame\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerControlSystem.h">
+      <Filter>Headerdateien\InGame\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="DataStructs.h">
+      <Filter>Headerdateien\InGame\DataStorage</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneGraphSystem.h">
+      <Filter>Headerdateien\InGame\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneGraphComponent.h">
+      <Filter>Headerdateien\InGame\DataStorage\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="BoundingBox.h">
+      <Filter>Headerdateien\InGame\DataStorage</Filter>
+    </ClInclude>
+    <ClInclude Include="VisibilitySystem.h">
+      <Filter>Headerdateien\InGame\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="VisibilityComponent.h">
+      <Filter>Headerdateien\InGame\DataStorage\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Frustrum.h">
+      <Filter>Headerdateien\InGame\DataStorage</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

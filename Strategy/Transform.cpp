@@ -11,7 +11,11 @@ Transform::Transform(const glm::vec3& Pos, const glm::quat& Rot, const glm::vec3
 
 void Transform::makeMat() const
 {
-	Matrix = glm::scale(glm::translate(glm::mat4(1.0f),Position) * glm::toMat4(Rotation),Scale);
+	Matrix = glm::mat4(glm::toMat3(Rotation));
+	Matrix[3] = glm::vec4(Position, 1.0f);
+	Matrix[0][0] *= Scale.x;
+	Matrix[1][1] *= Scale.y;
+	Matrix[2][2] *= Scale.z;
 }
 
 void Transform::makePRS()

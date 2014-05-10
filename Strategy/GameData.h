@@ -5,6 +5,7 @@
 #include "CameraComponent.h"
 #include "AssetManager.h"
 #include "RenderSystem.h"
+#include "DataStructs.h"
 
 class Update;
 
@@ -20,6 +21,8 @@ private:
 	Camera* activeCamera;
 	ShaderAsset_const shader;
 	RenderSystem renderSystem;
+
+	RenderSettings renderSettings;
 
 public:
 	GameData() : activeCamera(NULL), shader(AssetManager::getAsset<Shader>(ShaderKey("test.frag", "test.vert"))), renderSystem(entities)
