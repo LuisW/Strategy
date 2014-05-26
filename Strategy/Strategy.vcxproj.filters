@@ -197,14 +197,14 @@
     <ClInclude Include="VisibilityComponent.h">
       <Filter>Headerdateien\InGame\DataStorage\Components</Filter>
     </ClInclude>
-    <ClInclude Include="Frustrum.h">
-      <Filter>Headerdateien\InGame\DataStorage</Filter>
-    </ClInclude>
     <ClInclude Include="Terrain.h">
       <Filter>Headerdateien\InGame\Systems</Filter>
     </ClInclude>
     <ClInclude Include="Texture.h">
       <Filter>Headerdateien\Content</Filter>
+    </ClInclude>
+    <ClInclude Include="Frustum.h">
+      <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

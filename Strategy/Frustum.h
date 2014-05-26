@@ -3,13 +3,13 @@
 #include "ei/glm/glm.hpp"
 #include "BoundingBox.h"
 
-enum FrustrumPlane {FP_Top, FP_Bottom, FP_Left, FP_Right, FP_Near, FP_Far};
+enum FrustumPlane {FP_Top, FP_Bottom, FP_Left, FP_Right, FP_Near, FP_Far};
 enum IntersectionType {IT_Inside, IT_Outside, IT_Intersect};
 
 
 const char PlaneMasks[6] = { 1, 2, 4, 8, 16, 32 };
 
-class Frustrum
+class Frustum
 {
 private:
 
@@ -30,6 +30,17 @@ private:
 			return IT_Intersect;
 		}
 
+		IntersectionType IntersectAABBTerrain(const glm::vec4& nodeData)  //(boxHeightOver2, plane.x * h.x + plane.z * h.z, center.x, center.z);
+		{
+			float hph = nodeData.y * plane.y;
+			float e = nodeData.x + abs(hph);
+			float s = nodeData.z * plane.x + hph + nodeData.w * plane.z + plane.w;
+
+			if (s - e > 0) return IT_Outside;
+			if (s + e < 0) return IT_Inside;
+			return IT_Intersect;
+		}
+
 		void Normalize()
 		{
 			float len = glm::sqrt(plane.x * plane.x + plane.y * plane.y + plane.z * plane.z);
@@ -40,7 +51,7 @@ private:
 	Plane planes[6];
 
 public:
-	Frustrum(glm::mat4 VP)
+	Frustum(glm::mat4 VP)
 	{
 		VP = glm::transpose(VP);
 		planes[FP_Left  ].plane = -(VP[3] + VP[0]);
@@ -56,7 +67,7 @@ public:
 		}
 	}					    
 
-	inline const glm::vec4& getPlane(FrustrumPlane plane)
+	inline const glm::vec4& getPlane(FrustumPlane plane)
 	{
 		return planes[plane].plane;
 	}
@@ -101,6 +112,40 @@ public:
 			{
 				failPlane = k;
 				return IT_Outside; 
+			}
+			else if (it == IT_Intersect) intersect = true;
+			else parentIn |= (1 << k);
+		}
+
+		if (intersect) return IT_Intersect;
+		return IT_Inside;
+	}
+
+	IntersectionType IntersectAABBTerrain(const glm::vec4& nodeData, char& parentIn, unsigned char& failPlane)
+	{
+		bool intersect = false;
+
+		IntersectionType it;
+
+		if (!((1 << failPlane) & parentIn))
+		{
+			it = planes[failPlane].IntersectAABBTerrain(nodeData);
+			if (it == IT_Outside) return IT_Outside;
+			else if (it == IT_Intersect) intersect = true;
+		}
+
+		for (unsigned int k = 0; k < 6; ++k)
+		{
+			if (k == failPlane || (1 << k) & parentIn)
+			{
+				continue;
+			}
+
+			it = planes[k].IntersectAABBTerrain(nodeData);
+			if (it == IT_Outside)
+			{
+				failPlane = k;
+				return IT_Outside;
 			}
 			else if (it == IT_Intersect) intersect = true;
 			else parentIn |= (1 << k);

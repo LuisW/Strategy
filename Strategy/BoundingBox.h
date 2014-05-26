@@ -43,7 +43,7 @@ public:
 		max = _max;
 	}
 
-	float SqDistanceToPointXZ(const glm::vec3& p)
+	inline float SqDistanceToPointXZ(const glm::vec3& p)
 	{
 		glm::vec3 center = getCenter();
 		float dx = glm::max(glm::abs(p.x - center.x) - (center.x - min.x), 0.0f);

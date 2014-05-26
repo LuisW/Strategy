@@ -47,7 +47,7 @@ void Window::initGL()
 
 	glShadeModel(GL_SMOOTH);
 	glEnable(GL_TEXTURE_2D);
-	glPolygonMode(GL_FRONT, GL_FILL);
+	glPolygonMode(GL_FRONT, GL_LINE);
 	glPolygonMode(GL_BACK, GL_FILL);
 
 	glewInit();

@@ -1,6 +1,8 @@
 #include "PlayerControlSystem.h"
 #include "ei/SDL/SDL.h"
 
+const float speed = 0.1f;
+
 void PlayerControlSystem::Tick(Camera& activeCam)
 {
 	int mx, my;
@@ -15,21 +17,21 @@ void PlayerControlSystem::Tick(Camera& activeCam)
 
 	if (data.getKeyboardState(SDLK_w))
 	{
-		activeCam.Move(1.0f);
+		activeCam.Move(speed);
 	}
 
 	if (data.getKeyboardState(SDLK_a))
 	{
-		activeCam.Strafe(-1.0f);
+		activeCam.Strafe(-speed);
 	}
 
 	if (data.getKeyboardState(SDLK_s))
 	{
-		activeCam.Move(-1.0f);
+		activeCam.Move(-speed);
 	}
 
 	if (data.getKeyboardState(SDLK_d))
 	{
-		activeCam.Strafe(1.0f);
+		activeCam.Strafe(speed);
 	}
 }

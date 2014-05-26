@@ -95,7 +95,7 @@
     <ClInclude Include="Component.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="EntityManager.h" />
-    <ClInclude Include="Frustrum.h" />
+    <ClInclude Include="Frustum.h" />
     <ClInclude Include="GameData.h" />
     <ClInclude Include="InGame.h" />
     <ClInclude Include="Mesh.h" />

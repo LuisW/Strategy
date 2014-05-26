@@ -35,6 +35,16 @@ bool Update::UpdateTick()
 		__debugbreak();
 	}
 
+	if (data.getKeyboardState(SDLK_l))
+	{
+		glPolygonMode(GL_FRONT, GL_LINE);
+	}
+
+	if (data.getKeyboardState(SDLK_f))
+	{
+		glPolygonMode(GL_FRONT, GL_FILL);
+	}
+
 	if (data.activeCamera != NULL)
 	{
 		playerControl.Tick(*(data.activeCamera));

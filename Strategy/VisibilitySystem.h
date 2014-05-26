@@ -4,17 +4,22 @@
 #include "Camera.h"
 #include "Terrain.h"
 
+#define calcLevelFac(level) ((1 << (2 * level + 2)) - 1) / 3
+
+const unsigned int levelFactors[] = { calcLevelFac(0), calcLevelFac(1), calcLevelFac(2), calcLevelFac(3), calcLevelFac(4), calcLevelFac(5), calcLevelFac(6),
+calcLevelFac(7), calcLevelFac(8), calcLevelFac(9), calcLevelFac(10), calcLevelFac(11), calcLevelFac(12) };
+
 class QTNode;
 
 struct QTCullPassStruct
 {
-	QTCullPassStruct(QTNode* _nodes, Terrain& _terrain, Frustrum& _frustrum, const glm::vec3& _camPos) 
+	QTCullPassStruct(QTNode* _nodes, Terrain& _terrain, Frustum& _frustrum, const glm::vec3& _camPos) 
 		: nodes(_nodes), terrain(_terrain), frustrum(_frustrum), camPos(_camPos)
 	{}
 
 	QTNode* nodes;
 	Terrain& terrain;
-	Frustrum& frustrum;
+	Frustum& frustrum;
 	const glm::vec3& camPos;
 };
 
@@ -30,6 +35,7 @@ private:
 	unsigned char failPlane;
 
 public:
+
 	QTNode() : boundingBox(glm::vec3(0.0f), glm::vec3(0.0f)), failPlane(FP_Top)
 	{
 
@@ -41,49 +47,47 @@ public:
 
 	}
 
-	void Cull(QTCullPassStruct& data, unsigned int index, unsigned char level, char parentIn)
+	void Cull(QTCullPassStruct& data, unsigned int index, unsigned char level, char parentIn, ChildLocation loc)
 	{
 		IntersectionType it = data.frustrum.IntersectAABB(boundingBox, parentIn, failPlane);
 
 		if (it == IT_Intersect)
 		{
-			bool LoDfound = data.terrain.LoDCheck(boundingBox, level, offset, data.camPos);
+			bool LoDfound = data.terrain.LoDCheck(boundingBox, level, offset, data.camPos, loc);
 
 			if (level != 0 && !LoDfound)
 			{
 				--level;
 
-				unsigned int levelFac = ((1 << (2 * level + 2)) - 1) / 3;
 				unsigned int currInd = index;
 
 				for (unsigned int n = 0; n < 4; n++)
 				{
-					index = currInd + n * levelFac + 1;
-					data.nodes[index].Cull(data, index, level, parentIn);
+					index = currInd + n * levelFactors[level] + 1;
+					data.nodes[index].Cull(data, index, level, parentIn, ChildLocation(n));
 				}
 			}
 		}
 		else if (it == IT_Inside)
 		{
-			SetAllChildrenIn(data, index, level);
+			SetAllChildrenIn(data, index, level, loc);
 		}
 	}
 
-	void SetAllChildrenIn(QTCullPassStruct& data, unsigned int index, unsigned char level)
+	void SetAllChildrenIn(QTCullPassStruct& data, unsigned int index, unsigned char level, ChildLocation loc)
 	{
-		bool LoDfound = data.terrain.LoDCheck(boundingBox, level, offset, data.camPos);
+		bool LoDfound = data.terrain.LoDCheck(boundingBox, level, offset, data.camPos, loc);
 
 		if (level != 0 && !LoDfound)
 		{
 			--level;
 
-			unsigned int levelFac = ((1 << (2 * level + 2)) - 1) / 3;
 			unsigned int currInd = index;
 
 			for (unsigned int n = 0; n < 4; n++)
 			{
-				index = currInd + n * levelFac + 1;
-				data.nodes[index].SetAllChildrenIn(data, index, level);
+				index = currInd + n * levelFactors[level] + 1;
+				data.nodes[index].SetAllChildrenIn(data, index, level, ChildLocation(n));
 			}
 		}
 	}
@@ -98,12 +102,10 @@ public:
 
 			--level;
 
-			unsigned int levelFac = ((1 << (2 * (level) + 2)) - 1) / 3;
-
 			unsigned int c0 = index + 1;
-			unsigned int c1 = levelFac + index + 1;
-			unsigned int c2 = levelFac * 2 + index + 1;
-			unsigned int c3 = levelFac * 3 + index + 1;
+			unsigned int c1 = levelFactors[level] + index + 1;
+			unsigned int c2 = levelFactors[level] * 2 + index + 1;
+			unsigned int c3 = levelFactors[level] * 3 + index + 1;
 
 			unsigned short childlen = 1 << level;
 			nodes[c0].boundingBox = AABoundingBox(glm::vec3(min.x, 0, min.z), glm::vec3(center.x, 255, center.z));
@@ -139,7 +141,7 @@ private:
 	Terrain& terrain;
 
 public:
-	TopQTNode(unsigned int _level, Terrain& _terrain) : terrain(_terrain), level(_level), nNodes(((1 << (2 * level + 2)) - 1) / 3), QTNodes(new QTNode[nNodes])
+	TopQTNode(unsigned int _level, Terrain& _terrain) : terrain(_terrain), level(_level), nNodes(levelFactors[level]), QTNodes(new QTNode[nNodes])
 	{
 		
 	}
@@ -151,11 +153,11 @@ public:
 		QTNodes[0].Feed(QTNodes, level, 0);
 	}
 
-	void Cull(const glm::vec3& camPos, Frustrum& frustrum)
+	void Cull(const glm::vec3& camPos, Frustum& frustrum)
 	{
 		QTCullPassStruct data(QTNodes, terrain, frustrum, camPos);
 
-		QTNodes[0].Cull(data, 0, level, 0);
+		QTNodes[0].Cull(data, 0, level, 0, ChildLocation(0));
 	}
 
 	~TopQTNode()
@@ -200,7 +202,7 @@ public:
 		{
 			if (topNodes[n].used)
 			{
-				topNodes[n].node->Cull(cam.getPos(), cam.getFrustrum());
+				topNodes[n].node->Cull(cam.getPos(), cam.getFrustum());
 			}
 		}
 	}

@@ -7,17 +7,30 @@
 #include "ei/glm/gtc/type_ptr.hpp"
 #include <vector>
 
+enum ChildLocation { CHILD_NW, CHILD_NE, CHILD_SW, CHILD_SE };
+
 class Terrain
 {
 private:
 	void makeMesh(unsigned int cells, float celllen, Mesh& mesh);
 
+	inline float SqDistanceToPointXZ(const glm::vec3& min, float lenOver2, const glm::vec3& p)
+	{
+		float dx = glm::max(glm::abs(p.x - min.x - lenOver2) - lenOver2, 0.0f);
+		float dz = glm::max(glm::abs(p.z - min.z - lenOver2) - lenOver2, 0.0f);
+
+		return dx*dx + dz*dz;
+	}
+
+	inline float LevelLen(unsigned int level)
+	{
+		return TerrainSettings::CellsPerLeaf * TerrainSettings::MinimumCellLength * (float)(1 << level);
+	}
+
 	unsigned int leafCells;
 	float celllen;
 
 	Mesh mesh;
-	unsigned int singlePerm;
-	unsigned int doublePerm;
 
 	TextureAsset_const heightMap;
 	TextureAsset_const grass;
@@ -31,18 +44,33 @@ private:
 		unsigned short tex;
 	};
 
-	std::vector<RenderInstance> fullInstances;
-	mutable unsigned int fullInstUsed;
+	struct TerrainMesh
+	{
+		std::vector<RenderInstance> Instances;
+		mutable unsigned int InstUsed;
+		unsigned int offset;
+		unsigned int len;
+	};
+
+	TerrainMesh full;
+	TerrainMesh singlePerm;
+	TerrainMesh doublePerm;
 
 	GLuint InstVBO;
 	GLuint VAO;
 
 public:
-	Terrain() : leafCells(TerrainSettings::CellsPerLeaf), celllen(TerrainSettings::MinimumCellLength), mesh(0, 0, 0, 0, 0, 0), singlePerm(leafCells * leafCells * 6),
-		doublePerm(singlePerm + (leafCells - 1) * leafCells * 6 + 9 * leafCells / 2), heightMap(AssetManager::getAsset<Texture>(TextureKey("heightmap.png"))), grass(AssetManager::getAsset<Texture>(TextureKey("grass.jpg"))),
-		shader(AssetManager::getAsset<Shader>(ShaderKey("terrain.frag", "terrain.vert"))), fullInstUsed(0)
+	Terrain() : leafCells(TerrainSettings::CellsPerLeaf), celllen(TerrainSettings::MinimumCellLength), mesh(0, 0, 0, 0, 0, 0), heightMap(AssetManager::getAsset<Texture>(TextureKey("heightmap.png"))),
+		grass(AssetManager::getAsset<Texture>(TextureKey("grass.jpg"))), shader(AssetManager::getAsset<Shader>(ShaderKey("terrain.frag", "terrain.vert")))
 	{
 		makeMesh(leafCells, celllen, mesh);
+
+		singlePerm.InstUsed = doublePerm.InstUsed = full.InstUsed = 0;
+		full.offset = 0;
+		full.len = singlePerm.offset = leafCells * leafCells * 6;
+		singlePerm.len = (leafCells - 1) * leafCells * 6 + 9 * leafCells / 2;
+		doublePerm.offset = singlePerm.offset + singlePerm.len;
+		doublePerm.len = mesh.getIndlen() - doublePerm.offset;
 
 		glGenBuffers(1, &InstVBO);
 
@@ -62,21 +90,168 @@ public:
 		glBindVertexArray(0);
 	}
 
-	bool LoDCheck(AABoundingBox& aabb, unsigned int level, glm::lowp_uvec2& offset, const glm::vec3& camPos)
+	bool LoDCheck(AABoundingBox& aabb, unsigned int level, glm::lowp_uvec2& offset, const glm::vec3& camPos, ChildLocation loc)
 	{
-		if (aabb.SqDistanceToPointXZ(camPos) >= TerrainSettings::LoDDistances[level] * TerrainSettings::LoDDistances[level])
+		if (SqDistanceToPointXZ(aabb.getMin(), LevelLen(level) * 0.5f, camPos) >= TerrainSettings::LoDDistances[level] * TerrainSettings::LoDDistances[level])
 		{
-			if (fullInstances.size() <= fullInstUsed)
+			bool Dist1, Dist2;
+			unsigned short rot;
+
+			switch (loc)
 			{
-				fullInstances.push_back(RenderInstance());
+			case CHILD_SW:
+				//W
+				Dist1 = SqDistanceToPointXZ(aabb.getMin() - glm::vec3(LevelLen(level + 1), 0.0f, LevelLen(level + 1)), LevelLen(level), camPos)
+					>= TerrainSettings::LoDDistances[level + 1] * TerrainSettings::LoDDistances[level + 1];
+
+				//S
+				Dist2 = SqDistanceToPointXZ(aabb.getMin() + glm::vec3(0.0f, 0.0f, LevelLen(level)), LevelLen(level), camPos)
+					>= TerrainSettings::LoDDistances[level + 1] * TerrainSettings::LoDDistances[level + 1];
+
+				if (!Dist1 && !Dist2)
+				{
+					rot = 4;
+				}
+				else if (Dist1 && !Dist2)
+				{
+					rot = 0;
+				}
+				else if (!Dist1 && Dist2)
+				{
+					rot = 3;
+				}
+				else
+				{
+					rot = 3;
+				}
+
+				break;
+			case CHILD_SE:
+				//E
+				Dist1 = SqDistanceToPointXZ(aabb.getMin() + glm::vec3(LevelLen(level), 0.0f, -LevelLen(level)), LevelLen(level), camPos)
+					>= TerrainSettings::LoDDistances[level + 1] * TerrainSettings::LoDDistances[level + 1];
+
+				//S
+				Dist2 = SqDistanceToPointXZ(aabb.getMin() + glm::vec3(-LevelLen(level), 0.0f, LevelLen(level)), LevelLen(level), camPos)
+					>= TerrainSettings::LoDDistances[level + 1] * TerrainSettings::LoDDistances[level + 1];
+
+				if (!Dist1 && !Dist2)
+				{
+					rot = 4;
+				}
+				else if (Dist1 && !Dist2)
+				{
+					rot = 2;
+				}
+				else if (!Dist1 && Dist2)
+				{
+					rot = 3;
+				}
+				else
+				{
+					rot = 2;
+				}
+
+				break;
+			case CHILD_NW:
+				//W
+				Dist1 = SqDistanceToPointXZ(aabb.getMin() - glm::vec3(LevelLen(level + 1), 0.0f, 0.0f), LevelLen(level), camPos)
+					>= TerrainSettings::LoDDistances[level + 1] * TerrainSettings::LoDDistances[level + 1];
+
+				//N
+				Dist2 = SqDistanceToPointXZ(aabb.getMin() - glm::vec3(0.0f, 0.0f, LevelLen(level + 1)), LevelLen(level), camPos)
+					>= TerrainSettings::LoDDistances[level + 1] * TerrainSettings::LoDDistances[level + 1];
+
+				if (!Dist1 && !Dist2)
+				{
+					rot = 4;
+				}
+				else if (Dist1 && !Dist2)
+				{
+					rot = 0;
+				}
+				else if (!Dist1 && Dist2)
+				{
+					rot = 1;
+				}
+				else
+				{
+					rot = 0;
+				}
+
+				break;
+			case CHILD_NE:
+				//E
+				Dist1 = SqDistanceToPointXZ(aabb.getMin() + glm::vec3(LevelLen(level), 0.0f, 0.0f), LevelLen(level), camPos)
+					>= TerrainSettings::LoDDistances[level + 1] * TerrainSettings::LoDDistances[level + 1];
+
+				//N
+				Dist2 = SqDistanceToPointXZ(aabb.getMin() + glm::vec3(-LevelLen(level), 0.0f, -LevelLen(level + 1)), LevelLen(level), camPos)
+					>= TerrainSettings::LoDDistances[level + 1] * TerrainSettings::LoDDistances[level + 1];
+
+				if (!Dist1 && !Dist2)
+				{
+					rot = 4;
+				}
+				else if (Dist1 && !Dist2)
+				{
+					rot = 2;
+				}
+				else if (!Dist1 && Dist2)
+				{
+					rot = 1;
+				}
+				else
+				{
+					rot = 1;
+				}
+
+				break;
 			}
 
-			fullInstances[fullInstUsed].offx = offset.x;
-			fullInstances[fullInstUsed].offz = offset.y;
-			fullInstances[fullInstUsed].rotscale = level;
-			fullInstances[fullInstUsed].tex = 0;
+			if (rot == 4)
+			{
+				if (full.Instances.size() <= full.InstUsed)
+				{
+					full.Instances.push_back(RenderInstance());
+				}
 
-			fullInstUsed++;
+				full.Instances[full.InstUsed].offx = offset.x;
+				full.Instances[full.InstUsed].offz = offset.y;
+				full.Instances[full.InstUsed].rotscale = level;
+				full.Instances[full.InstUsed].tex = 0;
+
+				full.InstUsed++;
+			}
+			else if (Dist1 && Dist2)
+			{
+				if (doublePerm.Instances.size() <= doublePerm.InstUsed)
+				{
+					doublePerm.Instances.push_back(RenderInstance());
+				}
+
+				doublePerm.Instances[doublePerm.InstUsed].offx = offset.x;
+				doublePerm.Instances[doublePerm.InstUsed].offz = offset.y;
+				doublePerm.Instances[doublePerm.InstUsed].rotscale = level | (rot << 8);
+				doublePerm.Instances[doublePerm.InstUsed].tex = 0;
+
+				doublePerm.InstUsed++;
+			}
+			else
+			{
+				if (singlePerm.Instances.size() <= singlePerm.InstUsed)
+				{
+					singlePerm.Instances.push_back(RenderInstance());
+				}
+
+				singlePerm.Instances[singlePerm.InstUsed].offx = offset.x;
+				singlePerm.Instances[singlePerm.InstUsed].offz = offset.y;
+				singlePerm.Instances[singlePerm.InstUsed].rotscale = level | (rot << 8);
+				singlePerm.Instances[singlePerm.InstUsed].tex = 0;
+
+				singlePerm.InstUsed++;
+			}
+			
 
 			return true;
 		}
@@ -87,7 +262,10 @@ public:
 	void Render(const glm::mat4& VP, glm::vec2 cam) const
 	{
 		glBindBuffer(GL_ARRAY_BUFFER, InstVBO);
-		glBufferData(GL_ARRAY_BUFFER, fullInstUsed * sizeof(RenderInstance), fullInstances.data(), GL_DYNAMIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, (full.InstUsed + singlePerm.InstUsed + doublePerm.InstUsed) * sizeof(RenderInstance), NULL, GL_DYNAMIC_DRAW);
+		glBufferSubData(GL_ARRAY_BUFFER, 0, full.InstUsed * sizeof(RenderInstance), full.Instances.data());
+		glBufferSubData(GL_ARRAY_BUFFER, full.InstUsed * sizeof(RenderInstance), singlePerm.InstUsed * sizeof(RenderInstance), singlePerm.Instances.data());
+		glBufferSubData(GL_ARRAY_BUFFER, (singlePerm.InstUsed + full.InstUsed) * sizeof(RenderInstance), doublePerm.InstUsed * sizeof(RenderInstance), doublePerm.Instances.data());
 
 		glBindAttribLocation(shader.get().getShader(), 0, "in_Position");
 		glBindAttribLocation(shader.get().getShader(), 1, "in_InstData");
@@ -117,13 +295,13 @@ public:
 
 		glBindVertexArray(VAO);
 
-		//glDrawElements(GL_TRIANGLES, mesh.getIndlen() - doublePerm, GL_UNSIGNED_INT, (void*)(doublePerm * sizeof(unsigned int)));
-		//glDrawElements(GL_TRIANGLES, doublePerm - singlePerm, GL_UNSIGNED_INT, (void*)(singlePerm * sizeof(unsigned int)));
-		glDrawElementsInstanced(GL_TRIANGLES, singlePerm, GL_UNSIGNED_INT, (void*)(NULL), fullInstUsed);
+		glDrawElementsInstancedBaseInstance(GL_TRIANGLES, full.len      , GL_UNSIGNED_INT, (void*)(full.offset       * sizeof(unsigned int)), full.InstUsed      , 0);
+		glDrawElementsInstancedBaseInstance(GL_TRIANGLES, singlePerm.len, GL_UNSIGNED_INT, (void*)(singlePerm.offset * sizeof(unsigned int)), singlePerm.InstUsed, full.InstUsed);
+		glDrawElementsInstancedBaseInstance(GL_TRIANGLES, doublePerm.len, GL_UNSIGNED_INT, (void*)(doublePerm.offset * sizeof(unsigned int)), doublePerm.InstUsed, full.InstUsed + singlePerm.InstUsed);
 
 		glBindVertexArray(0);
 
-		fullInstUsed = 0;
+		singlePerm.InstUsed = doublePerm.InstUsed = full.InstUsed = 0;
 	}
 
 	~Terrain()

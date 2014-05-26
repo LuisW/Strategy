@@ -3,7 +3,7 @@
 #include "ei\glm\glm.hpp"
 #include "ei\glm\gtc\matrix_transform.hpp"
 #include "ei\glm\gtx\quaternion.hpp"
-#include "Frustrum.h"
+#include "Frustum.h"
 
 class Camera
 {
@@ -21,7 +21,7 @@ private:
 	mutable glm::mat4 view;
 	mutable glm::mat4 projection;
 	mutable glm::mat4 vp;
-	mutable Frustrum viewFrustrum;
+	mutable Frustum viewFrustum;
 
 	glm::quat rotation;
 	glm::vec3 position;
@@ -40,14 +40,14 @@ private:
 public:
 	Camera(float _fov, float _aspect, float _near, float _far) : 
 		fov(_fov), aspect(_aspect), near(_near), far(_far), projection(glm::perspective(fov, aspect, near, far)),
-		updateP(false), updateV(true), updateVP(false), rotation(0.0f, 0.0f, 0.0f, 1.0f), position(0.0f), viewFrustrum(vp)
+		updateP(false), updateV(true), updateVP(false), rotation(0.0f, 0.0f, 0.0f, 1.0f), position(0.0f), viewFrustum(vp)
 	{
 		makeLocalSystem();
 	}
 
 	Camera(float _fov, float _aspect, float _near, float _far, glm::vec3 pos, glm::quat rot) :
 		fov(_fov), aspect(_aspect), near(_near), far(_far), projection(glm::perspective(fov, aspect, near, far)), 
-		updateP(false), updateV(true), updateVP(false), position(pos), rotation(rot), viewFrustrum(vp)
+		updateP(false), updateV(true), updateVP(false), position(pos), rotation(rot), viewFrustum(vp)
 	{
 		makeLocalSystem();
 	}
@@ -101,7 +101,7 @@ public:
 		if (updateVP || updateP || updateV)
 		{
 			vp = getProjection() * getView();
-			viewFrustrum = Frustrum(vp);
+			viewFrustum = Frustum(vp);
 			updateVP = false;
 		}
 
@@ -195,9 +195,9 @@ public:
 		return front;
 	}
 
-	inline Frustrum& getFrustrum() const
+	inline Frustum& getFrustum() const
 	{
 		getViewProjection();
-		return viewFrustrum;
+		return viewFrustum;
 	}
 };
