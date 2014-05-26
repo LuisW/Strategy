@@ -23,7 +23,11 @@ void Render::RenderFrame()
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 48, NULL);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 48, (GLvoid*)12);
 
-	data.getRenderSystem().Tick(data.getActiveCam()->getViewProjection(), sp_WVP);
+	//data.getRenderSystem().Tick(data.getActiveCam()->getViewProjection(), sp_WVP);
+
+	glm::vec3 cam = data.getActiveCam()->getPos();
+
+	data.getTerrain().Render(data.getActiveCam()->getViewProjection(), glm::vec2(cam.x, cam.z));
 
 	SDL_GL_SwapBuffers();
 }

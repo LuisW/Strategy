@@ -15,21 +15,21 @@ void PlayerControlSystem::Tick(Camera& activeCam)
 
 	if (data.getKeyboardState(SDLK_w))
 	{
-		activeCam.Move(0.1f);
+		activeCam.Move(1.0f);
 	}
 
 	if (data.getKeyboardState(SDLK_a))
 	{
-		activeCam.Strafe(-0.1f);
+		activeCam.Strafe(-1.0f);
 	}
 
 	if (data.getKeyboardState(SDLK_s))
 	{
-		activeCam.Move(-0.1f);
+		activeCam.Move(-1.0f);
 	}
 
 	if (data.getKeyboardState(SDLK_d))
 	{
-		activeCam.Strafe(0.1f);
+		activeCam.Strafe(1.0f);
 	}
 }

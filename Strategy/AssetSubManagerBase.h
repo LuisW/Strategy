@@ -1,7 +1,34 @@
 #pragma once
 
 #include <unordered_map>
+#include <stdexcept>
 #include "Asset.h"
+
+template<typename T>
+class AssetLoadException : std::runtime_error
+{
+private:
+	const AssetKey<T> asset;
+	std::string info;
+
+public:
+	AssetLoadException(const AssetKey<T> _asset, std::string _info) : std::runtime_error("AssetLoadException"), asset(_asset), info(_info)
+	{}
+
+	virtual const char* what() const throw()
+	{
+		std::string str(std::runtime_error::what());
+
+		str += ": Exception while loading asset " + asset.toString() + ".";
+
+		if (info != "")
+		{
+			str += " " + info;
+		}
+
+		return str.c_str();
+	}
+};
 
 template<typename T>
 class AssetSubManagerBase
@@ -37,6 +64,12 @@ public:
 		{
 			AssetSubManagerStorage<T> newElem;
 			newElem.data = Load(key);
+
+			if (newElem.data == NULL)
+			{
+				throw AssetLoadException<T>(key, "");
+			}
+
 			newElem.refCnt = ReferenceCounter(0);
 
 			assets[key] = newElem;

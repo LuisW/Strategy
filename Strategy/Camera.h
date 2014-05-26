@@ -195,8 +195,9 @@ public:
 		return front;
 	}
 
-	inline Frustrum& getFrustrum()
+	inline Frustrum& getFrustrum() const
 	{
+		getViewProjection();
 		return viewFrustrum;
 	}
 };

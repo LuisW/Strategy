@@ -79,6 +79,8 @@
     <ClCompile Include="ShaderTypes.cpp" />
     <ClCompile Include="SubShader.cpp" />
     <ClCompile Include="RenderSystem.cpp" />
+    <ClCompile Include="Terrain.cpp" />
+    <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Transform.cpp" />
     <ClCompile Include="Update.cpp" />
     <ClCompile Include="Window.cpp" />
@@ -110,6 +112,8 @@
     <ClInclude Include="DataStructs.h" />
     <ClInclude Include="SubShader.h" />
     <ClInclude Include="System.h" />
+    <ClInclude Include="Terrain.h" />
+    <ClInclude Include="Texture.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="TransformComponent.h" />
     <ClInclude Include="Update.h" />
@@ -120,6 +124,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="forLuis.tem" />
+    <None Include="terrain.frag" />
+    <None Include="terrain.vert" />
     <None Include="test.frag" />
     <None Include="test.vert" />
   </ItemGroup>

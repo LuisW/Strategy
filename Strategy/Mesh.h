@@ -62,6 +62,11 @@ class AssetKey<Mesh>
 public:
 	std::string name;
 
+	std::string toString() const
+	{
+		return "<Mesh>:" + name;
+	}
+
 	inline bool operator==(const MeshKey& other) const
 	{
 		return name == other.name;

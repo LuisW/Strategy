@@ -2,6 +2,7 @@
 
 #include "Shader.h"
 #include "Mesh.h"
+#include "Texture.h"
 
 class AssetManager
 {
@@ -9,6 +10,7 @@ private:
 	SubShaderAssetManager	subShaders;
 	ShaderAssetManager		shaders;
 	MeshAssetManager		meshes;
+	TextureAssetManager		textures;
 
 	static AssetManager* instance;
 

@@ -6,6 +6,7 @@
 #include "AssetManager.h"
 #include "RenderSystem.h"
 #include "DataStructs.h"
+#include "VisibilitySystem.h"
 
 class Update;
 
@@ -21,11 +22,14 @@ private:
 	Camera* activeCamera;
 	ShaderAsset_const shader;
 	RenderSystem renderSystem;
+	Terrain terrain;
+	VisibilitySystem visibilitySystem;
 
 	RenderSettings renderSettings;
 
 public:
-	GameData() : activeCamera(NULL), shader(AssetManager::getAsset<Shader>(ShaderKey("test.frag", "test.vert"))), renderSystem(entities)
+	GameData() : activeCamera(NULL), shader(AssetManager::getAsset<Shader>(ShaderKey("test.frag", "test.vert"))), renderSystem(entities), terrain()
+		, visibilitySystem(entities, TerrainSettings::LoDs, terrain)
 	{
 		for (int n = 0; n < 256; n++)
 		{
@@ -68,5 +72,10 @@ public:
 	inline const RenderSystem& getRenderSystem() const
 	{
 		return renderSystem;
+	}
+
+	inline const Terrain& getTerrain() const
+	{
+		return terrain;
 	}
 };

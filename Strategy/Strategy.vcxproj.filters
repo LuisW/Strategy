@@ -93,6 +93,12 @@
     <ClCompile Include="PlayerControlSystem.cpp">
       <Filter>Quelldateien\InGame\Systems</Filter>
     </ClCompile>
+    <ClCompile Include="Terrain.cpp">
+      <Filter>Quelldateien\InGame\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Quelldateien\Content</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h">
@@ -194,6 +200,12 @@
     <ClInclude Include="Frustrum.h">
       <Filter>Headerdateien\InGame\DataStorage</Filter>
     </ClInclude>
+    <ClInclude Include="Terrain.h">
+      <Filter>Headerdateien\InGame\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Headerdateien\Content</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="test.frag">
@@ -204,6 +216,12 @@
     </None>
     <None Include="forLuis.tem">
       <Filter>Ressourcendateien\Model</Filter>
+    </None>
+    <None Include="terrain.vert">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="terrain.frag">
+      <Filter>Ressourcendateien\Shader</Filter>
     </None>
   </ItemGroup>
 </Project>

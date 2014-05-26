@@ -37,6 +37,12 @@ public:
 	bool isfrag;
 
 
+	std::string toString() const
+	{
+		return "<SubShader>:" + name;
+	}
+
+
 	inline bool operator==(const SubShaderKey& other) const
 	{
 		return name == other.name && isfrag == other.isfrag;

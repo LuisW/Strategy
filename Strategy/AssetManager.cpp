@@ -30,11 +30,18 @@ const Asset<Mesh> AssetManager::getAsset<Mesh>(const AssetKey<Mesh>& key)
 	return instance->meshes.GetAsset(key);
 }
 
+template<>
+const Asset<Texture> AssetManager::getAsset<Texture>(const AssetKey<Texture>& key)
+{
+	return instance->textures.GetAsset(key);
+}
+
 void AssetManager::deinit()
 {
 	instance->meshes.DeleteAll();
 	instance->shaders.DeleteAll();
 	instance->subShaders.DeleteAll();
+	instance->textures.DeleteAll();
 	delete instance;
 }
 

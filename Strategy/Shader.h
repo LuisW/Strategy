@@ -43,6 +43,12 @@ public:
 	std::string frag;
 	std::string vert;
 
+
+	std::string toString() const
+	{
+		return "<Shader>:" + frag + ", " + vert;
+	}
+
 	AssetKey(const std::string& _frag, const std::string& _vert) : frag(_frag), vert(_vert)
 	{
 

@@ -3,7 +3,13 @@
 #include "ReferenceCounter.h"
 
 
-template<typename T> class AssetKey;
+template<typename T> class AssetKey
+{
+	std::string toString() const
+	{
+		return "Unknown";
+	}
+};
 
 //template< typename T >
 //class TAssetManager

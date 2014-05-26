@@ -36,6 +36,20 @@ SubShader* SubShaderAssetManager::Load(SubShaderKey key)
 		GLint success;
 		glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
 
+		if (success == GL_FALSE)
+		{
+			GLint logsize = 0;
+			glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &logsize);
+			char* log = new char[logsize];
+			glGetShaderInfoLog(shader, logsize, &logsize, log);
+
+			printf(log);
+
+			delete[] log;
+			glDeleteShader(shader);
+			throw AssetLoadException<SubShader>(key, "Shader compiliation error!");
+		}
+
 		return new SubShader(shader, key.isfrag);
 	}
 	catch (std::exception e)

@@ -30,10 +30,19 @@ bool Update::UpdateTick()
 	if (data.getKeyboardState(SDLK_ESCAPE))
 		return false;
 
+	if (data.getKeyboardState(SDLK_b))
+	{
+		__debugbreak();
+	}
+
 	if (data.activeCamera != NULL)
 	{
 		playerControl.Tick(*(data.activeCamera));
 	}
+
+	size_t t = SDL_GetTicks();
+	data.visibilitySystem.Tick(*(data.activeCamera));
+	t = SDL_GetTicks() - t;
 
 	return true;
 }

@@ -4,15 +4,16 @@
 #include <vector>
 #include "ei/glm/glm.hpp"
 #include "ei/GL/glew.h"
+#include "EntityManager.h"
 
 class RenderSystem : public System
 {
 private:
-	EntityManager& entities;
+	EntityManager& entityManager;
 	std::vector<EntityID> entities;
 
 public:
-	RenderSystem(EntityManager& _entityManager)
+	RenderSystem(EntityManager& _entityManager) : entityManager(_entityManager)
 	{}
 
 	void onEntityChanged(EntityID entity, ComponentType type, bool added);

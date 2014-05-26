@@ -7,11 +7,9 @@ class AABoundingBox
 private:
 	glm::vec3 min;
 	glm::vec3 max;
-	glm::vec3 center;
-	glm::vec3 halfDiagonal;
 
 public:
-	AABoundingBox(glm::vec3 _min, glm::vec3 _max) : min(_min), max(_max), center((min + max) * 0.5f), halfDiagonal((max - min) * 0.5f)
+	AABoundingBox(glm::vec3 _min, glm::vec3 _max) : min(_min), max(_max)
 	{
 	}
 
@@ -25,27 +23,32 @@ public:
 		return max;
 	}
 
-	const glm::vec3& getCenter() const
+	inline glm::vec3 getCenter() const
 	{
-		return center;
+		return 0.5f * (min + max);
 	}
 
-	const glm::vec3& getHalfDiagonal() const
+	inline glm::vec3 getHalfDiagonal() const
 	{
-		return halfDiagonal;
+		return 0.5f * (max - min);
 	}
 
 	void setMin(const glm::vec3& _min)
 	{
 		min = _min;
-		center = (min + max) * 0.5f;
-		halfDiagonal = (max - min) * 0.5f;
 	}
 
 	void setMax(const glm::vec3& _max)
 	{
 		max = _max;
-		center = (min + max) * 0.5f;
-		halfDiagonal = (max - min) * 0.5f;
+	}
+
+	float SqDistanceToPointXZ(const glm::vec3& p)
+	{
+		glm::vec3 center = getCenter();
+		float dx = glm::max(glm::abs(p.x - center.x) - (center.x - min.x), 0.0f);
+		float dz = glm::max(glm::abs(p.z - center.z) - (center.z - min.z), 0.0f);
+
+		return dx*dx + dz*dz;
 	}
 };

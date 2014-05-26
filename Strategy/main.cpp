@@ -35,10 +35,10 @@ int main(int argc, const char* argv[])
 
 		fpsint++;
 
-		if (fpsint == 1000)
+		if (fpsint == 10)
 		{
 			fpsint = 0;
-			float dt = (float)(SDL_GetTicks() - t0) / 1000.0f;
+			float dt = (float)(SDL_GetTicks() - t0) / 10.0f;
 			float fps = 1000.0f / dt;
 			t0 = SDL_GetTicks();
 			SDL_WM_SetCaption(std::to_string(fps).c_str(), NULL);
