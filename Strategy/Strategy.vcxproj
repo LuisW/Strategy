@@ -126,6 +126,8 @@
     <None Include="forLuis.tem" />
     <None Include="terrain.frag" />
     <None Include="terrain.vert" />
+    <None Include="terrain2.frag" />
+    <None Include="terrain2.vert" />
     <None Include="test.frag" />
     <None Include="test.vert" />
   </ItemGroup>

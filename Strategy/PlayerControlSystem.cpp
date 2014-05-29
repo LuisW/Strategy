@@ -1,7 +1,7 @@
 #include "PlayerControlSystem.h"
 #include "ei/SDL/SDL.h"
 
-const float speed = 0.1f;
+const float speed = 1.0f;
 
 void PlayerControlSystem::Tick(Camera& activeCam)
 {

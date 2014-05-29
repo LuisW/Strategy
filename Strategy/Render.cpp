@@ -27,7 +27,7 @@ void Render::RenderFrame()
 
 	glm::vec3 cam = data.getActiveCam()->getPos();
 
-	data.getTerrain().Render(data.getActiveCam()->getViewProjection(), glm::vec2(cam.x, cam.z));
+	data.getTerrain().Render(data.getActiveCam()->getViewProjection(), cam);
 
 	SDL_GL_SwapBuffers();
 }

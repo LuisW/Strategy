@@ -108,19 +108,19 @@ public:
 			unsigned int c3 = levelFactors[level] * 3 + index + 1;
 
 			unsigned short childlen = 1 << level;
-			nodes[c0].boundingBox = AABoundingBox(glm::vec3(min.x, 0, min.z), glm::vec3(center.x, 255, center.z));
+			nodes[c0].boundingBox = AABoundingBox(glm::vec3(min.x, 0, min.z), glm::vec3(center.x, max.y, center.z));
 			nodes[c0].offset = offset;
 			nodes[c0].Feed(nodes, level, c0);
 
-			nodes[c1].boundingBox = AABoundingBox(glm::vec3(center.x, 0, min.z), glm::vec3(max.x, 255, center.z));
+			nodes[c1].boundingBox = AABoundingBox(glm::vec3(center.x, 0, min.z), glm::vec3(max.x, max.y, center.z));
 			nodes[c1].offset = glm::lowp_uvec2(offset.x + childlen, offset.y);
 			nodes[c1].Feed(nodes, level, c1);
 
-			nodes[c2].boundingBox = AABoundingBox(glm::vec3(min.x, 0, center.z), glm::vec3(center.x, 255, max.z));
+			nodes[c2].boundingBox = AABoundingBox(glm::vec3(min.x, 0, center.z), glm::vec3(center.x, max.y, max.z));
 			nodes[c2].offset = glm::lowp_uvec2(offset.x, offset.y + childlen);
 			nodes[c2].Feed(nodes, level, c2);
 
-			nodes[c3].boundingBox = AABoundingBox(glm::vec3(center.x, 0, center.z), glm::vec3(max.x, 255, max.z));
+			nodes[c3].boundingBox = AABoundingBox(glm::vec3(center.x, 0, center.z), glm::vec3(max.x, max.y, max.z));
 			nodes[c3].offset = offset + childlen;
 			nodes[c3].Feed(nodes, level, c3);
 		}

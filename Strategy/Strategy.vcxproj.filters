@@ -223,5 +223,11 @@
     <None Include="terrain.frag">
       <Filter>Ressourcendateien\Shader</Filter>
     </None>
+    <None Include="terrain2.vert">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="terrain2.frag">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
   </ItemGroup>
 </Project>

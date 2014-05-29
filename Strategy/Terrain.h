@@ -34,6 +34,7 @@ private:
 
 	TextureAsset_const heightMap;
 	TextureAsset_const grass;
+	TextureAsset_const rock;
 	ShaderAsset_const shader;
 
 	struct RenderInstance
@@ -61,7 +62,8 @@ private:
 
 public:
 	Terrain() : leafCells(TerrainSettings::CellsPerLeaf), celllen(TerrainSettings::MinimumCellLength), mesh(0, 0, 0, 0, 0, 0), heightMap(AssetManager::getAsset<Texture>(TextureKey("heightmap.png"))),
-		grass(AssetManager::getAsset<Texture>(TextureKey("grass.jpg"))), shader(AssetManager::getAsset<Shader>(ShaderKey("terrain.frag", "terrain.vert")))
+		grass(AssetManager::getAsset<Texture>(TextureKey("grass.jpg"))), rock(AssetManager::getAsset<Texture>(TextureKey("rock.jpg"))),
+		shader(AssetManager::getAsset<Shader>(ShaderKey("terrain2.frag", "terrain2.vert")))
 	{
 		makeMesh(leafCells, celllen, mesh);
 
@@ -101,7 +103,7 @@ public:
 			{
 			case CHILD_SW:
 				//W
-				Dist1 = SqDistanceToPointXZ(aabb.getMin() - glm::vec3(LevelLen(level + 1), 0.0f, LevelLen(level + 1)), LevelLen(level), camPos)
+				Dist1 = SqDistanceToPointXZ(aabb.getMin() - glm::vec3(LevelLen(level + 1), 0.0f, LevelLen(level)), LevelLen(level), camPos)
 					>= TerrainSettings::LoDDistances[level + 1] * TerrainSettings::LoDDistances[level + 1];
 
 				//S
@@ -259,7 +261,7 @@ public:
 		return false;
 	}
 
-	void Render(const glm::mat4& VP, glm::vec2 cam) const
+	void Render(const glm::mat4& VP, glm::vec3 cam) const
 	{
 		glBindBuffer(GL_ARRAY_BUFFER, InstVBO);
 		glBufferData(GL_ARRAY_BUFFER, (full.InstUsed + singlePerm.InstUsed + doublePerm.InstUsed) * sizeof(RenderInstance), NULL, GL_DYNAMIC_DRAW);
@@ -279,11 +281,15 @@ public:
 		GLbyte sp_gridsize = glGetUniformLocation(shader.get().getShader(), "gridSize");
 		GLbyte sp_instbuff = glGetUniformLocation(shader.get().getShader(), "instBuff");
 		GLbyte sp_grass = glGetUniformLocation(shader.get().getShader(), "grass");
+		GLbyte sp_rock = glGetUniformLocation(shader.get().getShader(), "rock");
 		GLbyte sp_camPos = glGetUniformLocation(shader.get().getShader(), "camPos");
+		GLbyte sp_texelSize = glGetUniformLocation(shader.get().getShader(), "texelSize");
 
 		glUniformMatrix4fv(sp_WVP, 1, GL_FALSE, glm::value_ptr(VP));
 		glUniform1f(sp_gridsize, celllen * leafCells);
-		glUniform2fv(sp_camPos, 1, glm::value_ptr(cam));
+		glUniform3fv(sp_camPos, 1, glm::value_ptr(cam));
+		float txs = 1.0f / (float)heightMap.get().getHeight();
+		glUniform1f(sp_texelSize, txs);
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, heightMap.get().getTexture());
@@ -292,6 +298,10 @@ public:
 		glActiveTexture(GL_TEXTURE0 + 1);
 		glBindTexture(GL_TEXTURE_2D, grass.get().getTexture());
 		glUniform1i(sp_grass, 1);
+
+		glActiveTexture(GL_TEXTURE0 + 2);
+		glBindTexture(GL_TEXTURE_2D, rock.get().getTexture());
+		glUniform1i(sp_rock, 2);
 
 		glBindVertexArray(VAO);
 
