@@ -81,6 +81,7 @@
     <ClCompile Include="RenderSystem.cpp" />
     <ClCompile Include="Terrain.cpp" />
     <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="Timer_Win.cpp" />
     <ClCompile Include="Transform.cpp" />
     <ClCompile Include="Update.cpp" />
     <ClCompile Include="Window.cpp" />
@@ -114,9 +115,11 @@
     <ClInclude Include="System.h" />
     <ClInclude Include="Terrain.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="Timer.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="TransformComponent.h" />
     <ClInclude Include="Update.h" />
+    <ClInclude Include="VelocityComponent.h" />
     <ClInclude Include="VertexFormat.h" />
     <ClInclude Include="VisibilityComponent.h" />
     <ClInclude Include="VisibilitySystem.h" />

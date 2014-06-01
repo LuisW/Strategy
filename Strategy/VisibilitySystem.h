@@ -11,9 +11,9 @@ calcLevelFac(7), calcLevelFac(8), calcLevelFac(9), calcLevelFac(10), calcLevelFa
 
 class QTNode;
 
-struct QTCullPassStruct
+struct QTCullGlobalPass
 {
-	QTCullPassStruct(QTNode* _nodes, Terrain& _terrain, Frustum& _frustrum, const glm::vec3& _camPos) 
+	QTCullGlobalPass(QTNode* _nodes, Terrain& _terrain, Frustum& _frustrum, const glm::vec3& _camPos) 
 		: nodes(_nodes), terrain(_terrain), frustrum(_frustrum), camPos(_camPos)
 	{}
 
@@ -23,6 +23,20 @@ struct QTCullPassStruct
 	const glm::vec3& camPos;
 };
 
+struct QTCullLocalPass
+{
+	QTCullLocalPass(unsigned char _level, char _parentIn, glm::vec3 _h)
+		: level(_level), parentIn(_parentIn), h(_h)
+	{}
+
+	unsigned int index;
+	unsigned char level;
+	char parentIn;
+	ChildLocation loc;
+	glm::lowp_uvec2 offset;
+	glm::vec3 h;
+};
+
 class TopQTNode;
 
 class QTNode
@@ -30,100 +44,97 @@ class QTNode
 private:
 	friend TopQTNode;
 
-	glm::lowp_uvec2 offset;
-	AABoundingBox boundingBox;
 	unsigned char failPlane;
-
 public:
 
-	QTNode() : boundingBox(glm::vec3(0.0f), glm::vec3(0.0f)), failPlane(FP_Top)
+	QTNode() : failPlane(FP_Top)
 	{
 
 	}
 
-	QTNode(const AABoundingBox& _boundingBox, unsigned int level, glm::lowp_uvec2 _offset) : boundingBox(_boundingBox),
-		failPlane(FP_Top), offset(_offset)
+	void Cull(QTCullGlobalPass& global, QTCullLocalPass& local)
 	{
+		glm::vec2 min = glm::vec2(local.offset) * (TerrainSettings::CellsPerLeaf * TerrainSettings::MinimumCellLength);
 
-	}
-
-	void Cull(QTCullPassStruct& data, unsigned int index, unsigned char level, char parentIn, ChildLocation loc)
-	{
-		IntersectionType it = data.frustrum.IntersectAABB(boundingBox, parentIn, failPlane);
+  		IntersectionType it = global.frustrum.IntersectAABB(glm::vec3(min.x, 0.0f, min.y) + local.h , local.h ,local.parentIn, failPlane);
 
 		if (it == IT_Intersect)
 		{
-			bool LoDfound = data.terrain.LoDCheck(boundingBox, level, offset, data.camPos, loc);
+			bool LoDfound = global.terrain.LoDCheck(min, local.level, local.offset, global.camPos, local.loc);
 
-			if (level != 0 && !LoDfound)
+			if (local.level != 0 && !LoDfound)
 			{
-				--level;
-
-				unsigned int currInd = index;
+				QTCullLocalPass newLocal = QTCullLocalPass(local.level - 1, local.parentIn, glm::vec3((TerrainSettings::CellsPerLeaf * TerrainSettings::MinimumCellLength) * (1 << (local.level - 1))));
+				newLocal.h.y = local.h.y;
 
 				for (unsigned int n = 0; n < 4; n++)
 				{
-					index = currInd + n * levelFactors[level] + 1;
-					data.nodes[index].Cull(data, index, level, parentIn, ChildLocation(n));
+					newLocal.index = local.index + n * levelFactors[newLocal.level] + 1;
+					newLocal.loc = ChildLocation(n);
+
+					switch (newLocal.loc)
+					{
+					case CHILD_NW:
+						newLocal.offset = local.offset;
+						break;
+					case CHILD_NE:
+						newLocal.offset = glm::lowp_uvec2(local.offset.x + (1 << newLocal.level), local.offset.y);
+						break;
+					case CHILD_SW:
+						newLocal.offset = glm::lowp_uvec2(local.offset.x, local.offset.y + (1 << newLocal.level));
+						break;
+					case CHILD_SE:
+						newLocal.offset = glm::lowp_uvec2(local.offset.x + (1 << newLocal.level), local.offset.y + (1 << newLocal.level));
+						break;
+					}
+
+					global.nodes[local.index].Cull(global, newLocal);
 				}
 			}
 		}
 		else if (it == IT_Inside)
 		{
-			SetAllChildrenIn(data, index, level, loc);
+			SetAllChildrenIn(global, local);
 		}
 	}
 
-	void SetAllChildrenIn(QTCullPassStruct& data, unsigned int index, unsigned char level, ChildLocation loc)
+	void SetAllChildrenIn(QTCullGlobalPass& global, QTCullLocalPass& local)
 	{
-		bool LoDfound = data.terrain.LoDCheck(boundingBox, level, offset, data.camPos, loc);
+		bool LoDfound = global.terrain.LoDCheck(glm::vec2(local.offset) * (TerrainSettings::CellsPerLeaf * TerrainSettings::MinimumCellLength), local.level, local.offset, global.camPos, local.loc);
 
-		if (level != 0 && !LoDfound)
+		if (local.level != 0 && !LoDfound)
 		{
-			--level;
-
-			unsigned int currInd = index;
+			QTCullLocalPass newLocal = QTCullLocalPass(local.level - 1, local.parentIn, glm::vec3());
 
 			for (unsigned int n = 0; n < 4; n++)
 			{
-				index = currInd + n * levelFactors[level] + 1;
-				data.nodes[index].SetAllChildrenIn(data, index, level, ChildLocation(n));
+				newLocal.index = local.index + n * levelFactors[newLocal.level] + 1;
+				newLocal.loc = ChildLocation(n);
+
+				switch (newLocal.loc)
+				{
+				case CHILD_NW:
+					newLocal.offset = local.offset;
+					break;
+				case CHILD_NE:
+					newLocal.offset = glm::lowp_uvec2(local.offset.x + (1 << newLocal.level), local.offset.y);
+					break;
+				case CHILD_SW:
+					newLocal.offset = glm::lowp_uvec2(local.offset.x, local.offset.y + (1 << newLocal.level));
+					break;
+				case CHILD_SE:
+					newLocal.offset = glm::lowp_uvec2(local.offset.x + (1 << newLocal.level), local.offset.y + (1 << newLocal.level));
+					break;
+				}
+
+				global.nodes[local.index].SetAllChildrenIn(global, newLocal);
 			}
 		}
 	}
 
 	void Feed(QTNode* nodes, unsigned char level, unsigned int index)
 	{
-		if (level > 0)
-		{
-			glm::vec3 min = boundingBox.getMin();
-			glm::vec3 max = boundingBox.getMax();
-			glm::vec3 center = boundingBox.getCenter();
 
-			--level;
-
-			unsigned int c0 = index + 1;
-			unsigned int c1 = levelFactors[level] + index + 1;
-			unsigned int c2 = levelFactors[level] * 2 + index + 1;
-			unsigned int c3 = levelFactors[level] * 3 + index + 1;
-
-			unsigned short childlen = 1 << level;
-			nodes[c0].boundingBox = AABoundingBox(glm::vec3(min.x, 0, min.z), glm::vec3(center.x, max.y, center.z));
-			nodes[c0].offset = offset;
-			nodes[c0].Feed(nodes, level, c0);
-
-			nodes[c1].boundingBox = AABoundingBox(glm::vec3(center.x, 0, min.z), glm::vec3(max.x, max.y, center.z));
-			nodes[c1].offset = glm::lowp_uvec2(offset.x + childlen, offset.y);
-			nodes[c1].Feed(nodes, level, c1);
-
-			nodes[c2].boundingBox = AABoundingBox(glm::vec3(min.x, 0, center.z), glm::vec3(center.x, max.y, max.z));
-			nodes[c2].offset = glm::lowp_uvec2(offset.x, offset.y + childlen);
-			nodes[c2].Feed(nodes, level, c2);
-
-			nodes[c3].boundingBox = AABoundingBox(glm::vec3(center.x, 0, center.z), glm::vec3(max.x, max.y, max.z));
-			nodes[c3].offset = offset + childlen;
-			nodes[c3].Feed(nodes, level, c3);
-		}
 	}
 
 	~QTNode()
@@ -139,6 +150,7 @@ private:
 	unsigned int nNodes;
 	QTNode* QTNodes;
 	Terrain& terrain;
+	glm::lowp_uvec2 globalOffset;
 
 public:
 	TopQTNode(unsigned int _level, Terrain& _terrain) : terrain(_terrain), level(_level), nNodes(levelFactors[level]), QTNodes(new QTNode[nNodes])
@@ -146,18 +158,21 @@ public:
 		
 	}
 
-	void Feed(AABoundingBox& boundingBox, const glm::lowp_uvec2& offset)
+	void Feed(const glm::lowp_uvec2& _globalOffset)
 	{
-		QTNodes[0].boundingBox = boundingBox;
-		QTNodes[0].offset = offset;
-		QTNodes[0].Feed(QTNodes, level, 0);
+		globalOffset = _globalOffset;
 	}
 
 	void Cull(const glm::vec3& camPos, Frustum& frustrum)
 	{
-		QTCullPassStruct data(QTNodes, terrain, frustrum, camPos);
+		QTCullGlobalPass global(QTNodes, terrain, frustrum, camPos);
+		QTCullLocalPass local = QTCullLocalPass(level, 0, glm::vec3((TerrainSettings::CellsPerLeaf * TerrainSettings::MinimumCellLength) * (1 << (level - 1))));
+		local.h.y = 1000.0f;
+		local.index = 0;
+		local.loc = ChildLocation(0);
+		local.offset = globalOffset;
 
-		QTNodes[0].Cull(data, 0, level, 0, ChildLocation(0));
+		QTNodes[0].Cull(global, local);
 	}
 
 	~TopQTNode()
@@ -167,7 +182,7 @@ public:
 };
 
 
-#define NTopNodes 1
+#define NTopNodes 9
 
 class VisibilitySystem //: public System
 {
@@ -189,9 +204,9 @@ public:
 	{
 		for (unsigned int n = 0; n < NTopNodes; n++)
 		{
-			float topSize = TerrainSettings::CellsPerLeaf * TerrainSettings::MinimumCellLength * (1 << _treeDepth);
+			unsigned short topSize = 1 << treeDepth;
 			topNodes[n].node = new TopQTNode(_treeDepth, terrain);
-			topNodes[n].node->Feed(AABoundingBox(glm::vec3(0.0f), glm::vec3(topSize, 2000.0f, topSize)), glm::lowp_uvec2(0, 0));
+			topNodes[n].node->Feed(glm::lowp_uvec2(topSize * (n/3), topSize * (n%3)));
 			topNodes[n].used = true;
 		}
 	}

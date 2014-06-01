@@ -58,6 +58,13 @@ void RenderSystem::Tick(const glm::mat4& VP, GLbyte sp_WVP) const
 		glBindBuffer(GL_ARRAY_BUFFER, mesh.getVertices());
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.getIndices());
 
+		glEnableVertexAttribArray(0);
+		glEnableVertexAttribArray(1);
+		glDisableVertexAttribArray(2);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 48, NULL);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 48, (GLvoid*)12);
+		glVertexAttribDivisor(1, 0);
+
 		glDrawElements(GL_TRIANGLES, mesh.getIndlen(), GL_UNSIGNED_INT, NULL);
 	}
 }

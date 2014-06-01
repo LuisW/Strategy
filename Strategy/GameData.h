@@ -20,6 +20,7 @@ private:
 
 	EntityManager entities;
 	Camera* activeCamera;
+	EntityID player1;
 	ShaderAsset_const shader;
 	RenderSystem renderSystem;
 	Terrain terrain;
@@ -40,7 +41,7 @@ public:
 		entities.RegisterSystem(&renderSystem);
 
 		entities.newTestObject();
-		EntityID player1 = entities.newPlayer();
+		player1 = entities.newPlayer();
 		activeCamera = (Camera*)(&entities.entityGetComponent<CameraComponent>(player1));  
 	}
 
@@ -54,7 +55,12 @@ public:
 		return MouseBtnState[btn];
 	}
 
-	inline const EntityManager& getEntityManager()
+	inline const EntityManager& getEntityManager() const
+	{
+		return entities;
+	}
+
+	inline EntityManager& getEntityManager()
 	{
 		return entities;
 	}
@@ -77,5 +83,10 @@ public:
 	inline const Terrain& getTerrain() const
 	{
 		return terrain;
+	}
+
+	inline EntityID getPlayer()
+	{
+		return player1;
 	}
 };

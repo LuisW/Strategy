@@ -3,6 +3,7 @@
 #include "CameraComponent.h"
 #include "RenderComponent.h"
 #include "TransformComponent.h"
+#include "VelocityComponent.h"
 #include "AssetManager.h"
 
 void EntityManager::NotifyEntityChanged(EntityID entity, ComponentType type, bool added)
@@ -99,7 +100,8 @@ void EntityManager::UnregisterAllSystems()
 EntityID EntityManager::newPlayer()
 {
 	EntityID ent = newEntity();
-	entityAddComponent(ent, new CameraComponent(ent, "Cam", 60.0f, 4.0f/3.0f, 0.1f, 10000.0f, glm::vec3(0.0f, 1.0f, 0.0f), glm::angleAxis(0.0f,glm::vec3(0.0f,1.0f,0.0f))));
+	entityAddComponent(ent, new CameraComponent(ent, "Cam", 60.0f, 4.0f/3.0f, 0.1f, 10000.0f, glm::vec3(8000.0f, 9.0f,19660.0f), glm::angleAxis(0.0f,glm::vec3(0.0f,1.0f,0.0f))));
+	entityAddComponent(ent, new VelocityComponent(ent, glm::vec3()));
 	return ent;
 }
 
@@ -107,7 +109,7 @@ EntityID EntityManager::newTestObject()
 {
 	EntityID ent = newEntity();
 	entityAddComponent(ent, new RenderComponent(AssetManager::getAsset<Mesh>(MeshKey("forLuis.tem")), ent, "TestMesh"));
-	entityAddComponent(ent, new TransformComponent(ent, "TestTrans", glm::vec3(10.0f, 10.0f, -10.0f), glm::angleAxis(90.0f, glm::vec3(0.0f, 1.0f, 0.0f)), glm::vec3(1.0f)));
+	entityAddComponent(ent, new TransformComponent(ent, "TestTrans", glm::vec3(8000.0f, 16.4f, 19651.0f), glm::angleAxis(90.0f, glm::vec3(0.0f, 1.0f, 0.0f)), glm::vec3(0.1385f)));
 	return ent;
 }
 

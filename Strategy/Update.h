@@ -15,7 +15,7 @@ public:
 	{
 	}
 	
-	bool UpdateTick();
+	bool UpdateTick(double deltaT);
 
 	~Update()
 	{

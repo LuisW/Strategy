@@ -4,6 +4,7 @@
 #include "GameData.h"
 #include "Render.h"
 #include "Update.h"
+#include "Timer.h"
 
 class InGame : public GameState
 {
@@ -11,6 +12,8 @@ private:
 	GameData data;
 	Render render;
 	Update update;
+
+	Timer timer;
 
 public:
 	InGame() : data(), render(data), update(data)
@@ -20,7 +23,9 @@ public:
 
 	inline bool LoopTick()
 	{
-		bool res = update.UpdateTick();
+		double deltaT = timer.Stop();
+		timer.Start();
+		bool res = update.UpdateTick(deltaT);
 
 		if (res)
 		{

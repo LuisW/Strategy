@@ -99,6 +99,9 @@
     <ClCompile Include="Texture.cpp">
       <Filter>Quelldateien\Content</Filter>
     </ClCompile>
+    <ClCompile Include="Timer_Win.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h">
@@ -204,6 +207,12 @@
       <Filter>Headerdateien\Content</Filter>
     </ClInclude>
     <ClInclude Include="Frustum.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="VelocityComponent.h">
+      <Filter>Headerdateien\InGame\DataStorage\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

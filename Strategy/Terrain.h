@@ -14,10 +14,10 @@ class Terrain
 private:
 	void makeMesh(unsigned int cells, float celllen, Mesh& mesh);
 
-	inline float SqDistanceToPointXZ(const glm::vec3& min, float lenOver2, const glm::vec3& p)
+	inline float SqDistanceToPointXZ(const glm::vec2& min, float lenOver2, const glm::vec3& p)
 	{
 		float dx = glm::max(glm::abs(p.x - min.x - lenOver2) - lenOver2, 0.0f);
-		float dz = glm::max(glm::abs(p.z - min.z - lenOver2) - lenOver2, 0.0f);
+		float dz = glm::max(glm::abs(p.z - min.y - lenOver2) - lenOver2, 0.0f);
 
 		return dx*dx + dz*dz;
 	}
@@ -43,6 +43,7 @@ private:
 		unsigned short offz;
 		unsigned short rotscale;
 		unsigned short tex;
+		//float lodLerp;
 	};
 
 	struct TerrainMesh
@@ -84,17 +85,22 @@ public:
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 12, NULL);
 		glBindBuffer(GL_ARRAY_BUFFER, InstVBO);
 		glEnableVertexAttribArray(1);
-		glVertexAttribIPointer(1, 4, GL_UNSIGNED_SHORT, 8, NULL);
+		glVertexAttribIPointer(1, 4, GL_UNSIGNED_SHORT, sizeof(RenderInstance), NULL);
 		glVertexAttribDivisor(1, 1);
+		//glEnableVertexAttribArray(2);
+		//glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, sizeof(RenderInstance), (void*)(4 * sizeof(unsigned short)));
+		//glVertexAttribDivisor(2, 1);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.getIndices());
 
 		glBindVertexArray(0);
 	}
 
-	bool LoDCheck(AABoundingBox& aabb, unsigned int level, glm::lowp_uvec2& offset, const glm::vec3& camPos, ChildLocation loc)
+	bool LoDCheck(const glm::vec2& min, unsigned int level, glm::lowp_uvec2& offset, const glm::vec3& camPos, ChildLocation loc)
 	{
-		if (SqDistanceToPointXZ(aabb.getMin(), LevelLen(level) * 0.5f, camPos) >= TerrainSettings::LoDDistances[level] * TerrainSettings::LoDDistances[level])
+		float dist = SqDistanceToPointXZ(min, LevelLen(level) * 0.5f, camPos);
+
+		if (dist >= TerrainSettings::LoDDistances[level] * TerrainSettings::LoDDistances[level])
 		{
 			bool Dist1, Dist2;
 			unsigned short rot;
@@ -103,11 +109,11 @@ public:
 			{
 			case CHILD_SW:
 				//W
-				Dist1 = SqDistanceToPointXZ(aabb.getMin() - glm::vec3(LevelLen(level + 1), 0.0f, LevelLen(level)), LevelLen(level), camPos)
+				Dist1 = SqDistanceToPointXZ(min - glm::vec2(LevelLen(level + 1), LevelLen(level)), LevelLen(level), camPos)
 					>= TerrainSettings::LoDDistances[level + 1] * TerrainSettings::LoDDistances[level + 1];
 
 				//S
-				Dist2 = SqDistanceToPointXZ(aabb.getMin() + glm::vec3(0.0f, 0.0f, LevelLen(level)), LevelLen(level), camPos)
+				Dist2 = SqDistanceToPointXZ(min + glm::vec2(0.0f, LevelLen(level)), LevelLen(level), camPos)
 					>= TerrainSettings::LoDDistances[level + 1] * TerrainSettings::LoDDistances[level + 1];
 
 				if (!Dist1 && !Dist2)
@@ -130,11 +136,11 @@ public:
 				break;
 			case CHILD_SE:
 				//E
-				Dist1 = SqDistanceToPointXZ(aabb.getMin() + glm::vec3(LevelLen(level), 0.0f, -LevelLen(level)), LevelLen(level), camPos)
+				Dist1 = SqDistanceToPointXZ(min + glm::vec2(LevelLen(level), -LevelLen(level)), LevelLen(level), camPos)
 					>= TerrainSettings::LoDDistances[level + 1] * TerrainSettings::LoDDistances[level + 1];
 
 				//S
-				Dist2 = SqDistanceToPointXZ(aabb.getMin() + glm::vec3(-LevelLen(level), 0.0f, LevelLen(level)), LevelLen(level), camPos)
+				Dist2 = SqDistanceToPointXZ(min + glm::vec2(-LevelLen(level), LevelLen(level)), LevelLen(level), camPos)
 					>= TerrainSettings::LoDDistances[level + 1] * TerrainSettings::LoDDistances[level + 1];
 
 				if (!Dist1 && !Dist2)
@@ -157,11 +163,11 @@ public:
 				break;
 			case CHILD_NW:
 				//W
-				Dist1 = SqDistanceToPointXZ(aabb.getMin() - glm::vec3(LevelLen(level + 1), 0.0f, 0.0f), LevelLen(level), camPos)
+				Dist1 = SqDistanceToPointXZ(min - glm::vec2(LevelLen(level + 1), 0.0f), LevelLen(level), camPos)
 					>= TerrainSettings::LoDDistances[level + 1] * TerrainSettings::LoDDistances[level + 1];
 
 				//N
-				Dist2 = SqDistanceToPointXZ(aabb.getMin() - glm::vec3(0.0f, 0.0f, LevelLen(level + 1)), LevelLen(level), camPos)
+				Dist2 = SqDistanceToPointXZ(min - glm::vec2(0.0f, LevelLen(level + 1)), LevelLen(level), camPos)
 					>= TerrainSettings::LoDDistances[level + 1] * TerrainSettings::LoDDistances[level + 1];
 
 				if (!Dist1 && !Dist2)
@@ -184,11 +190,11 @@ public:
 				break;
 			case CHILD_NE:
 				//E
-				Dist1 = SqDistanceToPointXZ(aabb.getMin() + glm::vec3(LevelLen(level), 0.0f, 0.0f), LevelLen(level), camPos)
+				Dist1 = SqDistanceToPointXZ(min + glm::vec2(LevelLen(level), 0.0f), LevelLen(level), camPos)
 					>= TerrainSettings::LoDDistances[level + 1] * TerrainSettings::LoDDistances[level + 1];
 
 				//N
-				Dist2 = SqDistanceToPointXZ(aabb.getMin() + glm::vec3(-LevelLen(level), 0.0f, -LevelLen(level + 1)), LevelLen(level), camPos)
+				Dist2 = SqDistanceToPointXZ(min + glm::vec2(-LevelLen(level), -LevelLen(level + 1)), LevelLen(level), camPos)
 					>= TerrainSettings::LoDDistances[level + 1] * TerrainSettings::LoDDistances[level + 1];
 
 				if (!Dist1 && !Dist2)
@@ -210,6 +216,20 @@ public:
 
 				break;
 			}
+/*
+			unsigned int levelPerm = level;
+
+			if (dist >= TerrainSettings::LoDDistances[level + 1] * TerrainSettings::LoDDistances[level + 1])
+				levelPerm++;
+
+			dist -= TerrainSettings::LoDDistances[levelPerm] * TerrainSettings::LoDDistances[levelPerm];
+
+			double deltaLoD = TerrainSettings::LoDDistances[levelPerm + 1] * TerrainSettings::LoDDistances[levelPerm + 1] - TerrainSettings::LoDDistances[levelPerm] * TerrainSettings::LoDDistances[levelPerm];
+			deltaLoD = (dist - (deltaLoD * (1.0f - TerrainSettings::LoDLerpPercentage))) / (deltaLoD * TerrainSettings::LoDLerpPercentage);
+
+			if (deltaLoD < 0.0)
+				deltaLoD = 0.0*/;
+
 
 			if (rot == 4)
 			{
@@ -222,6 +242,7 @@ public:
 				full.Instances[full.InstUsed].offz = offset.y;
 				full.Instances[full.InstUsed].rotscale = level;
 				full.Instances[full.InstUsed].tex = 0;
+				//full.Instances[full.InstUsed].lodLerp = deltaLoD;
 
 				full.InstUsed++;
 			}
@@ -236,6 +257,7 @@ public:
 				doublePerm.Instances[doublePerm.InstUsed].offz = offset.y;
 				doublePerm.Instances[doublePerm.InstUsed].rotscale = level | (rot << 8);
 				doublePerm.Instances[doublePerm.InstUsed].tex = 0;
+				//doublePerm.Instances[doublePerm.InstUsed].lodLerp = deltaLoD;
 
 				doublePerm.InstUsed++;
 			}
@@ -250,6 +272,7 @@ public:
 				singlePerm.Instances[singlePerm.InstUsed].offz = offset.y;
 				singlePerm.Instances[singlePerm.InstUsed].rotscale = level | (rot << 8);
 				singlePerm.Instances[singlePerm.InstUsed].tex = 0;
+				//singlePerm.Instances[singlePerm.InstUsed].lodLerp = deltaLoD;
 
 				singlePerm.InstUsed++;
 			}
@@ -271,6 +294,7 @@ public:
 
 		glBindAttribLocation(shader.get().getShader(), 0, "in_Position");
 		glBindAttribLocation(shader.get().getShader(), 1, "in_InstData");
+		glBindAttribLocation(shader.get().getShader(), 2, "in_LoDLerp");
 
 		glLinkProgram(shader.get().getShader());
 
@@ -284,12 +308,14 @@ public:
 		GLbyte sp_rock = glGetUniformLocation(shader.get().getShader(), "rock");
 		GLbyte sp_camPos = glGetUniformLocation(shader.get().getShader(), "camPos");
 		GLbyte sp_texelSize = glGetUniformLocation(shader.get().getShader(), "texelSize");
+		GLbyte sp_cellLen = glGetUniformLocation(shader.get().getShader(), "cellLen");
 
 		glUniformMatrix4fv(sp_WVP, 1, GL_FALSE, glm::value_ptr(VP));
 		glUniform1f(sp_gridsize, celllen * leafCells);
 		glUniform3fv(sp_camPos, 1, glm::value_ptr(cam));
 		float txs = 1.0f / (float)heightMap.get().getHeight();
 		glUniform1f(sp_texelSize, txs);
+		glUniform1f(sp_cellLen, TerrainSettings::MinimumCellLength);
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, heightMap.get().getTexture());

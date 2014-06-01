@@ -1,7 +1,7 @@
 #include "Update.h"
 #include "ei/SDL/SDL.h"
 
-bool Update::UpdateTick()
+bool Update::UpdateTick(double deltaT)
 {
 	SDL_Event event;
 
@@ -30,11 +30,6 @@ bool Update::UpdateTick()
 	if (data.getKeyboardState(SDLK_ESCAPE))
 		return false;
 
-	if (data.getKeyboardState(SDLK_b))
-	{
-		__debugbreak();
-	}
-
 	if (data.getKeyboardState(SDLK_l))
 	{
 		glPolygonMode(GL_FRONT, GL_LINE);
@@ -45,14 +40,17 @@ bool Update::UpdateTick()
 		glPolygonMode(GL_FRONT, GL_FILL);
 	}
 
-	if (data.activeCamera != NULL)
+	if (data.getKeyboardState(SDLK_b))
 	{
-		playerControl.Tick(*(data.activeCamera));
+		__debugbreak();
 	}
 
-	size_t t = SDL_GetTicks();
+	if (data.activeCamera != NULL)
+	{
+		playerControl.Tick(data.getPlayer(), deltaT);
+	}
+
 	data.visibilitySystem.Tick(*(data.activeCamera));
-	t = SDL_GetTicks() - t;
 
 	return true;
 }

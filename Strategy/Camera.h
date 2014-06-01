@@ -26,9 +26,15 @@ private:
 	glm::quat rotation;
 	glm::vec3 position;
 
+	float yaw;
+	float pitch;
+	float roll;
+
 	mutable bool updateP;
 	mutable bool updateV;
 	mutable bool updateVP;
+
+	bool FlyCam;
 
 	void makeLocalSystem()
 	{
@@ -40,14 +46,16 @@ private:
 public:
 	Camera(float _fov, float _aspect, float _near, float _far) : 
 		fov(_fov), aspect(_aspect), near(_near), far(_far), projection(glm::perspective(fov, aspect, near, far)),
-		updateP(false), updateV(true), updateVP(false), rotation(0.0f, 0.0f, 0.0f, 1.0f), position(0.0f), viewFrustum(vp)
+		updateP(false), updateV(true), updateVP(false), rotation(0.0f, 0.0f, 0.0f, 1.0f), position(0.0f), viewFrustum(vp),
+		yaw(0.0f), pitch(0.0f), roll(0.0f), FlyCam(false)
 	{
 		makeLocalSystem();
 	}
 
 	Camera(float _fov, float _aspect, float _near, float _far, glm::vec3 pos, glm::quat rot) :
 		fov(_fov), aspect(_aspect), near(_near), far(_far), projection(glm::perspective(fov, aspect, near, far)), 
-		updateP(false), updateV(true), updateVP(false), position(pos), rotation(rot), viewFrustum(vp)
+		updateP(false), updateV(true), updateVP(false), position(pos), rotation(rot), viewFrustum(vp),
+		yaw(0.0f), pitch(0.0f), roll(0.0f), FlyCam(false)
 	{
 		makeLocalSystem();
 	}
@@ -143,28 +151,52 @@ public:
 		updateV = true;
 	}
 
+	inline void setYPos(float height)
+	{
+		position.y = height;
+		updateV = true;
+	}
+
 	inline const glm::quat& getRot() const
 	{
 		return rotation;
 	}
 
-	inline void setRot(const glm::quat& rot)
+	inline void AddYawPitch(float deltaYaw, float deltaPitch)
 	{
-		rotation = rot;
-		makeLocalSystem();
-		updateV = true;
-	}
+		yaw += deltaYaw;
+		pitch += deltaPitch;
 
-	inline void Rotate(const glm::quat& rot)
-	{
-		rotation = rotation * rot;
-		makeLocalSystem();
+		if (pitch > 60.0f)
+			pitch = 60.0f;
+
+		if (pitch < -60.0f)
+			pitch = -60.0f;
+
+		rotation = glm::angleAxis(yaw, glm::vec3(0.0f, 1.0f, 0.0f));
+		
+		right = glm::vec3(1.0f, 0.0f, 0.0f) * rotation;
+		
+		rotation = rotation * glm::angleAxis(pitch, right);
+
+		front = glm::vec3(0.0f, 0.0f, -1.0f) * rotation;
+		up = glm::vec3(0.0f, 1.0f, 0.0f) * rotation;
+
 		updateV = true;
 	}
 
 	inline void Move(float dist)
 	{
-		position += dist * front;
+		if (FlyCam)
+		{
+			position += dist * front;
+		}
+		else
+		{
+			glm::vec3 mov = glm::normalize(glm::vec3(front.x, 0.0f, front.z));
+			position += dist * mov;
+		}
+
 		updateV = true;
 	}
 
@@ -199,5 +231,10 @@ public:
 	{
 		getViewProjection();
 		return viewFrustum;
+	}
+
+	inline void setFlying(bool flying)
+	{
+		FlyCam = flying;
 	}
 };

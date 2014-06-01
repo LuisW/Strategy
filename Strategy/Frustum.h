@@ -30,11 +30,10 @@ private:
 			return IT_Intersect;
 		}
 
-		IntersectionType IntersectAABBTerrain(const glm::vec4& nodeData)  //(boxHeightOver2, plane.x * h.x + plane.z * h.z, center.x, center.z);
+		IntersectionType IntersectAABB(const glm::vec3& c, const glm::vec3& h)
 		{
-			float hph = nodeData.y * plane.y;
-			float e = nodeData.x + abs(hph);
-			float s = nodeData.z * plane.x + hph + nodeData.w * plane.z + plane.w;
+			float e = h.x * abs(plane.x) + h.y * abs(plane.y) + h.z * abs(plane.z);
+			float s = c.x * plane.x + c.y * plane.y + c.z * plane.z + plane.w;
 
 			if (s - e > 0) return IT_Outside;
 			if (s + e < 0) return IT_Inside;
@@ -121,7 +120,7 @@ public:
 		return IT_Inside;
 	}
 
-	IntersectionType IntersectAABBTerrain(const glm::vec4& nodeData, char& parentIn, unsigned char& failPlane)
+	IntersectionType IntersectAABB(const glm::vec3& c, const glm::vec3& h, char& parentIn, unsigned char& failPlane)
 	{
 		bool intersect = false;
 
@@ -129,7 +128,7 @@ public:
 
 		if (!((1 << failPlane) & parentIn))
 		{
-			it = planes[failPlane].IntersectAABBTerrain(nodeData);
+			it = planes[failPlane].IntersectAABB(c, h);
 			if (it == IT_Outside) return IT_Outside;
 			else if (it == IT_Intersect) intersect = true;
 		}
@@ -141,7 +140,7 @@ public:
 				continue;
 			}
 
-			it = planes[k].IntersectAABBTerrain(nodeData);
+			it = planes[k].IntersectAABB(c, h);
 			if (it == IT_Outside)
 			{
 				failPlane = k;
