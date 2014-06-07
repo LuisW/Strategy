@@ -13,11 +13,10 @@ class QTNode;
 
 struct QTCullGlobalPass
 {
-	QTCullGlobalPass(QTNode* _nodes, Terrain& _terrain, Frustum& _frustrum, const glm::vec3& _camPos) 
-		: nodes(_nodes), terrain(_terrain), frustrum(_frustrum), camPos(_camPos)
+	QTCullGlobalPass(Terrain& _terrain, Frustum& _frustrum, const glm::vec3& _camPos) 
+		: terrain(_terrain), frustrum(_frustrum), camPos(_camPos)
 	{}
 
-	QTNode* nodes;
 	Terrain& terrain;
 	Frustum& frustrum;
 	const glm::vec3& camPos;
@@ -43,20 +42,18 @@ class QTNode
 {
 private:
 	friend TopQTNode;
-
-	unsigned char failPlane;
 public:
 
-	QTNode() : failPlane(FP_Top)
+	QTNode()
 	{
 
 	}
 
-	void Cull(QTCullGlobalPass& global, QTCullLocalPass& local)
+	static void Cull(QTCullGlobalPass& global, QTCullLocalPass& local)
 	{
 		glm::vec2 min = glm::vec2(local.offset) * (TerrainSettings::CellsPerLeaf * TerrainSettings::MinimumCellLength);
 
-  		IntersectionType it = global.frustrum.IntersectAABB(glm::vec3(min.x, 0.0f, min.y) + local.h , local.h ,local.parentIn, failPlane);
+  		IntersectionType it = global.frustrum.IntersectAABB(glm::vec3(min.x, 0.0f, min.y) + local.h , local.h ,local.parentIn);
 
 		if (it == IT_Intersect)
 		{
@@ -88,7 +85,7 @@ public:
 						break;
 					}
 
-					global.nodes[local.index].Cull(global, newLocal);
+					Cull(global, newLocal);
 				}
 			}
 		}
@@ -98,7 +95,7 @@ public:
 		}
 	}
 
-	void SetAllChildrenIn(QTCullGlobalPass& global, QTCullLocalPass& local)
+	static void SetAllChildrenIn(QTCullGlobalPass& global, QTCullLocalPass& local)
 	{
 		bool LoDfound = global.terrain.LoDCheck(glm::vec2(local.offset) * (TerrainSettings::CellsPerLeaf * TerrainSettings::MinimumCellLength), local.level, local.offset, global.camPos, local.loc);
 
@@ -127,7 +124,7 @@ public:
 					break;
 				}
 
-				global.nodes[local.index].SetAllChildrenIn(global, newLocal);
+				SetAllChildrenIn(global, newLocal);
 			}
 		}
 	}
@@ -147,13 +144,11 @@ class TopQTNode
 {
 private:
 	unsigned int level;
-	unsigned int nNodes;
-	QTNode* QTNodes;
 	Terrain& terrain;
 	glm::lowp_uvec2 globalOffset;
 
 public:
-	TopQTNode(unsigned int _level, Terrain& _terrain) : terrain(_terrain), level(_level), nNodes(levelFactors[level]), QTNodes(new QTNode[nNodes])
+	TopQTNode(unsigned int _level, Terrain& _terrain) : terrain(_terrain), level(_level)
 	{
 		
 	}
@@ -165,19 +160,18 @@ public:
 
 	void Cull(const glm::vec3& camPos, Frustum& frustrum)
 	{
-		QTCullGlobalPass global(QTNodes, terrain, frustrum, camPos);
+		QTCullGlobalPass global(terrain, frustrum, camPos);
 		QTCullLocalPass local = QTCullLocalPass(level, 0, glm::vec3((TerrainSettings::CellsPerLeaf * TerrainSettings::MinimumCellLength) * (1 << (level - 1))));
 		local.h.y = 1000.0f;
 		local.index = 0;
 		local.loc = ChildLocation(0);
 		local.offset = globalOffset;
 
-		QTNodes[0].Cull(global, local);
+		QTNode::Cull(global, local);
 	}
 
 	~TopQTNode()
 	{
-		delete[] QTNodes;
 	}
 };
 

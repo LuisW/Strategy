@@ -86,22 +86,15 @@ public:
 		return IT_Inside;
 	}
 
-	IntersectionType IntersectAABB(const AABoundingBox& box, char& parentIn, unsigned char& failPlane)
+	IntersectionType IntersectAABB(const AABoundingBox& box, char& parentIn)
 	{
 		bool intersect = false;
 
 		IntersectionType it;
 
-		if (!((1 << failPlane) & parentIn))
-		{
-			it = planes[failPlane].IntersectAABB(box);
-			if (it == IT_Outside) return IT_Outside;
-			else if (it == IT_Intersect) intersect = true;
-		}
-
 		for (unsigned int k = 0; k < 6; ++k)
 		{
-			if (k == failPlane || (1 << k) & parentIn)
+			if ((1 << k) & parentIn)
 			{
 				continue;
 			}
@@ -109,7 +102,6 @@ public:
 			it = planes[k].IntersectAABB(box);
 			if (it == IT_Outside)
 			{
-				failPlane = k;
 				return IT_Outside; 
 			}
 			else if (it == IT_Intersect) intersect = true;
@@ -120,22 +112,15 @@ public:
 		return IT_Inside;
 	}
 
-	IntersectionType IntersectAABB(const glm::vec3& c, const glm::vec3& h, char& parentIn, unsigned char& failPlane)
+	IntersectionType IntersectAABB(const glm::vec3& c, const glm::vec3& h, char& parentIn)
 	{
 		bool intersect = false;
 
 		IntersectionType it;
 
-		if (!((1 << failPlane) & parentIn))
-		{
-			it = planes[failPlane].IntersectAABB(c, h);
-			if (it == IT_Outside) return IT_Outside;
-			else if (it == IT_Intersect) intersect = true;
-		}
-
 		for (unsigned int k = 0; k < 6; ++k)
 		{
-			if (k == failPlane || (1 << k) & parentIn)
+			if ((1 << k) & parentIn)
 			{
 				continue;
 			}
@@ -143,7 +128,6 @@ public:
 			it = planes[k].IntersectAABB(c, h);
 			if (it == IT_Outside)
 			{
-				failPlane = k;
 				return IT_Outside;
 			}
 			else if (it == IT_Intersect) intersect = true;
