@@ -44,6 +44,7 @@ float PlayerControlSystem::sampleHeight(glm::vec3 pos)
 	float lerpX0 = pos.x * p10.y + (1.0f - pos.x) * p00.y;
 	float lerpX1 = pos.x * p11.y + (1.0f - pos.x) * p01.y;
 
+	return 0;
 	return pos.z * lerpX1 + (1.0f - pos.z) * lerpX0;
 };
 
@@ -120,5 +121,5 @@ void PlayerControlSystem::Tick(EntityID player, double deltaT)
 
 	activeCam.setPos(newPos);
 
-	vel += glm::vec3(0.0f, -9.81f  * deltaT, 0.0f);
+	//vel += glm::vec3(0.0f, -9.81f  * deltaT, 0.0f);
 }

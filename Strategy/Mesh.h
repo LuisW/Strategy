@@ -21,6 +21,9 @@ public:
 	{
 	}
 
+	inline Mesh() : verts(0), inds(0), indBuff(0), vertBuff(0), vertlen(0), indlen(0)
+	{}
+
 	inline GLuint getVertices() const
 	{
 		return verts;
@@ -49,6 +52,15 @@ public:
 	inline const unsigned int* getIndBuff() const
 	{
 		return indBuff;
+	}
+
+	inline void clear()
+	{
+		delete[] indBuff;
+		delete[] vertBuff;
+
+		glDeleteBuffers(1, &inds);
+		glDeleteBuffers(1, &verts);
 	}
 };
 

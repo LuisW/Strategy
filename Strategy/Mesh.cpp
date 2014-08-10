@@ -98,12 +98,5 @@ Mesh* MeshAssetManager::Load(MeshKey key)
 
 void MeshAssetManager::Unload(AssetIterator it)
 {
-	delete[] it->second.data->getIndBuff();
-	delete[] it->second.data->getVertBuff();
-	
-	GLuint BO = it->second.data->getIndices();
-	glDeleteBuffers(1, &BO);
-
-	BO = it->second.data->getVertices();
-	glDeleteBuffers(1, &BO);
+	it->second.data->clear();
 }

@@ -42,7 +42,7 @@ public:
 
 		entities.newTestObject();
 		player1 = entities.newPlayer();
-		activeCamera = (Camera*)(&entities.entityGetComponent<CameraComponent>(player1));  
+		activeCamera = (Camera*)(&entities.entityGetComponent<CameraComponent>(player1));
 	}
 
 	inline bool getKeyboardState(SDLKey key) const

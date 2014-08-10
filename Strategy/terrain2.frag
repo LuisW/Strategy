@@ -6,7 +6,7 @@ uniform float texelSize;
 uniform sampler2D hmap;
 uniform vec3 camPos;
 
-const float mapScale = 8192.0;
+const float mapScale = 819.3;
 const float Yscale = 1250.0;
 
 in vec3 pos3D;
@@ -26,11 +26,11 @@ void main(void)
 {
 	vec3 normal = calcNormal(pos3D.xz, texelSize);
 
-	vec4 col = mix(texture2D(grass, pos3D.xz), texture2D(rock, pos3D.xz), pos3D.y / Yscale);
-	float specular = pow(saturate(dot(normal, normalize(normalize(camPos - pos3D) - light))), 20.0);
+	vec4 col = mix(texture2D(rock, pos3D.xz),texture2D(grass, pos3D.xz),  abs(0.7 * normal.y));
+	float specular = pow(saturate(dot(normal, normalize(normalize(camPos - pos3D) - light))), 100.0);
 	float diffuse = max(dot(-light, normal),0.0);
 
-	gl_FragColor = col * (diffuse + 0.2 + specular);
+	gl_FragColor = col * (diffuse + 0.3 + 0.1 * specular);
 }
 
 //vec4(0.3, 0.74, 0.2, 1.0)

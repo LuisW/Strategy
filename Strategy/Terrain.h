@@ -6,6 +6,7 @@
 #include "DataStructs.h"
 #include "ei/glm/gtc/type_ptr.hpp"
 #include <vector>
+#include "TerrainGenerator.h"
 
 enum ChildLocation { CHILD_NW, CHILD_NE, CHILD_SW, CHILD_SE };
 
@@ -27,12 +28,11 @@ private:
 		return TerrainSettings::CellsPerLeaf * TerrainSettings::MinimumCellLength * (float)(1 << level);
 	}
 
-	unsigned int leafCells;
-	float celllen;
+	TerrainGenerator terrainGen;
 
 	Mesh mesh;
 
-	TextureAsset_const heightMap;
+	GLuint heightmap;
 	TextureAsset_const grass;
 	TextureAsset_const rock;
 	ShaderAsset_const shader;
@@ -62,16 +62,15 @@ private:
 	GLuint VAO;
 
 public:
-	Terrain() : leafCells(TerrainSettings::CellsPerLeaf), celllen(TerrainSettings::MinimumCellLength), mesh(0, 0, 0, 0, 0, 0), heightMap(AssetManager::getAsset<Texture>(TextureKey("heightmap.png"))),
-		grass(AssetManager::getAsset<Texture>(TextureKey("grass.jpg"))), rock(AssetManager::getAsset<Texture>(TextureKey("rock.jpg"))),
-		shader(AssetManager::getAsset<Shader>(ShaderKey("terrain2.frag", "terrain2.vert")))
+	Terrain() : mesh(0, 0, 0, 0, 0, 0), grass(AssetManager::getAsset<Texture>(TextureKey("grass.jpg"))), 
+		rock(AssetManager::getAsset<Texture>(TextureKey("rock.jpg"))), shader(AssetManager::getAsset<Shader>(ShaderKey("terrain2.frag", "terrain2.vert")))
 	{
-		makeMesh(leafCells, celllen, mesh);
+		makeMesh(TerrainSettings::CellsPerLeaf, TerrainSettings::MinimumCellLength, mesh);
 
 		singlePerm.InstUsed = doublePerm.InstUsed = full.InstUsed = 0;
 		full.offset = 0;
-		full.len = singlePerm.offset = leafCells * leafCells * 6;
-		singlePerm.len = (leafCells - 1) * leafCells * 6 + 9 * leafCells / 2;
+		full.len = singlePerm.offset = TerrainSettings::CellsPerLeaf * TerrainSettings::CellsPerLeaf * 6;
+		singlePerm.len = (TerrainSettings::CellsPerLeaf - 1) * TerrainSettings::CellsPerLeaf * 6 + 9 * TerrainSettings::CellsPerLeaf / 2;
 		doublePerm.offset = singlePerm.offset + singlePerm.len;
 		doublePerm.len = mesh.getIndlen() - doublePerm.offset;
 
@@ -92,6 +91,8 @@ public:
 		//glVertexAttribDivisor(2, 1);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.getIndices());
+
+		heightmap = terrainGen.getHeightMap();
 
 		glBindVertexArray(0);
 	}
@@ -311,14 +312,14 @@ public:
 		GLbyte sp_cellLen = glGetUniformLocation(shader.get().getShader(), "cellLen");
 
 		glUniformMatrix4fv(sp_WVP, 1, GL_FALSE, glm::value_ptr(VP));
-		glUniform1f(sp_gridsize, celllen * leafCells);
+		glUniform1f(sp_gridsize, TerrainSettings::CellsPerLeaf * TerrainSettings::MinimumCellLength);
 		glUniform3fv(sp_camPos, 1, glm::value_ptr(cam));
-		float txs = 1.0f / (float)heightMap.get().getHeight();
+		float txs = 1.0f / TerrainSettings::HeightMapRes;
 		glUniform1f(sp_texelSize, txs);
 		glUniform1f(sp_cellLen, TerrainSettings::MinimumCellLength);
 
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, heightMap.get().getTexture());
+		glBindTexture(GL_TEXTURE_2D, heightmap);
 		glUniform1i(sp_hmap, 0);
 
 		glActiveTexture(GL_TEXTURE0 + 1);
@@ -342,14 +343,8 @@ public:
 
 	~Terrain()
 	{
-		delete[] mesh.getIndBuff();
-		delete[] mesh.getVertBuff();
-
-		GLuint IBO = mesh.getIndices();
-		GLuint VBO = mesh.getVertices();
-
-		glDeleteBuffers(1, &IBO);
-		glDeleteBuffers(1, &VBO);
+		mesh.clear();
 		glDeleteBuffers(1, &InstVBO);
+		glDeleteTextures(1, &heightmap);
 	}
 };

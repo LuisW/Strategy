@@ -102,6 +102,9 @@
     <ClCompile Include="Timer_Win.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="TerrainGenerator.cpp">
+      <Filter>Quelldateien\InGame\Systems</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h">
@@ -215,6 +218,12 @@
     <ClInclude Include="Timer.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="TerrainGenerator.h">
+      <Filter>Headerdateien\InGame\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="Map.h">
+      <Filter>Headerdateien\InGame\DataStorage</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="test.frag">
@@ -236,6 +245,12 @@
       <Filter>Ressourcendateien\Shader</Filter>
     </None>
     <None Include="terrain2.frag">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="HMapGen.frag">
+      <Filter>Ressourcendateien\Shader</Filter>
+    </None>
+    <None Include="HMapGen.vert">
       <Filter>Ressourcendateien\Shader</Filter>
     </None>
   </ItemGroup>

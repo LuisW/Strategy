@@ -18,7 +18,6 @@ private:
 public:
 	InGame() : data(), render(data), update(data)
 	{
-
 	}
 
 	inline bool LoopTick()

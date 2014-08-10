@@ -80,6 +80,7 @@
     <ClCompile Include="SubShader.cpp" />
     <ClCompile Include="RenderSystem.cpp" />
     <ClCompile Include="Terrain.cpp" />
+    <ClCompile Include="TerrainGenerator.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Timer_Win.cpp" />
     <ClCompile Include="Transform.cpp" />
@@ -99,6 +100,7 @@
     <ClInclude Include="Frustum.h" />
     <ClInclude Include="GameData.h" />
     <ClInclude Include="InGame.h" />
+    <ClInclude Include="Map.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="PlayerControlSystem.h" />
     <ClInclude Include="RenderComponent.h" />
@@ -114,6 +116,7 @@
     <ClInclude Include="SubShader.h" />
     <ClInclude Include="System.h" />
     <ClInclude Include="Terrain.h" />
+    <ClInclude Include="TerrainGenerator.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Transform.h" />
@@ -127,6 +130,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="forLuis.tem" />
+    <None Include="HMapGen.frag" />
+    <None Include="HMapGen.vert" />
     <None Include="terrain.frag" />
     <None Include="terrain.vert" />
     <None Include="terrain2.frag" />
