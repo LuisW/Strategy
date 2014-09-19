@@ -16,9 +16,7 @@ void Render::RenderFrame()
 
 	glUseProgram(data.getShader().get().getShader());
 
-	GLbyte sp_WVP = glGetUniformLocation(data.getShader().get().getShader(), "WVP");
-
-	data.getRenderSystem().Tick(data.getActiveCam()->getViewProjection(), sp_WVP);
+	data.getRenderSystem().Tick(*data.getActiveCam(), data.getShader().get().getShader());
 
 	glm::vec3 cam = data.getActiveCam()->getPos();
 

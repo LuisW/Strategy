@@ -1,52 +1,7 @@
 #include "PlayerControlSystem.h"
 #include "ei/SDL/SDL.h"
 #include "VelocityComponent.h"
-
-const float mapScale = 8192.0;
-const float Yscale = 1250.0;
-
-float getpixel(const SDL_Surface *surface, int x, int y)
-{
-	int bpp = surface->format->BytesPerPixel;
-	unsigned char *p = (unsigned char *)surface->pixels + y * surface->pitch + x * bpp;
-
-	return (p[0] / 255.0f) * Yscale;
-}
-
-float PlayerControlSystem::sampleHeight(glm::vec3 pos)
-{
-	pos /= mapScale;
-	pos = glm::fract(pos);
-	pos *= glm::vec3(hmap.get().getWidth(), 0.0f, hmap.get().getHeight());
-
-	glm::vec3 p00 = glm::vec3(glm::floor(pos.x), 0.0f, glm::floor(pos.z));
-	glm::vec3 p10 = glm::vec3(glm::ceil(pos.x), 0.0f, glm::floor(pos.z));
-	glm::vec3 p01 = glm::vec3(glm::floor(pos.x), 0.0f, glm::ceil(pos.z));
-	glm::vec3 p11 = glm::vec3(glm::ceil(pos.x), 0.0f, glm::ceil(pos.z));
-
-	if (glm::ceil(pos.x) > hmap.get().getWidth() - 1.0f)
-	{
-		p10.x = p11.x = 0.0f;
-	}
-
-	if (glm::ceil(pos.z) > hmap.get().getHeight() - 1.0f)
-	{
-		p01.z = p11.z = 0.0f;
-	}
-
-	pos = glm::fract(pos);
-
-	p00.y = getpixel(hmap.get().getImage(), p00.x, p00.z);
-	p10.y = getpixel(hmap.get().getImage(), p10.x, p10.z);
-	p01.y = getpixel(hmap.get().getImage(), p01.x, p01.z);
-	p11.y = getpixel(hmap.get().getImage(), p11.x, p11.z);
-
-	float lerpX0 = pos.x * p10.y + (1.0f - pos.x) * p00.y;
-	float lerpX1 = pos.x * p11.y + (1.0f - pos.x) * p01.y;
-
-	return 0;
-	return pos.z * lerpX1 + (1.0f - pos.z) * lerpX0;
-};
+#include "GameData.h"
 
 void PlayerControlSystem::Tick(EntityID player, double deltaT)
 {
@@ -57,10 +12,11 @@ void PlayerControlSystem::Tick(EntityID player, double deltaT)
 	my -= 384;
 
 	Camera& activeCam = data.getEntityManager().entityGetComponent<CameraComponent>(player);
+	Transform& trans = data.getEntityManager().entityGetComponent<TransformComponent>(player);
 		
 	activeCam.AddYawPitch(0.1f * mx, 0.1f * my);
 
-	float speed = 5.0f * deltaT;
+	float speed = 5.0f * (float)deltaT;
 
 	if (data.getKeyboardState(SDLK_LSHIFT))
 	{
@@ -68,16 +24,6 @@ void PlayerControlSystem::Tick(EntityID player, double deltaT)
 	}
 
 	SDL_WarpMouse(512, 384);
-
-	if (data.getKeyboardState(SDLK_q))
-	{
-		activeCam.setFlying(true);
-	}
-
-	if (data.getKeyboardState(SDLK_e))
-	{
-		activeCam.setFlying(false);
-	}
 
 	if (data.getKeyboardState(SDLK_w))
 	{
@@ -99,9 +45,29 @@ void PlayerControlSystem::Tick(EntityID player, double deltaT)
 		activeCam.Strafe(speed);
 	}
 
+	if (data.getMouseBtnState(SDL_BUTTON_LEFT))
+	{
+		if (rmbUp)
+		{
+			std::vector<EntityID> ents;
+			data.getCollisionSystem().Collide(Ray(activeCam.getPos(), activeCam.getFront()), true, ents);
+
+			for (unsigned int n = 0; n < ents.size(); n++)
+			{
+				data.getEntityManager().deleteEntity(ents[n]);
+			}
+
+			rmbUp = false;
+		}
+	}
+	else
+	{
+		rmbUp = true;
+	}
+
 	VelocityComponent& vel = data.getEntityManager().entityGetComponent<VelocityComponent>(player);
 
-	float h = sampleHeight(activeCam.getPos());
+	float h = data.getCollisionSystem().TerrainHeight(glm::vec2(activeCam.getPos().x, activeCam.getPos().z));
 
 	if (data.getKeyboardState(SDLK_SPACE))
 	{
@@ -121,5 +87,21 @@ void PlayerControlSystem::Tick(EntityID player, double deltaT)
 
 	activeCam.setPos(newPos);
 
-	//vel += glm::vec3(0.0f, -9.81f  * deltaT, 0.0f);
+	vel += glm::vec3(0.0f, -9.81f  * deltaT, 0.0f);
+
+	if (data.getKeyboardState(SDLK_r))
+	{
+		if (rUp)
+		{
+			data.getEntityManager().newCreature(data.getCreatureManager(), SDL_GetTicks() % 1000, newPos);
+			rUp = false;
+		}
+	}
+	else
+	{
+		rUp = true;
+	}
+
+	trans.setPos(activeCam.getPos() + activeCam.getFront() * 0.2f + activeCam.getRight() * 0.1f - activeCam.getUp() * 0.2f);
+	trans.setRot(glm::inverse(activeCam.getRot()) * glm::angleAxis(90.0f, glm::vec3(1.0f, 0.0f, 0.0f)));
 }

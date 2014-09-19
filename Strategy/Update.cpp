@@ -45,12 +45,16 @@ bool Update::UpdateTick(double deltaT)
 		__debugbreak();
 	}
 
+	data.collisionSystem.PrepareFrame();
+
 	if (data.activeCamera != NULL)
 	{
-		playerControl.Tick(data.getPlayer(), deltaT);
+		data.playerControl.Tick(data.getPlayer(), deltaT);
 	}
 
-	data.visibilitySystem.Tick(*(data.activeCamera));
+	data.cullingSystem.Tick(*(data.activeCamera));
+	
+	data.creatureAI.Tick(*(data.activeCamera), deltaT);
 
 	return true;
 }

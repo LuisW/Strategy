@@ -1,0 +1,36 @@
+**************************************************************************************************
+**************************************** Look-At / Follow ****************************************
+**************************************************************************************************
+
+ void CreatureAISystem::Tick(Camera& player, double deltaT)
+{
+	for (unsigned int n = 0; n < entities.size(); n++)
+	{
+		EntityID ent = entities[n];
+
+		TransformComponent& trans = entityManager.entityGetComponent<TransformComponent>(ent);
+
+		glm::vec3 ppos = player.getPos();
+		glm::vec3 cpos = trans.getPos();
+
+		glm::vec3 distv = ppos - cpos;
+		distv.y = 0.0f;
+		float dist = glm::length(distv);
+		distv /= dist;
+
+		if (dist > 1.0f && dist < 50.0f)
+		{
+			if (dist > 2.0f)
+				trans.setPos(cpos + distv * (float)deltaT * 10.0f);
+		
+			float phi = glm::dot(trans.getRot() * glm::vec3(0.0f, 0.0f, 1.0f), distv);
+
+			if (100.0f * deltaT < glm::abs(phi))
+			{
+				phi = 100.0f * deltaT * glm::sign(phi);
+			}
+
+			trans.setRot(trans.getRot() * glm::angleAxis(phi, glm::vec3(0.0f, 1.0f, 0.0f)));
+		}
+	}
+}

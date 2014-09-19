@@ -69,14 +69,23 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AssetManager.cpp" />
+    <ClCompile Include="BehaviourManager.cpp" />
+    <ClCompile Include="Behaviours.cpp" />
+    <ClCompile Include="CollisionSystem.cpp" />
+    <ClCompile Include="CreatureAIComponent.cpp" />
+    <ClCompile Include="CreatureAISystem.cpp" />
+    <ClCompile Include="CreatureManager.cpp" />
     <ClCompile Include="EntityManager.cpp" />
     <ClCompile Include="GameData.cpp" />
+    <ClCompile Include="IStatEffect.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="PlayerControlSystem.cpp" />
+    <ClCompile Include="ProjectileSystem.cpp" />
     <ClCompile Include="Render.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderTypes.cpp" />
+    <ClCompile Include="StatSystem.cpp" />
     <ClCompile Include="SubShader.cpp" />
     <ClCompile Include="RenderSystem.cpp" />
     <ClCompile Include="Terrain.cpp" />
@@ -91,14 +100,26 @@
     <ClInclude Include="Asset.h" />
     <ClInclude Include="AssetManager.h" />
     <ClInclude Include="AssetSubManagerBase.h" />
+    <ClInclude Include="BehaviourManager.h" />
+    <ClInclude Include="Behaviours.h" />
     <ClInclude Include="BoundingBox.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CameraComponent.h" />
+    <ClInclude Include="CollisionComponent.h" />
+    <ClInclude Include="CollisionSystem.h" />
     <ClInclude Include="Component.h" />
+    <ClInclude Include="CreatureAIComponent.h" />
+    <ClInclude Include="CreatureAISystem.h" />
+    <ClInclude Include="CreatureManager.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="EntityManager.h" />
     <ClInclude Include="Frustum.h" />
     <ClInclude Include="GameData.h" />
+    <ClInclude Include="IStatEffect.h" />
+    <ClInclude Include="ProjectileComponent.h" />
+    <ClInclude Include="ProjectileSystem.h" />
+    <ClInclude Include="Ray.h" />
+    <ClInclude Include="StatsComponent.h" />
     <ClInclude Include="InGame.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="Mesh.h" />
@@ -113,6 +134,7 @@
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderTypes.h" />
     <ClInclude Include="DataStructs.h" />
+    <ClInclude Include="StatSystem.h" />
     <ClInclude Include="SubShader.h" />
     <ClInclude Include="System.h" />
     <ClInclude Include="Terrain.h" />
@@ -125,7 +147,8 @@
     <ClInclude Include="VelocityComponent.h" />
     <ClInclude Include="VertexFormat.h" />
     <ClInclude Include="VisibilityComponent.h" />
-    <ClInclude Include="VisibilitySystem.h" />
+    <ClInclude Include="CullingSystem.h" />
+    <ClInclude Include="VitalsComponent.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
@@ -138,6 +161,9 @@
     <None Include="terrain2.vert" />
     <None Include="test.frag" />
     <None Include="test.vert" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="BehaviourDump.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

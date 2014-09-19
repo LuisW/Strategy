@@ -32,7 +32,7 @@ private:
 
 	Mesh mesh;
 
-	GLuint heightmap;
+	TextureAsset_const heightmap;
 	TextureAsset_const grass;
 	TextureAsset_const rock;
 	ShaderAsset_const shader;
@@ -63,7 +63,8 @@ private:
 
 public:
 	Terrain() : mesh(0, 0, 0, 0, 0, 0), grass(AssetManager::getAsset<Texture>(TextureKey("grass.jpg"))), 
-		rock(AssetManager::getAsset<Texture>(TextureKey("rock.jpg"))), shader(AssetManager::getAsset<Shader>(ShaderKey("terrain2.frag", "terrain2.vert")))
+		rock(AssetManager::getAsset<Texture>(TextureKey("rock.jpg"))), shader(AssetManager::getAsset<Shader>(ShaderKey("terrain2.frag", "terrain2.vert"))),
+		heightmap(AssetManager::getAsset<Texture>(TextureKey("heightmap.png")))
 	{
 		makeMesh(TerrainSettings::CellsPerLeaf, TerrainSettings::MinimumCellLength, mesh);
 
@@ -91,8 +92,6 @@ public:
 		//glVertexAttribDivisor(2, 1);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.getIndices());
-
-		heightmap = terrainGen.getHeightMap();
 
 		glBindVertexArray(0);
 	}
@@ -319,7 +318,7 @@ public:
 		glUniform1f(sp_cellLen, TerrainSettings::MinimumCellLength);
 
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, heightmap);
+		glBindTexture(GL_TEXTURE_2D, heightmap.get().getTexture());
 		glUniform1i(sp_hmap, 0);
 
 		glActiveTexture(GL_TEXTURE0 + 1);
@@ -345,6 +344,5 @@ public:
 	{
 		mesh.clear();
 		glDeleteBuffers(1, &InstVBO);
-		glDeleteTextures(1, &heightmap);
 	}
 };

@@ -18,5 +18,5 @@ public:
 
 	void onEntityChanged(EntityID entity, ComponentType type, bool added);
 	void onEntityRemoved(EntityID entity);
-	void Tick(const glm::mat4& VP, GLbyte sp_WVP) const;
+	void Tick(const Camera& cam, GLuint shader) const;
 };

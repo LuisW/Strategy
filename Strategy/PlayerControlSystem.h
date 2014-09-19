@@ -1,18 +1,19 @@
 #pragma once
 
 #include "Camera.h"
-#include "GameData.h"
+
+class GameData;
+typedef unsigned int EntityID;
 
 class PlayerControlSystem
 {
 private:
 	GameData& data;
-	TextureAsset_const hmap;
-
-	float sampleHeight(glm::vec3 pos);
+	bool rUp;
+	bool rmbUp;
 
 public:
-	PlayerControlSystem(GameData& _data) : data(_data), hmap(AssetManager::getAsset<Texture>(TextureKey("heightmap.png")))
+	PlayerControlSystem(GameData& _data) : data(_data), rUp(true), rmbUp(true)
 	{}
 
 	void Tick(EntityID player, double deltaT);

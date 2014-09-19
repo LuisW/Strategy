@@ -6,7 +6,7 @@ uniform float texelSize;
 uniform sampler2D hmap;
 uniform vec3 camPos;
 
-const float mapScale = 819.3;
+const float mapScale = 8192.0;
 const float Yscale = 1250.0;
 
 in vec3 pos3D;
@@ -26,7 +26,7 @@ void main(void)
 {
 	vec3 normal = calcNormal(pos3D.xz, texelSize);
 
-	vec4 col = mix(texture2D(rock, pos3D.xz),texture2D(grass, pos3D.xz),  abs(0.7 * normal.y));
+	vec4 col = mix(texture2D(rock, pos3D.xz),texture2D(grass, pos3D.xz), abs(normal.y));
 	float specular = pow(saturate(dot(normal, normalize(normalize(camPos - pos3D) - light))), 100.0);
 	float diffuse = max(dot(-light, normal),0.0);
 

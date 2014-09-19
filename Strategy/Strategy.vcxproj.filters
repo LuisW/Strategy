@@ -49,6 +49,21 @@
     <Filter Include="Quelldateien\InGame\Systems">
       <UniqueIdentifier>{eb0d8292-b7b0-4934-aeaf-0a2c2413cc7c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\InGame\Gameplay">
+      <UniqueIdentifier>{b592c6b5-6592-4063-b631-32420b8bf256}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\InGame\DataStorage\Gameplay">
+      <UniqueIdentifier>{298261e4-c927-44e5-a603-01098942c315}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\InGame\AI">
+      <UniqueIdentifier>{ab97e2ec-f307-488f-9aa5-8ce507ccf922}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\InGame\AI">
+      <UniqueIdentifier>{9f06b3a3-6fb8-4a94-9830-c5180c4c3b16}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\InGame\DataStorage\Components">
+      <UniqueIdentifier>{c11b1a33-d946-4d45-9640-6793cb54600c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -103,6 +118,33 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="TerrainGenerator.cpp">
+      <Filter>Quelldateien\InGame\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="CreatureManager.cpp">
+      <Filter>Quelldateien\InGame\DataStorage\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="CreatureAISystem.cpp">
+      <Filter>Quelldateien\InGame\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="BehaviourManager.cpp">
+      <Filter>Quelldateien\InGame\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="CreatureAIComponent.cpp">
+      <Filter>Quelldateien\InGame\DataStorage\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Behaviours.cpp">
+      <Filter>Quelldateien\InGame\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionSystem.cpp">
+      <Filter>Quelldateien\InGame\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="ProjectileSystem.cpp">
+      <Filter>Quelldateien\InGame\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="IStatEffect.cpp">
+      <Filter>Quelldateien\InGame\DataStorage</Filter>
+    </ClCompile>
+    <ClCompile Include="StatSystem.cpp">
       <Filter>Quelldateien\InGame\Systems</Filter>
     </ClCompile>
   </ItemGroup>
@@ -197,9 +239,6 @@
     <ClInclude Include="BoundingBox.h">
       <Filter>Headerdateien\InGame\DataStorage</Filter>
     </ClInclude>
-    <ClInclude Include="VisibilitySystem.h">
-      <Filter>Headerdateien\InGame\Systems</Filter>
-    </ClInclude>
     <ClInclude Include="VisibilityComponent.h">
       <Filter>Headerdateien\InGame\DataStorage\Components</Filter>
     </ClInclude>
@@ -223,6 +262,51 @@
     </ClInclude>
     <ClInclude Include="Map.h">
       <Filter>Headerdateien\InGame\DataStorage</Filter>
+    </ClInclude>
+    <ClInclude Include="CreatureManager.h">
+      <Filter>Headerdateien\InGame\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="CreatureAISystem.h">
+      <Filter>Headerdateien\InGame\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="CreatureAIComponent.h">
+      <Filter>Headerdateien\InGame\DataStorage\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="BehaviourManager.h">
+      <Filter>Headerdateien\InGame\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="Behaviours.h">
+      <Filter>Headerdateien\InGame\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="CullingSystem.h">
+      <Filter>Headerdateien\InGame\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionComponent.h">
+      <Filter>Headerdateien\InGame\DataStorage\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionSystem.h">
+      <Filter>Headerdateien\InGame\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="Ray.h">
+      <Filter>Headerdateien\InGame\DataStorage</Filter>
+    </ClInclude>
+    <ClInclude Include="ProjectileComponent.h">
+      <Filter>Headerdateien\InGame\DataStorage\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="ProjectileSystem.h">
+      <Filter>Headerdateien\InGame\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="StatsComponent.h">
+      <Filter>Headerdateien\InGame\DataStorage\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="IStatEffect.h">
+      <Filter>Headerdateien\InGame\DataStorage</Filter>
+    </ClInclude>
+    <ClInclude Include="StatSystem.h">
+      <Filter>Headerdateien\InGame\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="VitalsComponent.h">
+      <Filter>Headerdateien\InGame\DataStorage\Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -253,5 +337,10 @@
     <None Include="HMapGen.vert">
       <Filter>Ressourcendateien\Shader</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="BehaviourDump.txt">
+      <Filter>Ressourcendateien</Filter>
+    </Text>
   </ItemGroup>
 </Project>

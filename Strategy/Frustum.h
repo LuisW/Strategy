@@ -4,8 +4,6 @@
 #include "BoundingBox.h"
 
 enum FrustumPlane {FP_Top, FP_Bottom, FP_Left, FP_Right, FP_Near, FP_Far};
-enum IntersectionType {IT_Inside, IT_Outside, IT_Intersect};
-
 
 const char PlaneMasks[6] = { 1, 2, 4, 8, 16, 32 };
 
@@ -17,7 +15,7 @@ private:
 	{
 		glm::vec4 plane;
 
-		IntersectionType IntersectAABB(const AABoundingBox& box)
+		IntersectionType IntersectAABB(const AABB& box)
 		{
 			glm::vec3 h = box.getHalfDiagonal();
 			glm::vec3 c = box.getCenter();
@@ -71,7 +69,7 @@ public:
 		return planes[plane].plane;
 	}
 
-	IntersectionType IntersectAABB(const AABoundingBox& box)
+	IntersectionType IntersectAABB(const AABB& box)
 	{
 		bool intersect = false;
 
@@ -86,7 +84,7 @@ public:
 		return IT_Inside;
 	}
 
-	IntersectionType IntersectAABB(const AABoundingBox& box, char& parentIn)
+	IntersectionType IntersectAABB(const AABB& box, char& parentIn)
 	{
 		bool intersect = false;
 

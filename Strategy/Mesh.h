@@ -2,6 +2,7 @@
 
 #include "ei/GL/glew.h"
 #include "AssetSubManagerBase.h"
+#include "BoundingBox.h"
 
 class Mesh
 {
@@ -13,11 +14,20 @@ private:
 	unsigned int vertlen;
 	unsigned int indlen;
 
+	OBB boundingVolume;
+
 	Mesh(const Mesh&)
 	{}
 
 public:
-	inline Mesh(GLuint _verts, GLuint _inds, unsigned int _vertlen, unsigned int _indlen, unsigned int* _indBuff, char* _vertBuff) : verts(_verts), inds(_inds), vertlen(_vertlen), indlen(_indlen), indBuff(_indBuff), vertBuff(_vertBuff)
+	inline Mesh(GLuint _verts, GLuint _inds, unsigned int _vertlen, unsigned int _indlen, unsigned int* _indBuff, char* _vertBuff) : verts(_verts),
+		inds(_inds), vertlen(_vertlen), indlen(_indlen), indBuff(_indBuff), vertBuff(_vertBuff), boundingVolume()
+	{
+	}
+
+	inline Mesh(GLuint _verts, GLuint _inds, unsigned int _vertlen, unsigned int _indlen, unsigned int* _indBuff, char* _vertBuff, const OBB& _boundingVolume) :
+		verts(_verts), inds(_inds), vertlen(_vertlen), indlen(_indlen), indBuff(_indBuff), vertBuff(_vertBuff),
+		boundingVolume(_boundingVolume)
 	{
 	}
 
@@ -52,6 +62,11 @@ public:
 	inline const unsigned int* getIndBuff() const
 	{
 		return indBuff;
+	}
+
+	inline const OBB& getBoundingVolume() const
+	{
+		return boundingVolume;
 	}
 
 	inline void clear()

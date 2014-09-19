@@ -4,6 +4,16 @@
 #include "System.h"
 #include <stdexcept>
 
+#include "CameraComponent.h"
+#include "RenderComponent.h"
+#include "TransformComponent.h"
+#include "VelocityComponent.h"
+#include "CreatureAIComponent.h"
+#include "CollisionComponent.h"
+#include "StatsComponent.h"
+
+#include "CreatureManager.h"
+
 enum EntityBaseType {ET_Player};
 
 class InvalidEntityException : public std::runtime_error
@@ -142,6 +152,10 @@ public:
 
 	~EntityManager();
 
+//************FactorySection*************
+
+public:
 	EntityID newPlayer();
 	EntityID newTestObject();
+	EntityID newCreature(CreatureManager& creatures, unsigned int seed, glm::vec3& location);
 };

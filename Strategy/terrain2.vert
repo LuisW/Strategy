@@ -8,7 +8,7 @@ const mat2 rotMats[4] = mat2[4](mat2(1.0), mat2(0,1, -1,0), mat2(-1.0f), mat2(0,
 const vec2 neighbours[4] = vec2[4](vec2(0.0, 0.0), vec2(1.0, 0.0), vec2(0.0, 1.0), vec2(1.0, 1.0));
 
 const uint scaleMask = 255u;
-const float mapScale = 819.30;
+const float mapScale = 8192.0;
 const float Yscale = 1250.0;
 
 uniform mat4 WVP;

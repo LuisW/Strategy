@@ -42,8 +42,8 @@ class QTNode
 {
 private:
 	friend TopQTNode;
-public:
 
+public:
 	QTNode()
 	{
 
@@ -178,7 +178,7 @@ public:
 
 #define NTopNodes 9
 
-class VisibilitySystem //: public System
+class CullingSystem : public System
 {
 private:
 	struct TopNode
@@ -194,7 +194,7 @@ private:
 	unsigned int treeDepth;
 
 public:
-	VisibilitySystem(EntityManager& _entities, unsigned int _treeDepth, Terrain& _terrain) : entities(_entities), treeDepth(_treeDepth), terrain(_terrain)
+	CullingSystem(EntityManager& _entities, unsigned int _treeDepth, Terrain& _terrain) : entities(_entities), treeDepth(_treeDepth), terrain(_terrain)
 	{
 		for (unsigned int n = 0; n < NTopNodes; n++)
 		{
@@ -216,12 +216,26 @@ public:
 		}
 	}
 
-	~VisibilitySystem()
+	void Tick()
+	{
+
+	}
+
+	void onEntityChanged(EntityID id, ComponentType type, bool added)
+	{
+
+	}
+
+	void onEntityRemoved(EntityID id)
+	{
+
+	}
+
+	~CullingSystem()
 	{
 		for (unsigned int n = 0; n < NTopNodes; n++)
 		{
 			delete topNodes[n].node;
 		}
 	}
-
 };

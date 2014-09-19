@@ -6,7 +6,10 @@
 #include "AssetManager.h"
 #include "RenderSystem.h"
 #include "DataStructs.h"
-#include "VisibilitySystem.h"
+#include "CullingSystem.h"
+#include "PlayerControlSystem.h"
+#include "CreatureAISystem.h"
+#include "CollisionSystem.h"
 
 class Update;
 
@@ -24,13 +27,17 @@ private:
 	ShaderAsset_const shader;
 	RenderSystem renderSystem;
 	Terrain terrain;
-	VisibilitySystem visibilitySystem;
+	CullingSystem cullingSystem;
+	CollisionSystem collisionSystem;
+	PlayerControlSystem playerControl;
+	CreatureManager creatures;
+	CreatureAISystem creatureAI;
 
 	RenderSettings renderSettings;
 
 public:
 	GameData() : activeCamera(NULL), shader(AssetManager::getAsset<Shader>(ShaderKey("test.frag", "test.vert"))), renderSystem(entities), terrain()
-		, visibilitySystem(entities, TerrainSettings::LoDs, terrain)
+		, cullingSystem(entities, TerrainSettings::LoDs, terrain), playerControl(*this), creatureAI(entities, creatures, collisionSystem), collisionSystem(entities)
 	{
 		for (int n = 0; n < 256; n++)
 		{
@@ -39,6 +46,7 @@ public:
 		}
 
 		entities.RegisterSystem(&renderSystem);
+		entities.RegisterSystem(&collisionSystem);
 
 		entities.newTestObject();
 		player1 = entities.newPlayer();
@@ -63,6 +71,16 @@ public:
 	inline EntityManager& getEntityManager()
 	{
 		return entities;
+	}
+
+	inline CollisionSystem& getCollisionSystem()
+	{
+		return collisionSystem;
+	}
+
+	inline CreatureManager& getCreatureManager()
+	{
+		return creatures;
 	}
 
 	inline const Camera* getActiveCam() const
