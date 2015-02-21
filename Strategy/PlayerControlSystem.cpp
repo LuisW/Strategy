@@ -2,6 +2,8 @@
 #include "ei/SDL/SDL.h"
 #include "VelocityComponent.h"
 #include "GameData.h"
+#include "GunAssetGenerator.h"
+#include <iostream>
 
 void PlayerControlSystem::Tick(EntityID player, double deltaT)
 {
@@ -13,10 +15,13 @@ void PlayerControlSystem::Tick(EntityID player, double deltaT)
 
 	Camera& activeCam = data.getEntityManager().entityGetComponent<CameraComponent>(player);
 	Transform& trans = data.getEntityManager().entityGetComponent<TransformComponent>(player);
+	StatsComponent& stats = data.getEntityManager().entityGetComponent<StatsComponent>(player);
+	VelocityComponent& vel = data.getEntityManager().entityGetComponent<VelocityComponent>(player);
 		
+	activeCam.setPos(trans.getPos());
 	activeCam.AddYawPitch(0.1f * mx, 0.1f * my);
 
-	float speed = 5.0f * (float)deltaT;
+	float speed = stats.derived.movementspeed;
 
 	if (data.getKeyboardState(SDLK_LSHIFT))
 	{
@@ -25,47 +30,55 @@ void PlayerControlSystem::Tick(EntityID player, double deltaT)
 
 	SDL_WarpMouse(512, 384);
 
+	glm::vec3 walkfront = activeCam.getFront();
+	walkfront.y = 0.0f;
+	walkfront = glm::normalize(walkfront);
+
+	glm::vec3 walkright = activeCam.getRight();
+	walkright.y = 0.0f;
+	walkright = glm::normalize(walkright);
+
+	vel.setX(0.0f);
+	vel.setZ(0.0f);
+
 	if (data.getKeyboardState(SDLK_w))
 	{
-		activeCam.Move(speed);
+		vel += walkfront * speed;
 	}
 
 	if (data.getKeyboardState(SDLK_a))
 	{
-		activeCam.Strafe(-speed);
+		vel += walkright * -speed;
 	}
 
 	if (data.getKeyboardState(SDLK_s))
 	{
-		activeCam.Move(-speed);
+		vel += walkfront * -speed;
 	}
 
 	if (data.getKeyboardState(SDLK_d))
 	{
-		activeCam.Strafe(speed);
+		vel += walkright * speed;
 	}
 
-	if (data.getMouseBtnState(SDL_BUTTON_LEFT))
+	if (data.getMouseBtnState(SDL_BUTTON_LEFT) && fullAuto + 100 < SDL_GetTicks())
 	{
-		if (rmbUp)
+		std::vector<EntityID> ents;
+		data.getCollisionSystem().Collide(Ray(activeCam.getPos(), activeCam.getFront()), true, ents, ComponentCollisionFilter<CT_Vitals>());
+
+		activeCam.AddYawPitch(randFltWeighted1(SDL_GetTicks(), 0.0f, 2.0f), -1.0f);
+
+		for (unsigned int n = 0; n < ents.size(); n++)
 		{
-			std::vector<EntityID> ents;
-			data.getCollisionSystem().Collide(Ray(activeCam.getPos(), activeCam.getFront()), true, ents);
+			VitalsComponent& vitals = data.getEntityManager().entityGetComponent<VitalsComponent>(ents[n]);
+			vitals.healthPercent -= 500.0f / vitals.maxHealth;
 
-			for (unsigned int n = 0; n < ents.size(); n++)
-			{
+			if (vitals.healthPercent <= 0.0f)
 				data.getEntityManager().deleteEntity(ents[n]);
-			}
-
-			rmbUp = false;
 		}
-	}
-	else
-	{
-		rmbUp = true;
-	}
 
-	VelocityComponent& vel = data.getEntityManager().entityGetComponent<VelocityComponent>(player);
+		fullAuto = SDL_GetTicks();
+	}
 
 	float h = data.getCollisionSystem().TerrainHeight(glm::vec2(activeCam.getPos().x, activeCam.getPos().z));
 
@@ -73,7 +86,7 @@ void PlayerControlSystem::Tick(EntityID player, double deltaT)
 	{
 		if (activeCam.getPos().y < (h + 1.8001f))
 		{
-			vel.setVelocity(glm::vec3(0.0f, 4.4294f, 0.0f));
+			vel += glm::vec3(0.0f, 4.4294f, 0.0f);
 		}
 	}
 
@@ -102,6 +115,25 @@ void PlayerControlSystem::Tick(EntityID player, double deltaT)
 		rUp = true;
 	}
 
-	trans.setPos(activeCam.getPos() + activeCam.getFront() * 0.2f + activeCam.getRight() * 0.1f - activeCam.getUp() * 0.2f);
-	trans.setRot(glm::inverse(activeCam.getRot()) * glm::angleAxis(90.0f, glm::vec3(1.0f, 0.0f, 0.0f)));
+	if (data.getKeyboardState(SDLK_t))
+	{
+		if (tUp)
+		{
+			unsigned int seed = SDL_GetTicks() % 1000;
+			std::cout << "ProceduralAssaultRifle:" << seed << std::endl;
+			data.getEntityManager().newStaticMesh(GunAssetGenerator::GenerateGun(seed), trans);
+			tUp = false;
+		}
+	}
+	else
+	{
+		tUp = true;
+	}
+
+	glm::quat trot = activeCam.getRot();
+	trot.x = 0;
+	trot.z = 0;
+
+	trans.setPos(activeCam.getPos());
+	trans.setRot(trot / (trot.y*trot.y + trot.w*trot.w));
 }

@@ -68,19 +68,22 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AIHelp.cpp" />
     <ClCompile Include="AssetManager.cpp" />
-    <ClCompile Include="BehaviourManager.cpp" />
-    <ClCompile Include="Behaviours.cpp" />
     <ClCompile Include="CollisionSystem.cpp" />
+    <ClCompile Include="CreatureAbilities.cpp" />
     <ClCompile Include="CreatureAIComponent.cpp" />
     <ClCompile Include="CreatureAISystem.cpp" />
     <ClCompile Include="CreatureManager.cpp" />
     <ClCompile Include="EntityManager.cpp" />
     <ClCompile Include="GameData.cpp" />
+    <ClCompile Include="GunAssetGenerator.cpp" />
+    <ClCompile Include="IAbility.cpp" />
     <ClCompile Include="IStatEffect.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="PlayerControlSystem.cpp" />
+    <ClCompile Include="ProcGenHelp.cpp" />
     <ClCompile Include="ProjectileSystem.cpp" />
     <ClCompile Include="Render.cpp" />
     <ClCompile Include="Shader.cpp" />
@@ -97,17 +100,20 @@
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AbilityEffects.h" />
+    <ClInclude Include="AIHelp.h" />
     <ClInclude Include="Asset.h" />
     <ClInclude Include="AssetManager.h" />
     <ClInclude Include="AssetSubManagerBase.h" />
-    <ClInclude Include="BehaviourManager.h" />
-    <ClInclude Include="Behaviours.h" />
     <ClInclude Include="BoundingBox.h" />
+    <ClInclude Include="BulletComponent.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CameraComponent.h" />
     <ClInclude Include="CollisionComponent.h" />
+    <ClInclude Include="CollisionFilters.h" />
     <ClInclude Include="CollisionSystem.h" />
     <ClInclude Include="Component.h" />
+    <ClInclude Include="CreatureAbilities.h" />
     <ClInclude Include="CreatureAIComponent.h" />
     <ClInclude Include="CreatureAISystem.h" />
     <ClInclude Include="CreatureManager.h" />
@@ -115,9 +121,14 @@
     <ClInclude Include="EntityManager.h" />
     <ClInclude Include="Frustum.h" />
     <ClInclude Include="GameData.h" />
+    <ClInclude Include="GroundWaveComponent.h" />
+    <ClInclude Include="IAbility.h" />
     <ClInclude Include="IStatEffect.h" />
+    <ClInclude Include="GunAssetGenerator.h" />
+    <ClInclude Include="ProcGenHelp.h" />
     <ClInclude Include="ProjectileComponent.h" />
     <ClInclude Include="ProjectileSystem.h" />
+    <ClInclude Include="ProjectileTypes.h" />
     <ClInclude Include="Ray.h" />
     <ClInclude Include="StatsComponent.h" />
     <ClInclude Include="InGame.h" />

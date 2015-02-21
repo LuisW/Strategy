@@ -13,6 +13,12 @@ void AssetManager::init()
 }
 
 template<>
+bool AssetManager::hasAsset<Mesh>(const AssetKey<Mesh>& key)
+{
+	return instance->meshes.hasAsset(key);
+}
+
+template<>
 const Asset<Shader> AssetManager::getAsset<Shader>(const AssetKey<Shader>& key)
 {
 	return instance->shaders.GetAsset(key);
@@ -34,6 +40,12 @@ template<>
 const Asset<Texture> AssetManager::getAsset<Texture>(const AssetKey<Texture>& key)
 {
 	return instance->textures.GetAsset(key);
+}
+
+template<>
+const Asset<Mesh> AssetManager::addAsset<Mesh>(const AssetKey<Mesh>& key, Mesh* data)
+{
+	return instance->meshes.AddAsset(key, data);
 }
 
 void AssetManager::deinit()

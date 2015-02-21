@@ -11,10 +11,11 @@
 #include "CreatureAIComponent.h"
 #include "CollisionComponent.h"
 #include "StatsComponent.h"
+#include "VitalsComponent.h"
 
 #include "CreatureManager.h"
 
-enum EntityBaseType {ET_Player};
+class IProjectileEffect;
 
 class InvalidEntityException : public std::runtime_error
 {
@@ -97,9 +98,9 @@ public:
 
 	inline void deleteEntity(EntityID entity)
 	{
+		NotifyEntityRemoved(entity);
 		entities[entity].entity->RemoveAllComponents();
 		entities[entity].used = false;
-		NotifyEntityRemoved(entity);
 	}
 	
 	template<typename T>
@@ -157,5 +158,8 @@ public:
 public:
 	EntityID newPlayer();
 	EntityID newTestObject();
+	EntityID newStaticMesh(MeshAsset_const mesh, const Transform& trans);
 	EntityID newCreature(CreatureManager& creatures, unsigned int seed, glm::vec3& location);
+	EntityID newBullet(EntityID source, glm::vec3 pos, glm::vec3 dir, IProjectileEffect* effect);
+	EntityID newGroundWave(EntityID source, glm::vec3 pos, float expVel, float maxRad, IProjectileEffect* effect);
 };

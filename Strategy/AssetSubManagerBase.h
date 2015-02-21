@@ -31,6 +31,32 @@ public:
 };
 
 template<typename T>
+class AssetAddException : std::runtime_error
+{
+private:
+	const AssetKey<T> asset;
+	std::string info;
+
+public:
+	AssetAddException(const AssetKey<T> _asset, std::string _info) : std::runtime_error("AssetAddException"), asset(_asset), info(_info)
+	{}
+
+	virtual const char* what() const throw()
+	{
+		std::string str(std::runtime_error::what());
+
+		str += ": Error adding asset " + asset.toString() + ".";
+
+		if (info != "")
+		{
+			str += " Details: " + info;
+		}
+
+		return str.c_str();
+	}
+};
+
+template<typename T>
 class AssetSubManagerBase
 {
 private:
@@ -52,6 +78,12 @@ protected:
 	virtual void Unload(AssetIterator it){};
 
 public:
+
+	bool hasAsset(const AssetKey<T>& key)
+	{
+		auto it = assets.find(key);
+		return it != assets.end();
+	}
 
 	const Asset<T> GetAsset(const AssetKey<T>& key)
 	{
@@ -80,7 +112,30 @@ public:
 	}
 
 	Asset<T> GetPrivateAsset(AssetKey<T> key);
-	void AddAsset(AssetKey<T> key, T& asset);
+
+	const Asset<T> AddAsset(const AssetKey<T>& key, T* asset)
+	{
+		auto it = assets.find(key);
+		if (it != assets.end())
+		{
+			throw AssetAddException<T>(key, "key already in use.");
+		}
+
+		AssetSubManagerStorage<T> newElem;
+		newElem.data = asset;
+
+		if (newElem.data == NULL)
+		{
+			throw AssetAddException<T>(key, "NULL asset.");
+		}
+
+		newElem.refCnt = ReferenceCounter(0);
+
+		assets[key] = newElem;
+
+		it = assets.find(key);
+		return Asset<T>(it->second.refCnt, (it->second.data), it->first);
+	}
 	
 	void CleanUnused()
 	{

@@ -31,12 +31,16 @@ struct StatsStruct
 
 class IStatEffect
 {
-private:
+protected:
 	unsigned int endTime;
 	bool infinite;
 
 public:
+	IStatEffect(unsigned int _endTime, bool _infinite) : endTime(_endTime), infinite(_infinite)
+	{}
+
 	bool hasEnded();
 	virtual bool isApplicable();
-	virtual bool effect(EntityID entity, double deltaT) = 0;
+	virtual bool statEffect(StatsStruct& stats, EntityID ent, double deltaT) = 0;
+	virtual bool derivedEffect(StatsStruct& stats, EntityID ent, double deltaT) = 0;
 };

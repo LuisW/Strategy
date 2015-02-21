@@ -17,6 +17,8 @@ private:
 public:
 	VitalsComponent(EntityID owner) : Component(CT_Vitals, owner, "")
 	{
+		healthPercent = 1.0f;
+		manaPercent = 1.0f;
 	}
 
 	static ComponentType getComponentType()

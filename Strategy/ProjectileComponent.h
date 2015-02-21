@@ -7,41 +7,40 @@ class IProjectileEffect : public ICollisionFilter
 {
 private:
 public:
-	virtual bool Filter(EntityID ent){ return true; }
-	virtual bool Effect(EntityID ent) = 0;
+	virtual bool Filter(EntityID ent, EntityManager& entityManager){ return true; }
+	virtual bool Effect(EntityID ent, EntityManager& entityManager, double deltaT) = 0;
 	virtual ~IProjectileEffect(){};
 };
+
+enum ProjectileType {PT_Bullet, PT_GroundWave, PT_Unused}; //PT_Unused must be last
 
 class ProjectileComponent : public Component
 {
 private:
 	IProjectileEffect* effect;
-	glm::vec3 pos;
-	glm::vec3 prevPos;
+	EntityID source;
+	ProjectileType type;
+
+protected:
+	ProjectileComponent(EntityID owner, EntityID _source, IProjectileEffect* _effect, ProjectileType _type) 
+		: source(_source), effect(_effect), type(_type), Component(CT_Projectile, owner, "")
+	{
+	}
 
 public:
-	ProjectileComponent(EntityID owner, IProjectileEffect* _effect) : effect(_effect), Component(CT_Projectile, owner, "")
+	ProjectileType getProjectileType()
 	{
+		return type;
 	}
 
-	const glm::vec3& getPos() const
+	EntityID getSource() const
 	{
-		return pos;
+		return source;
 	}
 
-	const glm::vec3& getPrevPos() const
+	void setSource(EntityID _source)
 	{
-		return prevPos;
-	}
-
-	void setPos(const glm::vec3& _pos)
-	{
-		pos = _pos;
-	}
-
-	void setPrevPos(const glm::vec3& _prevPos)
-	{
-		prevPos = _prevPos;
+		source = _source;
 	}
 
 	IProjectileEffect& getEffect()

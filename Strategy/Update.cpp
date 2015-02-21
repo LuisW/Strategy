@@ -52,9 +52,12 @@ bool Update::UpdateTick(double deltaT)
 		data.playerControl.Tick(data.getPlayer(), deltaT);
 	}
 
-	data.cullingSystem.Tick(*(data.activeCamera));
+	data.statSystem.Tick(deltaT);
+
+	//data.cullingSystem.Tick(*(data.activeCamera));
 	
-	data.creatureAI.Tick(*(data.activeCamera), deltaT);
+	data.creatureAI.Tick(*(data.activeCamera), deltaT, data);
+	data.projectileSystem.Tick(deltaT);
 
 	return true;
 }

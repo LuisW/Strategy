@@ -10,6 +10,8 @@
 #include "PlayerControlSystem.h"
 #include "CreatureAISystem.h"
 #include "CollisionSystem.h"
+#include "StatSystem.h"
+#include "ProjectileSystem.h"
 
 class Update;
 
@@ -32,12 +34,18 @@ private:
 	PlayerControlSystem playerControl;
 	CreatureManager creatures;
 	CreatureAISystem creatureAI;
+	StatSystem statSystem;
+	ProjectileSystem projectileSystem;
 
 	RenderSettings renderSettings;
+
+	GameData(const GameData& other);
+	const GameData& operator=(const GameData& other);
 
 public:
 	GameData() : activeCamera(NULL), shader(AssetManager::getAsset<Shader>(ShaderKey("test.frag", "test.vert"))), renderSystem(entities), terrain()
 		, cullingSystem(entities, TerrainSettings::LoDs, terrain), playerControl(*this), creatureAI(entities, creatures, collisionSystem), collisionSystem(entities)
+		, statSystem(entities), projectileSystem(entities, collisionSystem), creatures(this)
 	{
 		for (int n = 0; n < 256; n++)
 		{
@@ -47,6 +55,8 @@ public:
 
 		entities.RegisterSystem(&renderSystem);
 		entities.RegisterSystem(&collisionSystem);
+		entities.RegisterSystem(&statSystem);
+		entities.RegisterSystem(&projectileSystem);
 
 		entities.newTestObject();
 		player1 = entities.newPlayer();
@@ -76,6 +86,11 @@ public:
 	inline CollisionSystem& getCollisionSystem()
 	{
 		return collisionSystem;
+	}
+
+	inline ProjectileSystem& getProjectileSystem()
+	{
+		return projectileSystem;
 	}
 
 	inline CreatureManager& getCreatureManager()

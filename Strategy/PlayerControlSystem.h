@@ -10,10 +10,11 @@ class PlayerControlSystem
 private:
 	GameData& data;
 	bool rUp;
-	bool rmbUp;
+	bool tUp;
+	unsigned int fullAuto;
 
 public:
-	PlayerControlSystem(GameData& _data) : data(_data), rUp(true), rmbUp(true)
+	PlayerControlSystem(GameData& _data) : data(_data), rUp(true), tUp(true), fullAuto(0)
 	{}
 
 	void Tick(EntityID player, double deltaT);

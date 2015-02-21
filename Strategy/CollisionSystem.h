@@ -1,27 +1,10 @@
 #pragma once
 
 #include "System.h"
-#include "EntityManager.h"
+#include "CollisionFilters.h"
 #include <vector>
+#include <tuple>
 #include "Ray.h"
-
-class ICollisionFilter
-{
-private:
-public:
-	virtual bool Filter(EntityID ent) = 0;
-	virtual ~ICollisionFilter(){};
-};
-
-class DefaultCollisionFilter : public ICollisionFilter
-{
-private:
-public:
-	bool Filter(EntityID ent)
-	{
-		return true;
-	}
-};
 
 struct CollDistData
 {
@@ -70,6 +53,9 @@ public:
 	void Collide(const Ray& ray, bool positiveOnly, std::vector<EntityID>& collisions, ICollisionFilter& filter = DefaultCollisionFilter());
 	void Collide(const LineSegment line, std::vector<EntityID>& collisions, ICollisionFilter& filter = DefaultCollisionFilter());
 	void Collide(const LineSegment line, std::vector<CollDistData>& collisions, ICollisionFilter& filter = DefaultCollisionFilter());
+
+	void CollideTubeGWOpt(float smallR, float bigR, const glm::vec3& c, float height, std::vector<CollDistData>& collisions, ICollisionFilter& filter = DefaultCollisionFilter()); //Tube - OBB collision optimised for groundwaves (simplify cube to linesegment, assume tubes height is collinear to y-axis)
+
 	void CollideNearest(const LineSegment line, EntityID& collision, ICollisionFilter& filter = DefaultCollisionFilter());
 
 	float TerrainHeight(glm::vec2 position);

@@ -91,7 +91,7 @@ void CollisionSystem::Collide(const OBB& box, std::vector<EntityID>& collisions,
 {
 	for (unsigned int n = 0; n < entities.size(); n++)
 	{
-		if (filter.Filter(entities[n].id))
+		if (filter.Filter(entities[n].id, entityManager))
 			continue;
 
 		//bounding sphere pre-test 
@@ -117,7 +117,7 @@ void CollisionSystem::Collide(const glm::vec3& point, std::vector<EntityID>& col
 {
 	for (unsigned int n = 0; n < entities.size(); n++)
 	{
-		if (filter.Filter(entities[n].id) && entities[n].obb.IntersectPoint(point) == IT_Inside)
+		if (filter.Filter(entities[n].id, entityManager) && entities[n].obb.IntersectPoint(point) == IT_Inside)
 		{
 			collisions.push_back(entities[n].id);
 		}
@@ -128,7 +128,7 @@ void CollisionSystem::Collide(const Ray& ray, bool frontOnly, std::vector<Entity
 {
 	for (unsigned int n = 0; n < entities.size(); n++)
 	{
-		if (filter.Filter(entities[n].id) && entities[n].obb.IntersectRay(ray, true) == IT_Intersect)
+		if (filter.Filter(entities[n].id, entityManager) && entities[n].obb.IntersectRay(ray, true) == IT_Intersect)
 		{
 			collisions.push_back(entities[n].id);
 		}
@@ -139,7 +139,7 @@ void CollisionSystem::Collide(const LineSegment line, std::vector<EntityID>& col
 {
 	for (unsigned int n = 0; n < entities.size(); n++)
 	{
-		if (filter.Filter(entities[n].id) && entities[n].obb.IntersectLineSegment(line) == IT_Intersect)
+		if (filter.Filter(entities[n].id, entityManager) && entities[n].obb.IntersectLineSegment(line) == IT_Intersect)
 		{
 			collisions.push_back(entities[n].id);
 		}
@@ -152,10 +152,118 @@ void CollisionSystem::Collide(const LineSegment line, std::vector<CollDistData>&
 
 	for (unsigned int n = 0; n < entities.size(); n++)
 	{
-		if (filter.Filter(entities[n].id) && entities[n].obb.IntersectLineSegment(line, sqrdist) == IT_Intersect)
+		if (filter.Filter(entities[n].id, entityManager) && entities[n].obb.IntersectLineSegment(line, sqrdist) == IT_Intersect)
 		{
 			collisions.push_back(CollDistData(entities[n].id, sqrdist));
 		}
+	}
+
+	std::sort(collisions.begin(), collisions.end());
+}
+
+float sqr(float x)
+{
+	return x*x;
+}
+
+void CollisionSystem::CollideTubeGWOpt(float smallR, float bigR, const glm::vec3& c, float height, std::vector<CollDistData>& collisions, ICollisionFilter& filter)
+//Tube - OBB collision optimised for groundwaves (simplify cube to linesegment, assume tubes height is collinear to y-axis)
+{
+	float sqrdist = 0.0f;
+
+	height *= 0.5f;
+	bigR *= bigR;
+	smallR *= smallR;
+
+	glm::vec3 r;
+	glm::vec3 o2;
+	glm::vec2 d;
+	glm::vec2 t;
+
+	for (unsigned int n = 0; n < entities.size(); n++)
+	{
+		if (!filter.Filter(entities[n].id, entityManager))
+			continue;
+
+		o2 = entities[n].obb.getCenter() - c;
+		r = glm::vec3(entities[n].obb.getV()) * entities[n].obb.getV().w;
+
+		if (glm::abs(r.y) < 1e-06f)
+		{
+			if (glm::abs(o2.y) <= height)
+			{
+				t = glm::vec2(-1.0f, 1.0f);
+			}
+			else
+			{
+				continue;
+			}
+		}
+		else
+		{
+			
+			if (r.y < 0.0f)
+			{
+				t = glm::vec2((height - o2.y) / r.y, (-height - o2.y) / r.y);
+			}
+			else
+			{
+				t = glm::vec2((-height - o2.y) / r.y, (height - o2.y) / r.y);
+			}
+		}
+
+		t.x = glm::max(t.x, -1.0f);
+		t.y = glm::min(t.y, 1.0f);
+
+		if (t.x > t.y)
+			continue;
+
+		if (r.x < 1e-06f && r.z < 1e-06f)
+		{
+			float rad = o2.x * o2.x + o2.z * o2.z;
+
+			if (rad < smallR || rad > bigR)
+				continue;
+
+			sqrdist = rad;
+		}
+		else
+		{
+			float tmin = -(o2.x*r.x + o2.z*r.z) / (r.x*r.x + r.z*r.z);
+
+			if (t.x < tmin && 0.5f*(t.x + t.y) > tmin)
+			{
+				d.x = sqr(o2.x + r.x * tmin) + sqr(o2.z + r.z * tmin);
+				d.y = sqr(o2.x + r.x * t.x) + sqr(o2.z + r.z * t.x);
+			}
+			else if (t.y > tmin && 0.5f*(t.x + t.y) < tmin)
+			{
+				d.x = sqr(o2.x + r.x * tmin) + sqr(o2.z + r.z * tmin);
+				d.y = sqr(o2.x + r.x * t.y) + sqr(o2.z + r.z * t.y);
+			}
+			else
+			{
+				d.x = sqr(o2.x + r.x * t.x) + sqr(o2.z + r.z * t.x);
+				d.y = sqr(o2.x + r.x * t.y) + sqr(o2.z + r.z * t.y);
+
+				if (d.x > d.y)
+				{
+					float tmp = d.x;
+					d.x = d.y;
+					d.y = tmp;
+				}
+			}
+
+			t.x = glm::max(smallR, d.x);
+			t.y = glm::min(bigR, d.y);
+
+			if (t.x > t.y)
+				continue;
+
+			sqrdist = glm::max(d.x, smallR);
+		}
+
+		collisions.push_back(CollDistData(entities[n].id, sqrdist));
 	}
 
 	std::sort(collisions.begin(), collisions.end());
@@ -169,7 +277,7 @@ void CollisionSystem::CollideNearest(const LineSegment line, EntityID& collision
 
 	for (unsigned int n = 0; n < entities.size(); n++)
 	{
-		if (filter.Filter(entities[n].id) && entities[n].obb.IntersectLineSegment(line, sqrdist) == IT_Intersect)
+		if (filter.Filter(entities[n].id, entityManager) && entities[n].obb.IntersectLineSegment(line, sqrdist) == IT_Intersect)
 		{
 			if (sqrdist < min)
 			{
@@ -182,6 +290,9 @@ void CollisionSystem::CollideNearest(const LineSegment line, EntityID& collision
 
 float CollisionSystem::getTerrainPixel(int x, int z)
 {
+	x = x % hmap.get().getWidth();
+	z = z % hmap.get().getWidth();
+
 	int bpp = hmap.get().getImage()->format->BytesPerPixel;
 	unsigned char *p = (unsigned char *)hmap.get().getImage()->pixels + z * hmap.get().getImage()->pitch + x * bpp;
 

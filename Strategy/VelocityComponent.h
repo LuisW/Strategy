@@ -38,6 +38,16 @@ public:
 		velocity.y = y;
 	}
 
+	inline void setX(float x)
+	{
+		velocity.x = x;
+	}
+
+	inline void setZ(float z)
+	{
+		velocity.z = z;
+	}
+
 	static ComponentType getComponentType()
 	{
 		return CT_Velocity;

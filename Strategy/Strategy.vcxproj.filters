@@ -55,14 +55,23 @@
     <Filter Include="Quelldateien\InGame\DataStorage\Gameplay">
       <UniqueIdentifier>{298261e4-c927-44e5-a603-01098942c315}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Headerdateien\InGame\AI">
-      <UniqueIdentifier>{ab97e2ec-f307-488f-9aa5-8ce507ccf922}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Quelldateien\InGame\AI">
-      <UniqueIdentifier>{9f06b3a3-6fb8-4a94-9830-c5180c4c3b16}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Quelldateien\InGame\DataStorage\Components">
       <UniqueIdentifier>{c11b1a33-d946-4d45-9640-6793cb54600c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\InGame\Utility">
+      <UniqueIdentifier>{0aa5c7aa-7bc0-4ecf-be23-501636784fd4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\InGame\Utility">
+      <UniqueIdentifier>{e4dbe19a-dcce-4d1d-9e38-641950302e5e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\InGame\DataStorage\Components\Projectiles">
+      <UniqueIdentifier>{b5690f83-652d-4dad-969e-4ebeafabcffd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Content\Procedural">
+      <UniqueIdentifier>{aa59f8b0-2bcb-450c-ac26-4cfd90e58d5f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Content\Procedural">
+      <UniqueIdentifier>{eb98cd88-7bbd-4493-a4b9-3eacb9dde6ce}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -126,14 +135,8 @@
     <ClCompile Include="CreatureAISystem.cpp">
       <Filter>Quelldateien\InGame\Systems</Filter>
     </ClCompile>
-    <ClCompile Include="BehaviourManager.cpp">
-      <Filter>Quelldateien\InGame\AI</Filter>
-    </ClCompile>
     <ClCompile Include="CreatureAIComponent.cpp">
       <Filter>Quelldateien\InGame\DataStorage\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="Behaviours.cpp">
-      <Filter>Quelldateien\InGame\AI</Filter>
     </ClCompile>
     <ClCompile Include="CollisionSystem.cpp">
       <Filter>Quelldateien\InGame\Systems</Filter>
@@ -146,6 +149,21 @@
     </ClCompile>
     <ClCompile Include="StatSystem.cpp">
       <Filter>Quelldateien\InGame\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="AIHelp.cpp">
+      <Filter>Quelldateien\InGame\DataStorage\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="CreatureAbilities.cpp">
+      <Filter>Quelldateien\InGame\DataStorage\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="IAbility.cpp">
+      <Filter>Quelldateien\InGame\DataStorage</Filter>
+    </ClCompile>
+    <ClCompile Include="GunAssetGenerator.cpp">
+      <Filter>Quelldateien\Content\Procedural</Filter>
+    </ClCompile>
+    <ClCompile Include="ProcGenHelp.cpp">
+      <Filter>Quelldateien\Content\Procedural</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -272,12 +290,6 @@
     <ClInclude Include="CreatureAIComponent.h">
       <Filter>Headerdateien\InGame\DataStorage\Components</Filter>
     </ClInclude>
-    <ClInclude Include="BehaviourManager.h">
-      <Filter>Headerdateien\InGame\AI</Filter>
-    </ClInclude>
-    <ClInclude Include="Behaviours.h">
-      <Filter>Headerdateien\InGame\AI</Filter>
-    </ClInclude>
     <ClInclude Include="CullingSystem.h">
       <Filter>Headerdateien\InGame\Systems</Filter>
     </ClInclude>
@@ -289,9 +301,6 @@
     </ClInclude>
     <ClInclude Include="Ray.h">
       <Filter>Headerdateien\InGame\DataStorage</Filter>
-    </ClInclude>
-    <ClInclude Include="ProjectileComponent.h">
-      <Filter>Headerdateien\InGame\DataStorage\Components</Filter>
     </ClInclude>
     <ClInclude Include="ProjectileSystem.h">
       <Filter>Headerdateien\InGame\Systems</Filter>
@@ -307,6 +316,39 @@
     </ClInclude>
     <ClInclude Include="VitalsComponent.h">
       <Filter>Headerdateien\InGame\DataStorage\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionFilters.h">
+      <Filter>Headerdateien\InGame\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="AbilityEffects.h">
+      <Filter>Headerdateien\InGame\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="AIHelp.h">
+      <Filter>Headerdateien\InGame\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="CreatureAbilities.h">
+      <Filter>Headerdateien\InGame\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="ProjectileTypes.h">
+      <Filter>Headerdateien\InGame\DataStorage</Filter>
+    </ClInclude>
+    <ClInclude Include="ProjectileComponent.h">
+      <Filter>Headerdateien\InGame\DataStorage\Components\Projectiles</Filter>
+    </ClInclude>
+    <ClInclude Include="BulletComponent.h">
+      <Filter>Headerdateien\InGame\DataStorage\Components\Projectiles</Filter>
+    </ClInclude>
+    <ClInclude Include="GroundWaveComponent.h">
+      <Filter>Headerdateien\InGame\DataStorage\Components\Projectiles</Filter>
+    </ClInclude>
+    <ClInclude Include="IAbility.h">
+      <Filter>Headerdateien\InGame\DataStorage</Filter>
+    </ClInclude>
+    <ClInclude Include="GunAssetGenerator.h">
+      <Filter>Headerdateien\Content\Procedural</Filter>
+    </ClInclude>
+    <ClInclude Include="ProcGenHelp.h">
+      <Filter>Headerdateien\Content\Procedural</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

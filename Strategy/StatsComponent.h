@@ -62,6 +62,8 @@ public:
 		}
 
 		statEffects.push_back(effect);
+
+		return statEffects.size() - 1;
 	}
 
 	void RemoveEffect(StatEffectID effect)
@@ -75,6 +77,7 @@ public:
 		for (unsigned int n = 0; n < statEffects.size(); n++)
 		{
 			delete statEffects[n];
+			statEffects[n] = NULL;
 		}
 	}
 

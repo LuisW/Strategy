@@ -22,7 +22,13 @@ public:
 	AssetManager();
 
 	template<typename T>
+	static bool hasAsset(const AssetKey<T>& key);
+
+	template<typename T>
 	static const Asset<T> getAsset(const AssetKey<T>& key);
+
+	template<typename T>
+	static const Asset<T> addAsset(const AssetKey<T>& key, T* data);
 
 	~AssetManager();
 };

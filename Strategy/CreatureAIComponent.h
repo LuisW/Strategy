@@ -3,58 +3,100 @@
 #include "Component.h"
 #include "ei/glm/glm.hpp"
 #include "CreatureManager.h"
-
-enum CreatureAIMode { CAI_Idle, CAI_Combat, CAI_Search };
+#include "AIHelp.h"
 
 class CreatureAIComponent : public Component
 {
 private:
 	CreatureID creatureType;
-	CreatureAIMode mode;
-	long combatTimer;
 
-	IBehaviour* Idle;
-	IAbility* Abilities[4];
-	IBehaviour* RangedSetup;
-	IBehaviour* MeleeSetup;
+	glm::vec3 targetPos;
+	glm::quat targetRot;
+	glm::vec3 dirToPlayer;
+	float distToPlayer;
+	glm::vec3 frontVec;
+	
+	std::vector<IAbility*> abilities;
+	IAbility* moveAbility;
+	AIPlan plan;
 
 public:
-
 	CreatureAIComponent(EntityID owner, CreatureID _creatureType, CreatureManager& creatures, glm::vec3& location);
 
-	inline void setCombatTimer(long _combatTimer)
+	inline const glm::vec3& getDirToPlayer()
 	{
-		combatTimer = _combatTimer;
+		return dirToPlayer;
 	}
 
-	inline long getCombatTimer()
+	inline float getDistToPlayer()
 	{
-		return combatTimer;
+		return distToPlayer;
+	}
+
+	inline void setAIPlayerVec(glm::vec3 dir, float dist)
+	{
+		distToPlayer = dist;
+		dirToPlayer = dir;
+	}
+
+	inline const glm::vec3& getFront()
+	{
+		return frontVec;
+	}
+	
+	inline void setFront(const glm::vec3& front)
+	{
+		frontVec = front;
+	}
+
+	inline const glm::vec3& getTargetPos()
+	{
+		return targetPos;
+	}
+
+	inline void setTargetPos(const glm::vec3 pos)
+	{
+		targetPos = pos;
+	}
+
+	inline const glm::quat& getTargetRot()
+	{
+		return targetRot;
+	}
+
+	inline void setTargetRot(const glm::quat& rot)
+	{
+		targetRot = rot;
+	}
+
+	inline unsigned int getAbilityCount()
+	{
+		return abilities.size();
+	}
+
+	inline IAbility& getAbility(unsigned int n)
+	{
+		return *(abilities[n]);
+	}
+
+	inline IAbility& getMoveAbility()
+	{
+		return *(moveAbility);
+	}
+
+	inline AIPlan& getAIPlan()
+	{
+		return plan;
+	}
+
+	inline void setAIPlan(const AIPlan& _plan)
+	{
+		plan = AIPlan(_plan);
 	}
 
 	inline CreatureID getCreatureType()
 	{
 		return creatureType;
-	}
-
-	inline CreatureAIMode getMode()
-	{
-		return mode;
-	}
-
-	inline void setMode(CreatureAIMode _mode)
-	{
-		mode = _mode;
-	}
-
-	inline IBehaviour& getIdle()
-	{
-		return *Idle;
-	}
-
-	inline IBehaviour& getRangedSetup()
-	{
-		return *RangedSetup;
 	}
 
 	static ComponentType getComponentType()

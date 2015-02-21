@@ -133,12 +133,15 @@ public:
 
 	IntersectionType IntersectLineSegment(const LineSegment& segment, float& sqrdist) const	//Returns "IT_Intersect" if the LineSegment intersects the OBB, "IT_Outside" otherwise
 	{
+		if (segment.p1 == segment.p2)
+			return IT_Outside;
+
 		glm::mat3x4 axis = glm::mat3x4(getU(), getV(), getW());
 
 		float tmin = -INFINITY;
 		float tmax = INFINITY;
 
-		Ray ray = Ray(segment.p2 - segment.p1, segment.p1);
+		Ray ray = Ray(segment.p1, segment.p2 - segment.p1);
 
 		for (int n = 0; n < 3; n++)
 		{

@@ -4,6 +4,13 @@
 #include "ei\glm\gtc\matrix_transform.hpp"
 #include "ei\glm\gtx\quaternion.hpp"
 
+#ifndef M_PI
+	#define M_PI 3.14159265358979323846
+	#define M_PI_f 3.14159265358979323846f
+#endif
+
+#define M_Err 1e-06f
+
 class Transform
 {
 private:
