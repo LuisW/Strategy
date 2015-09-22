@@ -3,30 +3,30 @@
 class ReferenceCounter
 {
 private:
-	unsigned int refCnt;
+	unsigned int m_refCnt;
 
 public:
-	ReferenceCounter(unsigned int init) : refCnt(init)
+	ReferenceCounter(unsigned int init) : m_refCnt(init)
 	{}
 
-	ReferenceCounter() : refCnt(0)
+	ReferenceCounter() : m_refCnt(0)
 	{}
 
 	inline bool IsReferenced()
 	{
-		return refCnt > 0;
+		return m_refCnt > 0;
 	}
 
 	inline void AddReference()
 	{
-		refCnt++;
+		m_refCnt++;
 	}
 
 	inline bool DeleteReference()
 	{
-		if (refCnt > 0)
+		if (m_refCnt > 0)
 		{
-			refCnt--;
+			m_refCnt--;
 		}
 
 		return IsReferenced();

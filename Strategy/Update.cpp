@@ -10,16 +10,16 @@ bool Update::UpdateTick(double deltaT)
 		switch (event.type)
 		{
 		case SDL_KEYDOWN:
-			data.KeyboardState[event.key.keysym.sym] = true;
+			m_rData.m_keyboardState[event.key.keysym.sym] = true;
 			break;
 		case SDL_KEYUP:
-			data.KeyboardState[event.key.keysym.sym] = false;
+			m_rData.m_keyboardState[event.key.keysym.sym] = false;
 			break;
 		case SDL_MOUSEBUTTONDOWN:
-			data.MouseBtnState[event.button.button] = true;
+			m_rData.m_mouseBtnState[event.button.button] = true;
 			break;
 		case SDL_MOUSEBUTTONUP:
-			data.MouseBtnState[event.button.button] = false;
+			m_rData.m_mouseBtnState[event.button.button] = false;
 			break;
 		case SDL_QUIT:
 			return false;
@@ -27,37 +27,31 @@ bool Update::UpdateTick(double deltaT)
 		}
 	}
 
-	if (data.getKeyboardState(SDLK_ESCAPE))
+	if (m_rData.getKeyboardState(SDLK_ESCAPE))
 		return false;
 
-	if (data.getKeyboardState(SDLK_l))
+	if (m_rData.getKeyboardState(SDLK_l))
 	{
 		glPolygonMode(GL_FRONT, GL_LINE);
 	}
 
-	if (data.getKeyboardState(SDLK_f))
+	if (m_rData.getKeyboardState(SDLK_f))
 	{
 		glPolygonMode(GL_FRONT, GL_FILL);
 	}
 
-	if (data.getKeyboardState(SDLK_b))
+	if (m_rData.getKeyboardState(SDLK_b))
 	{
 		__debugbreak();
 	}
 
-	data.collisionSystem.PrepareFrame();
+	m_rData.m_collisionSystem.PrepareFrame();
 
-	if (data.activeCamera != NULL)
+	if (m_rData.m_pActiveCamera != NULL)
 	{
-		data.playerControl.Tick(data.getPlayer(), deltaT);
+		m_rData.m_playerControl.Tick(m_rData.getPlayer(), deltaT);
+		//data.cullingSystem.Tick(*data.getActiveCam());
 	}
-
-	data.statSystem.Tick(deltaT);
-
-	//data.cullingSystem.Tick(*(data.activeCamera));
-	
-	data.creatureAI.Tick(*(data.activeCamera), deltaT, data);
-	data.projectileSystem.Tick(deltaT);
 
 	return true;
 }

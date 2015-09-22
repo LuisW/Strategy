@@ -1,11 +1,14 @@
 #version 150
 
-in vec3 in_Position;
+#define hmapres 128u
 
-out uvec2 Coord;
+in vec3 in_Position;
+out vec2 Coord;
+
+uniform uvec2 off;
 
 void main(void)
 {
-	Coord = uvec2(((in_Position.xy + 1.0) / 2.0) * 2048.0);
+	Coord = (in_Position.xy + 1.0) * 2048.0 + in_Position.xy * 0.5 + vec2(off);
 	gl_Position = vec4(in_Position, 1.0);
 }

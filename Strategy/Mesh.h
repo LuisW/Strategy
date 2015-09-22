@@ -3,79 +3,94 @@
 #include "ei/GL/glew.h"
 #include "AssetSubManagerBase.h"
 #include "BoundingBox.h"
+#include "VertexFormat.h"
 
 class Mesh
 {
 private:
-	GLuint verts;
-	GLuint inds;
-	unsigned int* indBuff;
-	char* vertBuff;
-	unsigned int vertlen;
-	unsigned int indlen;
+	GLuint				m_verts;
+	GLuint				m_inds;
+	unsigned int*		m_pIndBuff;
+	char*				m_pVertBuff;
+	unsigned int		m_vertlen;
+	unsigned int		m_indlen;
+	VertexAttribFormat	m_format;
 
-	OBB boundingVolume;
+	OBB m_BoundingVolume;
+
 
 	Mesh(const Mesh&)
 	{}
 
 public:
-	inline Mesh(GLuint _verts, GLuint _inds, unsigned int _vertlen, unsigned int _indlen, unsigned int* _indBuff, char* _vertBuff) : verts(_verts),		//vertlen is float count, indlen is index count
-		inds(_inds), vertlen(_vertlen), indlen(_indlen), indBuff(_indBuff), vertBuff(_vertBuff), boundingVolume()
+	inline Mesh(GLuint verts, GLuint inds, unsigned int vertlen, unsigned int indlen, unsigned int* indBuff, char* vertBuff, VertexAttribFormat& format) //vertlen is float count, indlen is index count
+		: m_verts(verts), m_inds(inds), m_vertlen(vertlen), m_indlen(indlen), m_pIndBuff(indBuff), m_pVertBuff(vertBuff),
+		m_BoundingVolume(), m_format(format)
 	{
 	}
 
-	inline Mesh(GLuint _verts, GLuint _inds, unsigned int _vertlen, unsigned int _indlen, unsigned int* _indBuff, char* _vertBuff, const OBB& _boundingVolume) :  //vertlen is float count, indlen is index count
-		verts(_verts), inds(_inds), vertlen(_vertlen), indlen(_indlen), indBuff(_indBuff), vertBuff(_vertBuff),
-		boundingVolume(_boundingVolume)
+	inline Mesh(GLuint verts, GLuint inds, unsigned int vertlen, unsigned int indlen, unsigned int* indBuff, char* vertBuff, const OBB& boundingVolume, VertexAttribFormat& format) :  //vertlen is float count, indlen is index count
+		m_verts(verts), m_inds(inds), m_vertlen(vertlen), m_indlen(indlen), m_pIndBuff(indBuff), m_pVertBuff(vertBuff),
+		m_BoundingVolume(boundingVolume), m_format(format)
 	{
 	}
 
-	inline Mesh() : verts(0), inds(0), indBuff(0), vertBuff(0), vertlen(0), indlen(0)
+	inline Mesh() : m_verts(0), m_inds(0), m_pIndBuff(0), m_pVertBuff(0), m_vertlen(0), m_indlen(0)
 	{}
 
 	inline GLuint getVertices() const
 	{
-		return verts;
+		return m_verts;
 	}
 
 	inline GLuint getIndices() const
 	{
-		return inds;
+		return m_inds;
 	}
 
 	inline GLuint getVertlen() const
 	{
-		return vertlen;
+		return m_vertlen;
 	}
 
 	inline GLuint getIndlen() const
 	{
-		return indlen;
+		return m_indlen;
 	}
 
 	inline const char* getVertBuff() const
 	{
-		return vertBuff;
+		return m_pVertBuff;
 	}
 
 	inline const unsigned int* getIndBuff() const
 	{
-		return indBuff;
+		return m_pIndBuff;
 	}
 
 	inline const OBB& getBoundingVolume() const
 	{
-		return boundingVolume;
+		return m_BoundingVolume;
+	}
+
+	inline const VertexAttribFormat& getFormat() const
+	{
+		return m_format;
+	}
+
+	inline void Bind() const
+	{
+		glBindBuffer(GL_ARRAY_BUFFER, m_verts);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_inds);
 	}
 
 	inline void clear()
 	{
-		delete[] indBuff;
-		delete[] vertBuff;
+		delete[] m_pIndBuff;
+		delete[] m_pVertBuff;
 
-		glDeleteBuffers(1, &inds);
-		glDeleteBuffers(1, &verts);
+		glDeleteBuffers(1, &m_inds);
+		glDeleteBuffers(1, &m_verts);
 	}
 };
 
@@ -87,19 +102,19 @@ template<>
 class AssetKey<Mesh>
 {
 public:
-	std::string name;
+	std::string m_sName;
 
 	std::string toString() const
 	{
-		return "<Mesh>:" + name;
+		return "<Mesh>:" + m_sName;
 	}
 
 	inline bool operator==(const MeshKey& other) const
 	{
-		return name == other.name;
+		return m_sName == other.m_sName;
 	}
 
-	AssetKey(const std::string& _name) : name(_name)
+	AssetKey(const std::string& _name) : m_sName(_name)
 	{
 
 	}
@@ -112,7 +127,7 @@ namespace std
 	{
 		std::size_t operator()(const MeshKey& k) const
 		{
-			return hash<std::string>()(k.name);
+			return hash<std::string>()(k.m_sName);
 		}
 	};
 

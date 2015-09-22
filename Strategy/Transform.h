@@ -14,13 +14,12 @@
 class Transform
 {
 private:
-	glm::vec3 Position;
-	glm::vec3 Scale;
-	glm::quat Rotation;
+	glm::vec3 m_position;
+	glm::vec3 m_scale;
+	glm::quat m_rotation;
 
-	mutable glm::mat4 Matrix;
-
-	mutable bool update;
+	mutable glm::mat4	m_matrix;
+	mutable bool		m_update;
 
 	void makeMat() const;
 	void makePRS();
@@ -30,51 +29,51 @@ public:
 
 	inline const glm::vec3& getPos() const
 	{
-		return Position;
+		return m_position;
 	}
 
 	inline const glm::quat& getRot() const
 	{
-		return Rotation;
+		return m_rotation;
 	}
 
 	inline const glm::vec3& getScl() const
 	{
-		return Scale;
+		return m_scale;
 	}
 
 	inline void setPos(const glm::vec3& Pos)
 	{
-		Position = Pos;
-		update = true;
+		m_position = Pos;
+		m_update = true;
 	}
 
 	inline void setRot(const glm::quat& Rot)
 	{
-		Rotation = Rot;
-		update = true;
+		m_rotation = Rot;
+		m_update = true;
 	}
 
 	inline void setScl(const glm::vec3& Scl)
 	{
-		Scale = Scl;
-		update = true;
+		m_scale = Scl;
+		m_update = true;
 	}
 
 	inline const glm::mat4& getMat() const
 	{
-		if (update)
+		if (m_update)
 		{
 			makeMat();
-			update = false;
+			m_update = false;
 		}
 
-		return Matrix;
+		return m_matrix;
 	}
 
 	inline void setMat(const glm::mat4& Mat)
 	{
-		Matrix = Mat;
+		m_matrix = Mat;
 		makePRS();
 	}
 };

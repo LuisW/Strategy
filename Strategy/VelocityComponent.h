@@ -6,50 +6,50 @@
 class VelocityComponent : public Component
 {
 private:
-	glm::vec3 velocity;
+	glm::vec3 m_velocity;
 
 public:
 
-	VelocityComponent(EntityID owner) : Component(CT_Velocity, owner, "")
+	VelocityComponent(EntityID owner) : Component(CT_VELOCITY, owner, "")
 	{
 	}
 
-	VelocityComponent(EntityID owner, glm::vec3 _velocity) : Component(CT_Velocity, owner, ""), velocity(_velocity)
+	VelocityComponent(EntityID owner, glm::vec3 velocity) : Component(CT_VELOCITY, owner, ""), m_velocity(velocity)
 	{
 	}
 
 	inline const glm::vec3& getVelocity()
 	{
-		return velocity;
+		return m_velocity;
 	}
 
 	inline void setVelocity(const glm::vec3& _velocity)
 	{
-		velocity = _velocity;
+		m_velocity = _velocity;
 	}
 
 	inline void operator+=(const glm::vec3& delta)
 	{
-		velocity += delta;
+		m_velocity += delta;
 	}
 
 	inline void setY(float y)
 	{
-		velocity.y = y;
+		m_velocity.y = y;
 	}
 
 	inline void setX(float x)
 	{
-		velocity.x = x;
+		m_velocity.x = x;
 	}
 
 	inline void setZ(float z)
 	{
-		velocity.z = z;
+		m_velocity.z = z;
 	}
 
 	static ComponentType getComponentType()
 	{
-		return CT_Velocity;
+		return CT_VELOCITY;
 	}
 };

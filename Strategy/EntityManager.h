@@ -8,76 +8,29 @@
 #include "RenderComponent.h"
 #include "TransformComponent.h"
 #include "VelocityComponent.h"
-#include "CreatureAIComponent.h"
 #include "CollisionComponent.h"
-#include "StatsComponent.h"
-#include "VitalsComponent.h"
-
-#include "CreatureManager.h"
+#include "DebugHelp.h"
 
 class IProjectileEffect;
 
-class InvalidEntityException : public std::runtime_error
-{
-private:
-	EntityID entity;
-
-public:
-	InvalidEntityException(EntityID _entity) : std::runtime_error("invalid entity"), entity(_entity)
-	{}
-
-	virtual const char* what() const throw()
-	{
-		std::string str(std::runtime_error::what());
-
-		if (entity)
-		{
-			str += ": Attempt to access NULL entity";
-		}
-		else
-		{
-			str += ": Attempt to access invalid entity " + std::to_string(entity);
-		}
-
-		return str.c_str();
-	}
-};
-
-class InvalidComponentException : public std::runtime_error
-{
-private:
-	EntityID entity;
-	ComponentType type;
-
-public:
-	InvalidComponentException(ComponentType _type, EntityID _entity) : std::runtime_error("invalid entity"), entity(_entity), type(_type)
-	{}
-
-	virtual const char* what() const throw()
-	{
-		std::string str(std::runtime_error::what());
-
-		str += ": Attempt to access NULL component of type " + std::to_string(type) + " on entity " + std::to_string(entity);
-
-		return str.c_str();
-	}
-};
+#define InvalidEntError(entity) ERROR_INFO(InvalidEntityMsg(entity).c_str()); throw;
+#define InvalidCompError(type, entity) ERROR_INFO(InvalidComponentMsg(type, entity).c_str()); throw;
 
 class EntityManager
 {
 private:
 	struct EntityListElem
 	{
-		Entity* entity;
-		bool used;
+		Entity* m_pEntity;
+		bool	m_used;
 
-		EntityListElem(Entity* _entity, bool _used) : entity(_entity), used(_used)
+		EntityListElem(Entity* entity, bool used) : m_pEntity(entity), m_used(used)
 		{
 		}
 	};
 
-	std::vector<EntityListElem> entities;
-	std::vector<System*> systems;
+	std::vector<EntityListElem> m_entities;
+	std::vector<System*>		m_systems;
 
 	EntityManager(const EntityManager& other)
 	{}
@@ -88,10 +41,13 @@ private:
 	void NotifyEntityChanged(EntityID entity, ComponentType type, bool added);
 	void NotifyEntityRemoved(EntityID entity);
 
+	std::string InvalidEntityMsg(EntityID entity);
+	std::string InvalidComponentMsg(ComponentType type, EntityID entity);
+
 public:
 	EntityManager()
 	{
-		entities.push_back(EntityListElem(NULL, false));
+		m_entities.push_back(EntityListElem(NULL, false));
 	}
 
 	EntityID newEntity();
@@ -99,47 +55,47 @@ public:
 	inline void deleteEntity(EntityID entity)
 	{
 		NotifyEntityRemoved(entity);
-		entities[entity].entity->RemoveAllComponents();
-		entities[entity].used = false;
+		m_entities[entity].m_pEntity->RemoveAllComponents();
+		m_entities[entity].m_used = false;
 	}
 	
 	template<typename T>
 	const T& entityGetComponent(EntityID entity) const
 	{
-		if (entities[entity].used)
+		if (m_entities[entity].m_used)
 		{
-			T* comp = (T*)(entities[entity].entity->getComponent(T::getComponentType()));
+			T* comp = (T*)(m_entities[entity].m_pEntity->getComponent(T::getComponentType()));
 
 			if (!comp)
 			{
-				throw InvalidComponentException(T::getComponentType(), entity);
+				InvalidCompError(T::getComponentType(), entity)
 			}
 
 			return *comp;
 		}
 		else
 		{
-			throw InvalidEntityException(entity);
+			InvalidEntError(entity);
 		}
 	}
 
 	template<typename T>
 	T& entityGetComponent(EntityID entity)
 	{
-		if (entities[entity].used)
+		if (m_entities[entity].m_used)
 		{
-			T* comp = (T*)(entities[entity].entity->getComponent(T::getComponentType()));
+			T* comp = (T*)(m_entities[entity].m_pEntity->getComponent(T::getComponentType()));
 
 			if (!comp)
 			{
-				throw InvalidComponentException(T::getComponentType(), entity);
+				InvalidCompError(T::getComponentType(), entity)
 			}
 
 			return *comp;
 		}
 		else
 		{
-			throw InvalidEntityException(entity);
+			InvalidEntError(entity)
 		}
 	}
 
@@ -159,7 +115,8 @@ public:
 	EntityID newPlayer();
 	EntityID newTestObject();
 	EntityID newStaticMesh(MeshAsset_const mesh, const Transform& trans);
-	EntityID newCreature(CreatureManager& creatures, unsigned int seed, glm::vec3& location);
 	EntityID newBullet(EntityID source, glm::vec3 pos, glm::vec3 dir, IProjectileEffect* effect);
-	EntityID newGroundWave(EntityID source, glm::vec3 pos, float expVel, float maxRad, IProjectileEffect* effect);
 };
+
+#undef InvalidEntError
+#undef InvalidCompError

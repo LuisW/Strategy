@@ -8,10 +8,8 @@
 #include "DataStructs.h"
 #include "CullingSystem.h"
 #include "PlayerControlSystem.h"
-#include "CreatureAISystem.h"
 #include "CollisionSystem.h"
-#include "StatSystem.h"
-#include "ProjectileSystem.h"
+#include "TerrainGenerator.h"
 
 class Update;
 
@@ -20,106 +18,87 @@ class GameData	//Stores all Data related to the running game. GameData and all r
 private:
 	friend Update;
 
-	bool KeyboardState[256];
-	bool MouseBtnState[256];
+	bool m_keyboardState[256];
+	bool m_mouseBtnState[256];
 
-	EntityManager entities;
-	Camera* activeCamera;
-	EntityID player1;
-	ShaderAsset_const shader;
-	RenderSystem renderSystem;
-	Terrain terrain;
-	CullingSystem cullingSystem;
-	CollisionSystem collisionSystem;
-	PlayerControlSystem playerControl;
-	CreatureManager creatures;
-	CreatureAISystem creatureAI;
-	StatSystem statSystem;
-	ProjectileSystem projectileSystem;
+	EntityManager			m_entities;
+	Camera*					m_pActiveCamera;
+	EntityID				m_player1;
+	RenderSystem			m_renderSystem;
+	Terrain					m_terrain;
+	CullingSystem			m_cullingSystem;
+	CollisionSystem			m_collisionSystem;
+	PlayerControlSystem		m_playerControl;
+	TerrainGenerator		m_terrainGen;
 
-	RenderSettings renderSettings;
+	RenderSettings m_renderSettings;
 
 	GameData(const GameData& other);
 	const GameData& operator=(const GameData& other);
 
 public:
-	GameData() : activeCamera(NULL), shader(AssetManager::getAsset<Shader>(ShaderKey("test.frag", "test.vert"))), renderSystem(entities), terrain()
-		, cullingSystem(entities, TerrainSettings::LoDs, terrain), playerControl(*this), creatureAI(entities, creatures, collisionSystem), collisionSystem(entities)
-		, statSystem(entities), projectileSystem(entities, collisionSystem), creatures(this)
+	GameData() : m_pActiveCamera(NULL), m_renderSystem(m_entities), m_terrain(), m_cullingSystem(m_entities, TerrainSettings::LoDs, m_terrain), 
+		m_playerControl(*this), m_collisionSystem(m_entities), m_terrainGen()
 	{
 		for (int n = 0; n < 256; n++)
 		{
-			KeyboardState[n] = false;
-			MouseBtnState[n] = false;
+			m_keyboardState[n] = false;
+			m_mouseBtnState[n] = false;
 		}
 
-		entities.RegisterSystem(&renderSystem);
-		entities.RegisterSystem(&collisionSystem);
-		entities.RegisterSystem(&statSystem);
-		entities.RegisterSystem(&projectileSystem);
+		m_entities.RegisterSystem(&m_renderSystem);
+		m_entities.RegisterSystem(&m_collisionSystem);
 
-		entities.newTestObject();
-		player1 = entities.newPlayer();
-		activeCamera = (Camera*)(&entities.entityGetComponent<CameraComponent>(player1));
+		m_entities.newTestObject();
+		m_player1 = m_entities.newPlayer();
+		m_pActiveCamera = (Camera*)(&m_entities.entityGetComponent<CameraComponent>(m_player1));
+
+		m_terrainGen.GenerateFullTerrain();
+		m_terrain.getHMapManager().Init(m_pActiveCamera->getPos());
 	}
 
 	inline bool getKeyboardState(SDLKey key) const
 	{
-		return KeyboardState[key];
+		return m_keyboardState[key];
 	}
 
 	inline bool getMouseBtnState(Uint8 btn) const
 	{
-		return MouseBtnState[btn];
+		return m_mouseBtnState[btn];
 	}
 
 	inline const EntityManager& getEntityManager() const
 	{
-		return entities;
+		return m_entities;
 	}
 
 	inline EntityManager& getEntityManager()
 	{
-		return entities;
+		return m_entities;
 	}
 
 	inline CollisionSystem& getCollisionSystem()
 	{
-		return collisionSystem;
-	}
-
-	inline ProjectileSystem& getProjectileSystem()
-	{
-		return projectileSystem;
-	}
-
-	inline CreatureManager& getCreatureManager()
-	{
-		return creatures;
+		return m_collisionSystem;
 	}
 
 	inline const Camera* getActiveCam() const
 	{
-		return activeCamera;
+		return m_pActiveCamera;
 	}	  
-
-	inline ShaderAsset_const getShader() const
-	{
-		return shader;
-	}
 
 	inline const RenderSystem& getRenderSystem() const
 	{
-		return renderSystem;
+		return m_renderSystem;
 	}
 
 	inline const Terrain& getTerrain() const
 	{
-		return terrain;
+		return m_terrain;
 	}
 
 	inline EntityID getPlayer()
 	{
-		return player1;
+		return m_player1;
 	}
 };

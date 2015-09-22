@@ -3,8 +3,8 @@
 class Timer
 {
 private:
-	double freq;
-	__int64 prevTime;
+	double m_freq;
+	__int64 m_prevTime;
 
 	__int64 getCurrent();
 public:

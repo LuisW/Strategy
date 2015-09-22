@@ -5,18 +5,19 @@
 #include <vector>
 #include <tuple>
 #include "Ray.h"
+#include "AssetManager.h"
 
 struct CollDistData
 {
-	EntityID id;
-	float sqrdist;
+	EntityID	m_id;
+	float		m_sqrdist;
 
 	bool operator<(const CollDistData& other)
 	{
-		return sqrdist < other.sqrdist;
+		return m_sqrdist < other.m_sqrdist;
 	}
 
-	CollDistData(EntityID _id, float _sqrdist) : id(_id), sqrdist(_sqrdist)
+	CollDistData(EntityID id, float sqrdist) : m_id(id), m_sqrdist(sqrdist)
 	{}
 };
 
@@ -25,23 +26,22 @@ class CollisionSystem : public System
 private:
 	struct CollideableListEntry
 	{
-		bool isStatic;
-		EntityID id;
-		OBB obb;
+		bool		m_isStatic;
+		EntityID	m_id;
+		OBB			m_obb;
 
-		CollideableListEntry(bool _isStatic, EntityID _id, const OBB& _obb) : isStatic(_isStatic), id(_id), obb(_obb)
+		CollideableListEntry(bool isStatic, EntityID id, const OBB& obb) : m_isStatic(isStatic), m_id(id), m_obb(obb)
 		{
 
 		}
 	};
 
-	std::vector<CollideableListEntry> entities;
-	EntityManager& entityManager;
-	TextureAsset_const hmap;
+	std::vector<CollideableListEntry> m_entities;
+	EntityManager& m_rEntityManager;
 	float getTerrainPixel(int x, int z);
 
 public:
-	CollisionSystem(EntityManager& _entityManager);
+	CollisionSystem(EntityManager& entityManager);
 
 	void onEntityChanged(EntityID entity, ComponentType type, bool added);
 	void onEntityRemoved(EntityID entity);

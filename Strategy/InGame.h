@@ -9,26 +9,26 @@
 class InGame : public GameState
 {
 private:
-	GameData data;
-	Render render;
-	Update update;
+	GameData	m_data;
+	Render		m_render;
+	Update		m_update;
 
-	Timer timer;
+	Timer m_timer;
 
 public:
-	InGame() : data(), render(data), update(data)
+	InGame() : m_data(), m_render(m_data), m_update(m_data)
 	{
 	}
 
 	inline bool LoopTick()
 	{
-		double deltaT = timer.Stop();
-		timer.Start();
-		bool res = update.UpdateTick(deltaT);
+		double deltaT = m_timer.Stop();
+		m_timer.Start();
+		bool res = m_update.UpdateTick(deltaT);
 
 		if (res)
 		{
-			render.RenderFrame();
+			m_render.RenderFrame();
 		}
 
 		return res;

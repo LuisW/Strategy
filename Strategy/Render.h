@@ -5,8 +5,8 @@
 class Render	//Performs all rendering using the GameData. Has read-only access on GameData.
 {
 private:
-	const GameData& data;
+	const GameData& m_rData;
 public:
-	Render(const GameData& gameData) : data(gameData){}
+	Render(const GameData& gameData) : m_rData(gameData){}
 	void RenderFrame();
 };

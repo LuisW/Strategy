@@ -9,11 +9,11 @@
 class Window
 {
 private:
-	SDL_Surface* surface;
-	unsigned int width;
-	unsigned int height;
-	bool fullscreen;
-	std::string title;
+	SDL_Surface* m_pSurface;
+	unsigned int m_width;
+	unsigned int m_height;
+	bool m_fullscreen;
+	std::string m_title;
 
 	void initGL();
 	void initSDL();

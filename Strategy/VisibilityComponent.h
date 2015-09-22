@@ -10,7 +10,7 @@ private:
 	AABoundingBox boundingBox;
 
 public:
-	VisibilityComponent(EntityID owner, const glm::vec3& min, const glm::vec3& max) : Component(CT_Visibility, owner, ""), boundingBox(min, max), visible(true)
+	VisibilityComponent(EntityID owner, const glm::vec3& min, const glm::vec3& max) : Component(CT_VISIBILITY, owner, ""), boundingBox(min, max), visible(true)
 	{
 	}
 
@@ -36,7 +36,7 @@ public:
 
 	static ComponentType getComponentType()
 	{
-		return CT_Visibility;
+		return CT_VISIBILITY;
 	}
 
 };

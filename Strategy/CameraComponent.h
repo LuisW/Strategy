@@ -7,16 +7,16 @@ class CameraComponent : public Component, public Camera
 {
 private:
 public:
-	CameraComponent(EntityID owner, const std::string& name, float _fov, float _aspect, float _near, float _far) 
-		: Component(CT_Camera, owner, name), Camera(_fov, _aspect, _near, _far)
+	CameraComponent(EntityID owner, const std::string& name, float fov, float aspect, float near, float far) 
+		: Component(CT_CAMERA, owner, name), Camera(fov, aspect, near, far)
 	{}
 
-	CameraComponent(EntityID owner, const std::string& name, float _fov, float _aspect, float _near, float _far, glm::vec3 pos, glm::quat rot)
-		: Component(CT_Camera, owner, name), Camera(_fov, _aspect, _near, _far, pos, rot)
+	CameraComponent(EntityID owner, const std::string& name, float fov, float aspect, float near, float far, glm::vec3 pos, glm::quat rot)
+		: Component(CT_CAMERA, owner, name), Camera(fov, aspect, near, far, pos, rot)
 	{}
 
 	static ComponentType getComponentType()
 	{
-		return CT_Camera;
+		return CT_CAMERA;
 	}
 };

@@ -27,47 +27,47 @@ template<typename T>
 class Asset
 {
 private:
-	ReferenceCounter& refCnt;
-	T* data;
-	const AssetKey<T>& key;
+	ReferenceCounter&	m_refCnt;
+	const AssetKey<T>&	m_key;
+	T*					m_pData;
 
 public:
-	Asset(ReferenceCounter& _refCnt, T* _data, const AssetKey<T>& _key) : refCnt(_refCnt), data(_data), key(_key)
+	Asset(ReferenceCounter& refCnt, T* data, const AssetKey<T>& key) : m_refCnt(refCnt), m_pData(data), m_key(key)
 	{
-		refCnt.AddReference();
+		m_refCnt.AddReference();
 	}
 
-	Asset(const Asset& other) : refCnt(other.refCnt), data(other.data), key(other.key)
+	Asset(const Asset& other) : m_refCnt(other.m_refCnt), m_pData(other.m_pData), m_key(other.m_key)
 	{
-		refCnt.AddReference();
+		m_refCnt.AddReference();
 	}
 
 	const Asset& operator=(const Asset& rhs)
 	{
-		refCnt.DeleteReference();
-		refCnt = rhs.refCnt;
-		data = rhs.data;
-		key = rhs.key;
-		refCnt.AddReference();
+		m_refCnt.DeleteReference();
+		m_refCnt = rhs.m_refCnt;
+		m_pData = rhs.m_pData;
+		m_key = rhs.m_key;
+		m_refCnt.AddReference();
 	}
 
 	const T& get() const
 	{
-		return *data;
+		return *m_pData;
 	}
 
 	T& get()
 	{
-		return *data;
+		return *m_pData;
 	}
 
 	const AssetKey<T>& getKey() const
 	{
-		return key;
+		return m_key;
 	}
 
 	~Asset()
 	{
-		refCnt.DeleteReference();
+		m_refCnt.DeleteReference();
 	}
 };

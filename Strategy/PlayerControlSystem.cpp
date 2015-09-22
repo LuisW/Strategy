@@ -13,17 +13,16 @@ void PlayerControlSystem::Tick(EntityID player, double deltaT)
 	mx -= 512;
 	my -= 384;
 
-	Camera& activeCam = data.getEntityManager().entityGetComponent<CameraComponent>(player);
-	Transform& trans = data.getEntityManager().entityGetComponent<TransformComponent>(player);
-	StatsComponent& stats = data.getEntityManager().entityGetComponent<StatsComponent>(player);
-	VelocityComponent& vel = data.getEntityManager().entityGetComponent<VelocityComponent>(player);
+	Camera& activeCam = m_rData.getEntityManager().entityGetComponent<CameraComponent>(player);
+	Transform& trans = m_rData.getEntityManager().entityGetComponent<TransformComponent>(player);
+	VelocityComponent& vel = m_rData.getEntityManager().entityGetComponent<VelocityComponent>(player);
 		
 	activeCam.setPos(trans.getPos());
 	activeCam.AddYawPitch(0.1f * mx, 0.1f * my);
 
-	float speed = stats.derived.movementspeed;
+	float speed = 3.0f;
 
-	if (data.getKeyboardState(SDLK_LSHIFT))
+	if (m_rData.getKeyboardState(SDLK_LSHIFT))
 	{
 		speed *= 3.0f;
 	}
@@ -41,48 +40,31 @@ void PlayerControlSystem::Tick(EntityID player, double deltaT)
 	vel.setX(0.0f);
 	vel.setZ(0.0f);
 
-	if (data.getKeyboardState(SDLK_w))
+	if (m_rData.getKeyboardState(SDLK_w))
 	{
 		vel += walkfront * speed;
 	}
 
-	if (data.getKeyboardState(SDLK_a))
+	if (m_rData.getKeyboardState(SDLK_a))
 	{
 		vel += walkright * -speed;
 	}
 
-	if (data.getKeyboardState(SDLK_s))
+	if (m_rData.getKeyboardState(SDLK_s))
 	{
 		vel += walkfront * -speed;
 	}
 
-	if (data.getKeyboardState(SDLK_d))
+	if (m_rData.getKeyboardState(SDLK_d))
 	{
 		vel += walkright * speed;
 	}
 
-	if (data.getMouseBtnState(SDL_BUTTON_LEFT) && fullAuto + 100 < SDL_GetTicks())
-	{
-		std::vector<EntityID> ents;
-		data.getCollisionSystem().Collide(Ray(activeCam.getPos(), activeCam.getFront()), true, ents, ComponentCollisionFilter<CT_Vitals>());
+	float h = m_rData.getCollisionSystem().TerrainHeight(glm::vec2(activeCam.getPos().x, activeCam.getPos().z));
 
-		activeCam.AddYawPitch(randFltWeighted1(SDL_GetTicks(), 0.0f, 2.0f), -1.0f);
+	h = -1.8f;
 
-		for (unsigned int n = 0; n < ents.size(); n++)
-		{
-			VitalsComponent& vitals = data.getEntityManager().entityGetComponent<VitalsComponent>(ents[n]);
-			vitals.healthPercent -= 500.0f / vitals.maxHealth;
-
-			if (vitals.healthPercent <= 0.0f)
-				data.getEntityManager().deleteEntity(ents[n]);
-		}
-
-		fullAuto = SDL_GetTicks();
-	}
-
-	float h = data.getCollisionSystem().TerrainHeight(glm::vec2(activeCam.getPos().x, activeCam.getPos().z));
-
-	if (data.getKeyboardState(SDLK_SPACE))
+	if (m_rData.getKeyboardState(SDLK_SPACE))
 	{
 		if (activeCam.getPos().y < (h + 1.8001f))
 		{
@@ -92,7 +74,7 @@ void PlayerControlSystem::Tick(EntityID player, double deltaT)
 
 	glm::vec3 newPos = activeCam.getPos() + vel.getVelocity() * (float)deltaT;
 
-	if (newPos.y < h + 1.8f)
+	if (newPos.y < h + 1.8f - 1e-06f)
 	{
 		newPos.y = h + 1.8f;
 		vel.setY(0.0f);
@@ -102,32 +84,19 @@ void PlayerControlSystem::Tick(EntityID player, double deltaT)
 
 	vel += glm::vec3(0.0f, -9.81f  * deltaT, 0.0f);
 
-	if (data.getKeyboardState(SDLK_r))
+	if (m_rData.getKeyboardState(SDLK_t))
 	{
-		if (rUp)
-		{
-			data.getEntityManager().newCreature(data.getCreatureManager(), SDL_GetTicks() % 1000, newPos);
-			rUp = false;
-		}
-	}
-	else
-	{
-		rUp = true;
-	}
-
-	if (data.getKeyboardState(SDLK_t))
-	{
-		if (tUp)
+		if (m_tUp)
 		{
 			unsigned int seed = SDL_GetTicks() % 1000;
 			std::cout << "ProceduralAssaultRifle:" << seed << std::endl;
-			data.getEntityManager().newStaticMesh(GunAssetGenerator::GenerateGun(seed), trans);
-			tUp = false;
+			m_rData.getEntityManager().newStaticMesh(GunAssetGenerator::GenerateGun(seed), trans);
+			m_tUp = false;
 		}
 	}
 	else
 	{
-		tUp = true;
+		m_tUp = true;
 	}
 
 	glm::quat trot = activeCam.getRot();

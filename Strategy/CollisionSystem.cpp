@@ -3,58 +3,57 @@
 #include "DataStructs.h"
 #include <algorithm>
 
-CollisionSystem::CollisionSystem(EntityManager& _entityManager) : entityManager(_entityManager),
-	hmap(AssetManager::getAsset<Texture>(TextureKey("heightmap.png")))
+CollisionSystem::CollisionSystem(EntityManager& _entityManager) : m_rEntityManager(_entityManager)
 {
 }
 
 void CollisionSystem::onEntityChanged(EntityID entity, ComponentType type, bool added)
 {
-	if (type == CT_Transform && entityManager.entityHasComponent(entity, CT_Collision))
+	if (type == CT_TRANSFORM && m_rEntityManager.entityHasComponent(entity, CT_COLLISION))
 	{
-		for (unsigned int n = 0; n < entities.size(); n++)
+		for (unsigned int n = 0; n < m_entities.size(); n++)
 		{
-			if (entities[n].id == entity)
+			if (m_entities[n].m_id == entity)
 			{
-				entities[n].isStatic = !added;
+				m_entities[n].m_isStatic = !added;
 
-				CollisionComponent& coll = entityManager.entityGetComponent<CollisionComponent>(entity);
+				CollisionComponent& coll = m_rEntityManager.entityGetComponent<CollisionComponent>(entity);
 				if (added)
 				{
-					Transform& trans = entityManager.entityGetComponent<TransformComponent>(entity);
-					entities[n].obb = coll.getCollisionVolume().transform(trans);
+					Transform& trans = m_rEntityManager.entityGetComponent<TransformComponent>(entity);
+					m_entities[n].m_obb = coll.getCollisionVolume().transform(trans);
 				}
 				else
 				{
-					entities[n].obb = coll.getCollisionVolume();
+					m_entities[n].m_obb = coll.getCollisionVolume();
 				}
 
 				return;
 			}
 		}
 	}
-	else if (type == CT_Collision)
+	else if (type == CT_COLLISION)
 	{
 		if (added)
 		{
-			CollisionComponent& coll = entityManager.entityGetComponent<CollisionComponent>(entity);
-			if (entityManager.entityHasComponent(entity, CT_Transform))
+			CollisionComponent& coll = m_rEntityManager.entityGetComponent<CollisionComponent>(entity);
+			if (m_rEntityManager.entityHasComponent(entity, CT_TRANSFORM))
 			{
-				Transform& trans = entityManager.entityGetComponent<TransformComponent>(entity);
-				entities.push_back(CollideableListEntry(false, entity, coll.getCollisionVolume().transform(trans)));
+				Transform& trans = m_rEntityManager.entityGetComponent<TransformComponent>(entity);
+				m_entities.push_back(CollideableListEntry(false, entity, coll.getCollisionVolume().transform(trans)));
 			}
 			else
 			{
-				entities.push_back(CollideableListEntry(true, entity, coll.getCollisionVolume()));
+				m_entities.push_back(CollideableListEntry(true, entity, coll.getCollisionVolume()));
 			}
 		}
 		else
 		{
-			for (unsigned int n = 0; n < entities.size(); n++)
+			for (unsigned int n = 0; n < m_entities.size(); n++)
 			{
-				if (entities[n].id == entity)
+				if (m_entities[n].m_id == entity)
 				{
-					entities.erase(entities.begin() + n);
+					m_entities.erase(m_entities.begin() + n);
 					return;
 				}
 			}
@@ -64,41 +63,41 @@ void CollisionSystem::onEntityChanged(EntityID entity, ComponentType type, bool 
 
 void CollisionSystem::onEntityRemoved(EntityID entity)
 {
-	for (unsigned int n = 0; n < entities.size(); n++)
+	for (unsigned int n = 0; n < m_entities.size(); n++)
 	{
-		if (entities[n].id == entity)
+		if (m_entities[n].m_id == entity)
 		{
-			entities.erase(entities.begin() + n);
+			m_entities.erase(m_entities.begin() + n);
 		}
 	}
 }
 
 void CollisionSystem::PrepareFrame()
 {
-	for (unsigned int n = 0; n < entities.size(); n++)
+	for (unsigned int n = 0; n < m_entities.size(); n++)
 	{
-		if (!entities[n].isStatic)
+		if (!m_entities[n].m_isStatic)
 		{
-			Transform& trans = entityManager.entityGetComponent<TransformComponent>(entities[n].id);
-			CollisionComponent& coll = entityManager.entityGetComponent<CollisionComponent>(entities[n].id);
+			Transform& trans = m_rEntityManager.entityGetComponent<TransformComponent>(m_entities[n].m_id);
+			CollisionComponent& coll = m_rEntityManager.entityGetComponent<CollisionComponent>(m_entities[n].m_id);
 
-			entities[n].obb = coll.getCollisionVolume().transform(trans);
+			m_entities[n].m_obb = coll.getCollisionVolume().transform(trans);
 		}
 	}
 }
 
 void CollisionSystem::Collide(const OBB& box, std::vector<EntityID>& collisions, ICollisionFilter& filter)
 {
-	for (unsigned int n = 0; n < entities.size(); n++)
+	for (unsigned int n = 0; n < m_entities.size(); n++)
 	{
-		if (filter.Filter(entities[n].id, entityManager))
+		if (filter.Filter(m_entities[n].m_id, m_rEntityManager))
 			continue;
 
 		//bounding sphere pre-test 
 
-		glm::vec3 distv = box.getCenter() - entities[n].obb.getCenter();
+		glm::vec3 distv = box.getCenter() - m_entities[n].m_obb.getCenter();
 		float dist = glm::dot(distv, distv);
-		float dist2 = box.getRadius() + entities[n].obb.getRadius();
+		float dist2 = box.getRadius() + m_entities[n].m_obb.getRadius();
 		dist2 *= dist2;
 
 		if (dist > dist2)
@@ -106,42 +105,42 @@ void CollisionSystem::Collide(const OBB& box, std::vector<EntityID>& collisions,
 			continue;
 		}
 
-		if (box.IntersectOBB(entities[n].obb) == IT_Intersect)
+		if (box.IntersectOBB(m_entities[n].m_obb) == IT_Intersect)
 		{
-			collisions.push_back(entities[n].id);
+			collisions.push_back(m_entities[n].m_id);
 		}
 	}
 }
 
 void CollisionSystem::Collide(const glm::vec3& point, std::vector<EntityID>& collisions, ICollisionFilter& filter)
 {
-	for (unsigned int n = 0; n < entities.size(); n++)
+	for (unsigned int n = 0; n < m_entities.size(); n++)
 	{
-		if (filter.Filter(entities[n].id, entityManager) && entities[n].obb.IntersectPoint(point) == IT_Inside)
+		if (filter.Filter(m_entities[n].m_id, m_rEntityManager) && m_entities[n].m_obb.IntersectPoint(point) == IT_Inside)
 		{
-			collisions.push_back(entities[n].id);
+			collisions.push_back(m_entities[n].m_id);
 		}
 	}
 }
 
 void CollisionSystem::Collide(const Ray& ray, bool frontOnly, std::vector<EntityID>& collisions, ICollisionFilter& filter)
 {
-	for (unsigned int n = 0; n < entities.size(); n++)
+	for (unsigned int n = 0; n < m_entities.size(); n++)
 	{
-		if (filter.Filter(entities[n].id, entityManager) && entities[n].obb.IntersectRay(ray, true) == IT_Intersect)
+		if (filter.Filter(m_entities[n].m_id, m_rEntityManager) && m_entities[n].m_obb.IntersectRay(ray, true) == IT_Intersect)
 		{
-			collisions.push_back(entities[n].id);
+			collisions.push_back(m_entities[n].m_id);
 		}
 	}
 }
 
 void CollisionSystem::Collide(const LineSegment line, std::vector<EntityID>& collisions, ICollisionFilter& filter)
 {
-	for (unsigned int n = 0; n < entities.size(); n++)
+	for (unsigned int n = 0; n < m_entities.size(); n++)
 	{
-		if (filter.Filter(entities[n].id, entityManager) && entities[n].obb.IntersectLineSegment(line) == IT_Intersect)
+		if (filter.Filter(m_entities[n].m_id, m_rEntityManager) && m_entities[n].m_obb.IntersectLineSegment(line) == IT_Intersect)
 		{
-			collisions.push_back(entities[n].id);
+			collisions.push_back(m_entities[n].m_id);
 		}
 	}
 }
@@ -150,11 +149,11 @@ void CollisionSystem::Collide(const LineSegment line, std::vector<CollDistData>&
 {
 	float sqrdist = 0.0f;
 
-	for (unsigned int n = 0; n < entities.size(); n++)
+	for (unsigned int n = 0; n < m_entities.size(); n++)
 	{
-		if (filter.Filter(entities[n].id, entityManager) && entities[n].obb.IntersectLineSegment(line, sqrdist) == IT_Intersect)
+		if (filter.Filter(m_entities[n].m_id, m_rEntityManager) && m_entities[n].m_obb.IntersectLineSegment(line, sqrdist) == IT_Intersect)
 		{
-			collisions.push_back(CollDistData(entities[n].id, sqrdist));
+			collisions.push_back(CollDistData(m_entities[n].m_id, sqrdist));
 		}
 	}
 
@@ -180,13 +179,13 @@ void CollisionSystem::CollideTubeGWOpt(float smallR, float bigR, const glm::vec3
 	glm::vec2 d;
 	glm::vec2 t;
 
-	for (unsigned int n = 0; n < entities.size(); n++)
+	for (unsigned int n = 0; n < m_entities.size(); n++)
 	{
-		if (!filter.Filter(entities[n].id, entityManager))
+		if (!filter.Filter(m_entities[n].m_id, m_rEntityManager))
 			continue;
 
-		o2 = entities[n].obb.getCenter() - c;
-		r = glm::vec3(entities[n].obb.getV()) * entities[n].obb.getV().w;
+		o2 = m_entities[n].m_obb.getCenter() - c;
+		r = glm::vec3(m_entities[n].m_obb.getV()) * m_entities[n].m_obb.getV().w;
 
 		if (glm::abs(r.y) < 1e-06f)
 		{
@@ -263,7 +262,7 @@ void CollisionSystem::CollideTubeGWOpt(float smallR, float bigR, const glm::vec3
 			sqrdist = glm::max(d.x, smallR);
 		}
 
-		collisions.push_back(CollDistData(entities[n].id, sqrdist));
+		collisions.push_back(CollDistData(m_entities[n].m_id, sqrdist));
 	}
 
 	std::sort(collisions.begin(), collisions.end());
@@ -275,58 +274,60 @@ void CollisionSystem::CollideNearest(const LineSegment line, EntityID& collision
 	float min = INFINITY;
 	float sqrdist = 0.0f;
 
-	for (unsigned int n = 0; n < entities.size(); n++)
+	for (unsigned int n = 0; n < m_entities.size(); n++)
 	{
-		if (filter.Filter(entities[n].id, entityManager) && entities[n].obb.IntersectLineSegment(line, sqrdist) == IT_Intersect)
+		if (filter.Filter(m_entities[n].m_id, m_rEntityManager) && m_entities[n].m_obb.IntersectLineSegment(line, sqrdist) == IT_Intersect)
 		{
 			if (sqrdist < min)
 			{
 				min = sqrdist;
-				collision = entities[n].id;
+				collision = m_entities[n].m_id;
 			}
 		}
 	}
 }
 
-float CollisionSystem::getTerrainPixel(int x, int z)
-{
-	x = x % hmap.get().getWidth();
-	z = z % hmap.get().getWidth();
-
-	int bpp = hmap.get().getImage()->format->BytesPerPixel;
-	unsigned char *p = (unsigned char *)hmap.get().getImage()->pixels + z * hmap.get().getImage()->pitch + x * bpp;
-
-	return (p[0] / 255.0f) * TerrainSettings::Yscale;
-}
+//float CollisionSystem::getTerrainPixel(int x, int z)
+//{
+//	x = x % hmap.get().getWidth();
+//	z = z % hmap.get().getWidth();
+//
+//	int bpp = hmap.get().getImage()->format->BytesPerPixel;
+//	unsigned short *p = (unsigned short*)((unsigned char*)hmap.get().getImage()->pixels + z * hmap.get().getImage()->pitch + x * bpp);
+//
+//	return (p[0] / (float)((1<<8*bpp) - 1)) * TerrainSettings::Yscale;
+//}
 
 float CollisionSystem::TerrainHeight(glm::vec2 pos)
 {
-	pos -= 2.0f;
+	return TerrainSettings::Yscale * 0.7f;
 
-	float cx = TerrainSettings::mapScale / (float)(hmap.get().getWidth() - 1);
-	float cz = TerrainSettings::mapScale / (float)(hmap.get().getHeight() - 1);
+	//pos -= 2.0f;
 
-	pos.x /= cx;
-	pos.y /= cz;
+	//float cx = TerrainSettings::mapScale / (float)(hmap.get().getWidth() - 1);
+	//float cz = TerrainSettings::mapScale / (float)(hmap.get().getHeight() - 1);
 
-	if (glm::fract(pos.x) > glm::fract(pos.y))
-	{
-		float l1 = (1.0f - glm::fract(pos.x));
-		float l2 = glm::fract(pos.y);
-		float l3 = 1.0f - l1 - l2;
+	//pos.x /= cx;
+	//pos.y /= cz;
 
-		return l1 * getTerrainPixel((int)glm::floor(pos.x), (int)glm::floor(pos.y)) +
-			   l3 * getTerrainPixel((int)glm::ceil(pos.x), (int)glm::floor(pos.y)) +
-			   l2 * getTerrainPixel((int)glm::ceil(pos.x), (int)glm::ceil(pos.y));
-	}
-	else
-	{
-		float l1 = (1.0f - glm::fract(pos.y));
-		float l2 = glm::fract(pos.x);
-		float l3 = 1.0f - l1 - l2;
+	//if (glm::fract(pos.x) > glm::fract(pos.y))
+	//{
+	//	float l1 = (1.0f - glm::fract(pos.x));
+	//	float l2 = glm::fract(pos.y);
+	//	float l3 = 1.0f - l1 - l2;
 
-		return l1 * getTerrainPixel((int)glm::floor(pos.x), (int)glm::floor(pos.y)) +
-			   l3 * getTerrainPixel((int)glm::floor(pos.x), (int)glm::ceil(pos.y)) +
-			   l2 * getTerrainPixel((int)glm::ceil(pos.x), (int)glm::ceil(pos.y));
-	}
+	//	return l1 * getTerrainPixel((int)glm::floor(pos.x), (int)glm::floor(pos.y)) +
+	//		   l3 * getTerrainPixel((int)glm::ceil(pos.x), (int)glm::floor(pos.y)) +
+	//		   l2 * getTerrainPixel((int)glm::ceil(pos.x), (int)glm::ceil(pos.y));
+	//}
+	//else
+	//{
+	//	float l1 = (1.0f - glm::fract(pos.y));
+	//	float l2 = glm::fract(pos.x);
+	//	float l3 = 1.0f - l1 - l2;
+
+	//	return l1 * getTerrainPixel((int)glm::floor(pos.x), (int)glm::floor(pos.y)) +
+	//		   l3 * getTerrainPixel((int)glm::floor(pos.x), (int)glm::ceil(pos.y)) +
+	//		   l2 * getTerrainPixel((int)glm::ceil(pos.x), (int)glm::ceil(pos.y));
+	//}
 }

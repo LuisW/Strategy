@@ -3,16 +3,18 @@
 #include "Shader.h"
 #include "Mesh.h"
 #include "Texture.h"
+#include "Material.h"
 
 class AssetManager
 {
 private:
-	SubShaderAssetManager	subShaders;
-	ShaderAssetManager		shaders;
-	MeshAssetManager		meshes;
-	TextureAssetManager		textures;
+	SubShaderAssetManager	m_subShaders;
+	ShaderAssetManager		m_shaders;
+	MeshAssetManager		m_meshes;
+	TextureAssetManager		m_textures;
+	MaterialAssetManager	m_materials;
 
-	static AssetManager* instance;
+	static AssetManager* sm_instance;
 
 	static void init();
 	static void deinit();

@@ -9,7 +9,6 @@ void Terrain::makeMesh(unsigned int cells, float celllen, Mesh& mesh)
 	float *verts = new float[vertlen];
 	unsigned int *inds = new unsigned int[indlen];
 
-
 	int v = -1;
 	for (unsigned int x = 0; x < cells + 1; x++)
 	{
@@ -128,5 +127,8 @@ void Terrain::makeMesh(unsigned int cells, float celllen, Mesh& mesh)
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertlen, verts, GL_STATIC_DRAW);
 
-	mesh = Mesh(VBO, IBO, vertlen, indlen, inds, (char*)verts);
+	VertexAttribFormat fmt;
+	fmt.addElem(0, GL_FLOAT, 3, SEM_POSITION, 0);
+
+	mesh = Mesh(VBO, IBO, vertlen, indlen, inds, (char*)verts, fmt);
 }

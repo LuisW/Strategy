@@ -3,30 +3,28 @@
 #include <unordered_map>
 #include <stdexcept>
 #include "Asset.h"
+#include "DebugHelp.h"
 
 template<typename T>
 class AssetLoadException : std::runtime_error
 {
 private:
-	const AssetKey<T> asset;
-	std::string info;
+	std::string m_msg;
 
 public:
-	AssetLoadException(const AssetKey<T> _asset, std::string _info) : std::runtime_error("AssetLoadException"), asset(_asset), info(_info)
-	{}
-
-	virtual const char* what() const throw()
+	AssetLoadException(const AssetKey<T> asset, std::string info) : std::runtime_error("AssetLoadException"), m_msg(std::runtime_error::what())
 	{
-		std::string str(std::runtime_error::what());
-
-		str += ": Exception while loading asset " + asset.toString() + ".";
+		m_msg += ": Exception while loading asset " + asset.toString() + ".";
 
 		if (info != "")
 		{
-			str += " " + info;
+			m_msg += " " + info;
 		}
+	}
 
-		return str.c_str();
+	const char* what() const throw() override
+	{
+		return m_msg.c_str();
 	}
 };
 
@@ -34,25 +32,22 @@ template<typename T>
 class AssetAddException : std::runtime_error
 {
 private:
-	const AssetKey<T> asset;
-	std::string info;
+	std::string m_msg;
 
 public:
-	AssetAddException(const AssetKey<T> _asset, std::string _info) : std::runtime_error("AssetAddException"), asset(_asset), info(_info)
-	{}
-
-	virtual const char* what() const throw()
+	AssetAddException(const AssetKey<T> asset, std::string info) : std::runtime_error("AssetAddException"), m_msg(std::runtime_error::what())
 	{
-		std::string str(std::runtime_error::what());
-
-		str += ": Error adding asset " + asset.toString() + ".";
+		m_msg += ": Error adding asset " + asset.toString() + ".";
 
 		if (info != "")
 		{
-			str += " Details: " + info;
+			m_msg += " Details: " + info;
 		}
+	}
 
-		return str.c_str();
+	const char* what() const throw() override
+	{
+		return m_msg.c_str();
 	}
 };
 
@@ -63,9 +58,9 @@ private:
 	template<typename T>
 	struct AssetSubManagerStorage
 	{
-		ReferenceCounter refCnt;
-		T* data;
-		bool isPrivate;
+		ReferenceCounter	m_refCnt;
+		T*					m_pData;
+		bool				m_isPrivate;
 	};
 
 
@@ -90,24 +85,31 @@ public:
 		auto it = assets.find(key);
 		if (it != assets.end())
 		{
-			return Asset<T> (it->second.refCnt, (it->second.data), it->first);
+			return Asset<T> (it->second.m_refCnt, (it->second.m_pData), it->first);
 		}
 		else
 		{
 			AssetSubManagerStorage<T> newElem;
-			newElem.data = Load(key);
+			try
+			{
+				newElem.m_pData = Load(key);
+			}
+			catch (AssetLoadException<T>& ex)
+			{
+				ERROR(ex.what())
+			}
 
-			if (newElem.data == NULL)
+			if (newElem.m_pData == NULL)
 			{
 				throw AssetLoadException<T>(key, "");
 			}
 
-			newElem.refCnt = ReferenceCounter(0);
+			newElem.m_refCnt = ReferenceCounter(0);
 
 			assets[key] = newElem;
 
 			it = assets.find(key);
-			return Asset<T>(it->second.refCnt, (it->second.data), it->first);
+			return Asset<T>(it->second.m_refCnt, (it->second.m_pData), it->first);
 		}
 	}
 
@@ -122,19 +124,19 @@ public:
 		}
 
 		AssetSubManagerStorage<T> newElem;
-		newElem.data = asset;
+		newElem.m_pData = asset;
 
-		if (newElem.data == NULL)
+		if (newElem.m_pData == NULL)
 		{
 			throw AssetAddException<T>(key, "NULL asset.");
 		}
 
-		newElem.refCnt = ReferenceCounter(0);
+		newElem.m_refCnt = ReferenceCounter(0);
 
 		assets[key] = newElem;
 
 		it = assets.find(key);
-		return Asset<T>(it->second.refCnt, (it->second.data), it->first);
+		return Asset<T>(it->second.m_refCnt, (it->second.m_pData), it->first);
 	}
 	
 	void CleanUnused()
@@ -146,7 +148,7 @@ public:
 			if (!it->second.refCnt.isReferenced())
 			{
 				Unload(it);
-				delete it->second.data;
+				delete it->second.m_pData;
 				assets.erase(it++);
 			}
 			else
@@ -163,7 +165,7 @@ public:
 		while (it != assets.end())
 		{
 			Unload(it);
-			delete it->second.data;
+			delete it->second.m_pData;
 			assets.erase(it++);
 		}
 	}

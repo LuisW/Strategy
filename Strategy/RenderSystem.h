@@ -9,14 +9,14 @@
 class RenderSystem : public System
 {
 private:
-	EntityManager& entityManager;
-	std::vector<EntityID> entities;
+	EntityManager&			m_rEntityManager;
+	std::vector<EntityID>	m_entities;
 
 public:
-	RenderSystem(EntityManager& _entityManager) : entityManager(_entityManager)
+	RenderSystem(EntityManager& entityManager) : m_rEntityManager(entityManager)
 	{}
 
 	void onEntityChanged(EntityID entity, ComponentType type, bool added);
 	void onEntityRemoved(EntityID entity);
-	void Tick(const Camera& cam, GLuint shader) const;
+	void Tick(const Camera& cam) const;
 };

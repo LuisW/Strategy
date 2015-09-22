@@ -6,74 +6,91 @@
 
 void RenderSystem::onEntityChanged(EntityID entity, ComponentType type, bool added)
 {
-	if (type != CT_Render)
+	if (type != CT_RENDER)
 	{
 		return;
 	}
 
-	for (unsigned int n = 0; n < entities.size(); n++)
+	for (unsigned int n = 0; n < m_entities.size(); n++)
 	{
-		if (entities[n] == entity)
+		if (m_entities[n] == entity)
 		{
 			if (!added)
 			{
-				entities.erase(entities.begin() + n);
+				m_entities.erase(m_entities.begin() + n);
 			}
 			return;
 		}
 	}
 
-	entities.push_back(entity);
+	m_entities.push_back(entity);
 }
 
 void RenderSystem::onEntityRemoved(EntityID entity)
 {
-	for (unsigned int n = 0; n < entities.size(); n++)
+	for (unsigned int n = 0; n < m_entities.size(); n++)
 	{
-		if (entities[n] == entity)
+		if (m_entities[n] == entity)
 		{
-			entities.erase(entities.begin() + n);
+			m_entities.erase(m_entities.begin() + n);
 		}
 	}
 }
 
-void RenderSystem::Tick(const Camera& cam, GLuint shader) const
+void RenderSystem::Tick(const Camera& cam) const
 {
-	GLuint sp_WVP = glGetUniformLocation(shader, "WVP");
-	GLuint sp_NMat = glGetUniformLocation(shader, "NMat");
-	GLuint sp_Color = glGetUniformLocation(shader, "Color");
-
-	for (unsigned int n = 0; n < entities.size(); n++)
+	for (unsigned int n = 0; n < m_entities.size(); n++)
 	{
-		if (entityManager.entityHasComponent(entities[n], CT_Transform))
+		RenderComponent& Comp = m_rEntityManager.entityGetComponent<RenderComponent>(m_entities[n]);
+
+		const Material& mat = Comp.getMaterial().get();
+		MaterialObjectData& objData = Comp.getObjectData();
+		mat.BindShader();
+		mat.BindMaterialParams();
+
+		UniformID loc_nmat = Comp.getEngineUniformID(EUNI_NMAT);
+		UniformID loc_wvp = Comp.getEngineUniformID(EUNI_WVP);
+		UniformID loc_wv = Comp.getEngineUniformID(EUNI_WV);
+		UniformID loc_v = Comp.getEngineUniformID(EUNI_V);
+
+		if (m_rEntityManager.entityHasComponent(m_entities[n], CT_TRANSFORM))
 		{
-			TransformComponent& trans = entityManager.entityGetComponent<TransformComponent>(entities[n]);
-			glm::mat3 nmat = glm::transpose(glm::inverse(glm::mat3(trans.getMat())));
-			glUniformMatrix3fv(sp_NMat, 1, GL_FALSE, glm::value_ptr(nmat));
-			glUniformMatrix4fv(sp_WVP, 1, GL_FALSE, glm::value_ptr(cam.getViewProjection() * trans.getMat()));
+			TransformComponent& trans = m_rEntityManager.entityGetComponent<TransformComponent>(m_entities[n]);
+			
+			glm::mat4 WV = cam.getView() * trans.getMat();
+
+			if (loc_nmat >= 0)
+			{
+				glm::mat3 nmat = glm::transpose(glm::inverse(glm::mat3(WV)));
+				objData.setUniform(loc_nmat, nmat);
+			}
+
+			objData.setUniform(loc_wvp, cam.getViewProjection() * trans.getMat());
+
+			if (loc_wv >= 0)
+			{
+				objData.setUniform(loc_wv, WV);
+			}
+
+			objData.setUniform(loc_v, cam.getView());
 		}
 		else
 		{
-			glUniformMatrix3fv(sp_NMat, 1, GL_FALSE, glm::value_ptr(glm::mat3()));
-			glUniformMatrix4fv(sp_WVP, 1, GL_FALSE, glm::value_ptr(cam.getViewProjection()));
+			objData.setUniform(loc_nmat, glm::mat3());
+			objData.setUniform(loc_wvp, cam.getViewProjection());
+			objData.setUniform(loc_wv, cam.getView());
+			objData.setUniform(loc_v, cam.getView());
+
 		}
 
-		RenderComponent& Comp = entityManager.entityGetComponent<RenderComponent>(entities[n]);
-
-		glUniform3fv(sp_Color, 1, glm::value_ptr(Comp.getColor()));
+		mat.BindObjectParams(objData);
 
 		const Mesh& mesh = Comp.getMesh().get();
 
-		glBindBuffer(GL_ARRAY_BUFFER, mesh.getVertices());
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.getIndices());
-
-		glEnableVertexAttribArray(0);
-		glEnableVertexAttribArray(1);
-		glDisableVertexAttribArray(2);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 24, NULL);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 24, (GLvoid*)12);
-		glVertexAttribDivisor(1, 0);
+		Comp.getFormatBind().Bind();
 
 		glDrawElements(GL_TRIANGLES, mesh.getIndlen(), GL_UNSIGNED_INT, NULL);
 	}
+
+	glBindVertexArray(0);
 }

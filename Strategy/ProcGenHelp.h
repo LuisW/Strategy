@@ -11,6 +11,7 @@ unsigned int randuint(unsigned int seed, unsigned int min, unsigned max);
 float randFlt(unsigned int seed, float min, float max);
 bool randBool(unsigned int seed, float trueProb);
 float randFltWeighted1(unsigned int seed, float average, float maxDiff);
+glm::vec2 randPoint(const glm::vec2& center, float rad, unsigned int seed);
 float randStatBase(unsigned int seed);
 
 struct Triangle

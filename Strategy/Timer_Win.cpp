@@ -6,9 +6,9 @@ Timer::Timer()
 	_LARGE_INTEGER lif;
 	QueryPerformanceFrequency(&lif);
 
-	freq = (double)lif.QuadPart;
+	m_freq = (double)lif.QuadPart;
 
-	prevTime = getCurrent();
+	m_prevTime = getCurrent();
 }
 
 __int64 Timer::getCurrent()
@@ -20,10 +20,10 @@ __int64 Timer::getCurrent()
 
 void Timer::Start()
 {
-	prevTime = getCurrent();
+	m_prevTime = getCurrent();
 }
 
 double Timer::Stop()
 {
-	return (double)(getCurrent() - prevTime) / freq;
+	return (double)(getCurrent() - m_prevTime) / m_freq;
 }

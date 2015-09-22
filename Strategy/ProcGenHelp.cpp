@@ -60,6 +60,12 @@ float randFltWeighted2(unsigned int seed, float average, float maxDiff) //high p
 	return f * maxDiff + average;
 }
 
+glm::vec2 randPoint(const glm::vec2& center, float rad, unsigned int seed)
+{
+	float theta = randFlt(seed, 0.0f, 2.0f * M_PI_f);
+	return center + glm::vec2(glm::sin(theta), glm::cos(theta)) * randFlt(seed, 0.0f, rad);
+}
+
 float randStatBase(unsigned int seed)
 {
 	unsigned int r = randuint(seed, 0, 30000);
@@ -190,5 +196,9 @@ Mesh* ProcMesh::makeMesh()
 	memcpy(indsBuff, inds.data(), sizeof(unsigned int)* inds.size());
 	memcpy(vertsBuff, verts.data(), sizeof(Vertex)* verts.size());
 
-	return new Mesh(VBO, IBO, VertFlts*verts.size(), inds.size(), indsBuff, vertsBuff);
+	VertexAttribFormat fmt;
+	fmt.addElem(0, GL_FLOAT, 3, SEM_POSITION, 0);
+	fmt.addElem(3 * sizeof(float), GL_FLOAT, 3, SEM_NORMAL, 0);
+
+	return new Mesh(VBO, IBO, VertFlts*verts.size(), inds.size(), indsBuff, vertsBuff, fmt);
 }

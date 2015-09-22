@@ -6,57 +6,57 @@
 class Shader
 {
 private:
-	GLuint shader;
-	const Asset<SubShader> fragment;
-	const Asset<SubShader> vertex;
+	GLuint					m_shader;
+	const Asset<SubShader>	m_fragment;
+	const Asset<SubShader>	m_vertex;
 
 public:
-	Shader(GLuint _shader, SubShaderAsset_const frag, SubShaderAsset_const vert) : shader(_shader), fragment(frag), vertex(vert)
+	Shader(GLuint shader, SubShaderAsset_const frag, SubShaderAsset_const vert) : m_shader(shader), m_fragment(frag), m_vertex(vert)
 	{
 
 	}
 
 	inline GLuint getShader() const
 	{
-		return shader;
+		return m_shader;
 	}
 
-	inline const Asset<SubShader>& getFrag()
+	inline const Asset<SubShader>& getFrag() const
 	{
-		return fragment;
+		return m_fragment;
 	}
 
-	inline const Asset<SubShader>& getVert()
+	inline const Asset<SubShader>& getVert() const
 	{
-		return vertex;
+		return m_vertex;
 	}
 };
 
 typedef AssetKey<Shader> ShaderKey;
 typedef Asset<Shader> ShaderAsset;
-typedef Asset<Shader> ShaderAsset_const;
+typedef const Asset<Shader> ShaderAsset_const;
 
 template<>
 class AssetKey<Shader>
 {
 public:
-	std::string frag;
-	std::string vert;
+	std::string m_frag;
+	std::string m_vert;
 
 
 	std::string toString() const
 	{
-		return "<Shader>:" + frag + ", " + vert;
+		return "<Shader>:" + m_frag + ", " + m_vert;
 	}
 
-	AssetKey(const std::string& _frag, const std::string& _vert) : frag(_frag), vert(_vert)
+	AssetKey(const std::string& frag, const std::string& vert) : m_frag(frag), m_vert(vert)
 	{
 
 	}
 
 	bool operator==(const AssetKey<Shader>& other) const
 	{
-		return frag == other.frag && vert == other.vert;
+		return m_frag == other.m_frag && m_vert == other.m_vert;
 	}
 };
 
@@ -68,7 +68,7 @@ namespace std
 	{
 		std::size_t operator()(const ShaderKey& k) const
 		{
-			return hash<std::string>()(k.vert + k.frag);
+			return hash<std::string>()(k.m_vert + k.m_frag);
 		}
 	};
 

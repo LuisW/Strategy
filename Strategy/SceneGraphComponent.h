@@ -13,7 +13,7 @@ private:
 
 
 public:
-	SceneGraphComponent(EntityID owner) : Component(CT_SceneGraph, owner, ""), parentMat()
+	SceneGraphComponent(EntityID owner) : Component(CT_SCENEGRAPH, owner, ""), parentMat()
 	{
 	} 
 

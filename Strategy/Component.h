@@ -2,38 +2,38 @@
 
 #include <string>
 
-enum ComponentType {CT_Render, CT_Transform, CT_Camera, CT_SceneGraph, CT_Visibility, CT_Velocity, CT_CreatureAI,
-					CT_Stats, CT_Collision, CT_Projectile, CT_Vitals, CT_Unused};
+enum ComponentType {CT_RENDER, CT_TRANSFORM, CT_CAMERA, CT_SCENEGRAPH, CT_VISIBILITY, CT_VELOCITY, CT_CREATUREAI,
+					CT_STATS, CT_COLLISION, CT_PROJECTILE, CT_VITALS, CT_UNUSED};
 
 typedef unsigned int EntityID;
 
 class Component
 {
 private:
-	ComponentType type;
-	EntityID ownerID;
-	std::string name;
+	ComponentType	m_type;
+	EntityID		m_ownerID;
+	std::string		m_name;
 
 public:
-	Component(ComponentType _type, EntityID owner, const std::string& _name) : type(_type), ownerID(owner), name(_name)
+	Component(ComponentType type, EntityID owner, const std::string& name) : m_type(type), m_ownerID(owner), m_name(name)
 	{
 	}
 
 	inline ComponentType getType()
 	{
-		return type;
+		return m_type;
 	}
 	
 	inline EntityID getOwner()
 	{
-		return ownerID;
+		return m_ownerID;
 	}
 
 	inline const std::string& getName()
 	{
-		return name;
+		return m_name;
 	}
 
-	~Component()
+	virtual ~Component()
 	{}
 };

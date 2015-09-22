@@ -9,232 +9,233 @@ class Camera
 {
 private:
 
-	float fov;
-	float aspect;
-	float near;
-	float far;
+	float m_fov;
+	float m_aspect;
+	float m_near;
+	float m_far;
 
-	glm::vec3 front;
-	glm::vec3 right;
-	glm::vec3 up;
+	glm::vec3 m_front;
+	glm::vec3 m_right;
+	glm::vec3 m_up;
 
-	mutable glm::mat4 view;
-	mutable glm::mat4 projection;
-	mutable glm::mat4 vp;
-	mutable Frustum viewFrustum;
+	mutable glm::mat4 m_view;
+	mutable glm::mat4 m_projection;
+	mutable glm::mat4 m_vp;
+	
+	mutable Frustum	m_viewFrustum;
 
-	glm::quat rotation;
-	glm::vec3 position;
+	glm::quat m_rotation;
+	glm::vec3 m_position;
 
-	float yaw;
-	float pitch;
-	float roll;
+	float m_yaw;
+	float m_pitch;
+	float m_roll;
 
-	mutable bool updateP;
-	mutable bool updateV;
-	mutable bool updateVP;
+	mutable bool m_updateP;
+	mutable bool m_updateV;
+	mutable bool m_updateVP;
 
-	bool FlyCam;
+	bool m_FlyCam;
 
 	void makeLocalSystem()
 	{
-		front = glm::vec3(0.0f, 0.0f, -1.0f) * rotation;
-		up    = glm::vec3(0.0f, 1.0f,  0.0f) * rotation;
-		right = glm::vec3(1.0f, 0.0f,  0.0f) * rotation;
+		m_front = glm::vec3(0.0f, 0.0f, -1.0f) * m_rotation;
+		m_up    = glm::vec3(0.0f, 1.0f,  0.0f) * m_rotation;
+		m_right = glm::vec3(1.0f, 0.0f,  0.0f) * m_rotation;
 	}
 
 public:
-	Camera(float _fov, float _aspect, float _near, float _far) : 
-		fov(_fov), aspect(_aspect), near(_near), far(_far), projection(glm::perspective(fov, aspect, near, far)),
-		updateP(false), updateV(true), updateVP(false), rotation(0.0f, 0.0f, 0.0f, 1.0f), position(0.0f), viewFrustum(vp),
-		yaw(0.0f), pitch(0.0f), roll(0.0f), FlyCam(false)
+	Camera(float fov, float aspect, float near, float far) : 
+		m_fov(fov), m_aspect(aspect), m_near(near), m_far(far), m_projection(glm::perspective(m_fov, m_aspect, m_near, m_far)),
+		m_updateP(false), m_updateV(true), m_updateVP(false), m_rotation(0.0f, 0.0f, 0.0f, 1.0f), m_position(0.0f), m_viewFrustum(m_vp),
+		m_yaw(0.0f), m_pitch(0.0f), m_roll(0.0f), m_FlyCam(false)
 	{
 		makeLocalSystem();
 	}
 
-	Camera(float _fov, float _aspect, float _near, float _far, glm::vec3 pos, glm::quat rot) :
-		fov(_fov), aspect(_aspect), near(_near), far(_far), projection(glm::perspective(fov, aspect, near, far)), 
-		updateP(false), updateV(true), updateVP(false), position(pos), rotation(rot), viewFrustum(vp),
-		yaw(0.0f), pitch(0.0f), roll(0.0f), FlyCam(false)
+	Camera(float fov, float aspect, float near, float far, glm::vec3 pos, glm::quat rot) :
+		m_fov(fov), m_aspect(aspect), m_near(near), m_far(far), m_projection(glm::perspective(m_fov, m_aspect, m_near, m_far)), 
+		m_updateP(false), m_updateV(true), m_updateVP(false), m_position(pos), m_rotation(rot), m_viewFrustum(m_vp),
+		m_yaw(0.0f), m_pitch(0.0f), m_roll(0.0f), m_FlyCam(false)
 	{
 		makeLocalSystem();
 	}
 
 	inline float getAspect() const
 	{
-		return aspect;
+		return m_aspect;
 	}
 
 	inline float getFoV() const
 	{
-		return fov;
+		return m_fov;
 	}
 
 	inline float getNear() const
 	{
-		return near;
+		return m_near;
 	}
 
 	inline float getFar() const
 	{
-		return far;
+		return m_far;
 	}
 
 	inline const glm::mat4& getView() const
 	{
-		if (updateV)
+		if (m_updateV)
 		{
-			view = glm::lookAt(position, position + front, up);
-			updateV = 0;
-			updateVP = true;
+			m_view = glm::lookAt(m_position, m_position + m_front, m_up);
+			m_updateV = 0;
+			m_updateVP = true;
 		}
 
-		return view;
+		return m_view;
 	}
 
 	inline const glm::mat4& getProjection() const
 	{
-		if (updateP)
+		if (m_updateP)
 		{
-			projection = glm::perspective(fov, aspect, near, far);
-			updateP = false;
-			updateVP = true;
+			m_projection = glm::perspective(m_fov, m_aspect, m_near, m_far);
+			m_updateP = false;
+			m_updateVP = true;
 		}
 
-		return projection;
+		return m_projection;
 	}
 
 	inline const glm::mat4& getViewProjection() const
 	{
-		if (updateVP || updateP || updateV)
+		if (m_updateVP || m_updateP || m_updateV)
 		{
-			vp = getProjection() * getView();
-			viewFrustum = Frustum(vp);
-			updateVP = false;
+			m_vp = getProjection() * getView();
+			m_viewFrustum = Frustum(m_vp);
+			m_updateVP = false;
 		}
 
-		return vp;
+		return m_vp;
 	}
 
 	inline void setAspect(float _aspect)
 	{
-		aspect = _aspect;
-		updateP = true;
+		m_aspect = _aspect;
+		m_updateP = true;
 	}
 
 	inline void setFov(float _fov)
 	{
-		fov = _fov;
-		updateP = true;
+		m_fov = _fov;
+		m_updateP = true;
 	}
 
 	inline void setNear(float _near)
 	{
-		near = _near;
-		updateP = true;
+		m_near = _near;
+		m_updateP = true;
 	}
 
 	inline void setFar(float _far)
 	{
-		far = _far;
-		updateP = true;
+		m_far = _far;
+		m_updateP = true;
 	}
 
 	inline const glm::vec3& getPos() const
 	{
-		return position;
+		return m_position;
 	}
 
 	inline void setPos(const glm::vec3& pos)
 	{
-		position = pos;
-		updateV = true;
+		m_position = pos;
+		m_updateV = true;
 	}
 
 	inline void setYPos(float height)
 	{
-		position.y = height;
-		updateV = true;
+		m_position.y = height;
+		m_updateV = true;
 	}
 
 	inline const glm::quat& getRot() const
 	{
-		return rotation;
+		return m_rotation;
 	}
 
 	inline void AddYawPitch(float deltaYaw, float deltaPitch)
 	{
-		yaw += deltaYaw;
-		pitch += deltaPitch;
+		m_yaw += deltaYaw;
+		m_pitch += deltaPitch;
 
-		if (pitch > 60.0f)
-			pitch = 60.0f;
+		if (m_pitch > 60.0f)
+			m_pitch = 60.0f;
 
-		if (pitch < -60.0f)
-			pitch = -60.0f;
+		if (m_pitch < -60.0f)
+			m_pitch = -60.0f;
 
-		rotation = glm::angleAxis(yaw, glm::vec3(0.0f, 1.0f, 0.0f));
+		m_rotation = glm::angleAxis(m_yaw, glm::vec3(0.0f, -1.0f, 0.0f));
 		
-		right = glm::vec3(1.0f, 0.0f, 0.0f) * rotation;
+		m_right = m_rotation * glm::vec3(1.0f, 0.0f, 0.0f);
 		
-		rotation = rotation * glm::angleAxis(pitch, right);
+		m_rotation = glm::angleAxis(-m_pitch, m_right) * m_rotation;
 
-		front = glm::vec3(0.0f, 0.0f, -1.0f) * rotation;
-		up = glm::vec3(0.0f, 1.0f, 0.0f) * rotation;
+		m_front = m_rotation * glm::vec3(0.0f, 0.0f, -1.0f);
+		m_up = m_rotation * glm::vec3(0.0f, 1.0f, 0.0f);
 
-		updateV = true;
+		m_updateV = true;
 	}
 
 	inline void Move(float dist)
 	{
-		if (FlyCam)
+		if (m_FlyCam)
 		{
-			position += dist * front;
+			m_position += dist * m_front;
 		}
 		else
 		{
-			glm::vec3 mov = glm::normalize(glm::vec3(front.x, 0.0f, front.z));
-			position += dist * mov;
+			glm::vec3 mov = glm::normalize(glm::vec3(m_front.x, 0.0f, m_front.z));
+			m_position += dist * mov;
 		}
 
-		updateV = true;
+		m_updateV = true;
 	}
 
 	inline void Strafe(float dist)
 	{
-		position += dist * right;
-		updateV = true;
+		m_position += dist * m_right;
+		m_updateV = true;
 	}
 
 	inline void Translate(const glm::vec3& trans)
 	{
-		position += trans;
-		updateV = true;
+		m_position += trans;
+		m_updateV = true;
 	}
 
 	inline const glm::vec3& getRight()
 	{
-		return right;
+		return m_right;
 	}
 
 	inline const glm::vec3& getUp()
 	{
-		return up;
+		return m_up;
 	}
 
 	inline const glm::vec3& getFront()
 	{  
-		return front;
+		return m_front;
 	}
 
 	inline Frustum& getFrustum() const
 	{
 		getViewProjection();
-		return viewFrustum;
+		return m_viewFrustum;
 	}
 
 	inline void setFlying(bool flying)
 	{
-		FlyCam = flying;
+		m_FlyCam = flying;
 	}
 };

@@ -4,46 +4,46 @@
 
 struct LineSegment
 {
-	glm::vec3 p1;
-	glm::vec3 p2;
+	glm::vec3 m_p1;
+	glm::vec3 m_p2;
 
-	LineSegment(const glm::vec3& _p1, const glm::vec3& _p2) : p1(_p1), p2(_p2)
+	LineSegment(const glm::vec3& p1, const glm::vec3& p2) : m_p1(p1), m_p2(p2)
 	{}
 };
 
 class Ray
 {
 private:
-	glm::vec3 a;
-	glm::vec3 d;
+	glm::vec3 m_start;
+	glm::vec3 m_dir;
 
 public:
-	Ray(glm::vec3 _a, glm::vec3 _d) : a(_a), d(_d)
+	Ray(glm::vec3 start, glm::vec3 dir) : m_start(start), m_dir(dir)
 	{
 	}
 
-	inline const glm::vec3& getA() const
+	inline const glm::vec3& getStart() const
 	{
-		return a;
+		return m_start;
 	}
 
 	inline const glm::vec3& getDir() const
 	{
-		return d;
+		return m_dir;
 	}
 
-	inline void setA(glm::vec3 _a)
+	inline void setA(glm::vec3 start)
 	{
-		a = _a;
+		m_start = start;
 	}
 	
-	inline void setDir(glm::vec3 _d)
+	inline void setDir(glm::vec3 dir)
 	{
-		d = _d;
+		m_dir = dir;
 	}
 
 	inline glm::vec3 getPointinRay(float t) const
 	{
-		return a + d * t;
+		return m_start + m_dir * t;
 	}
 };

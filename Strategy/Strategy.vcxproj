@@ -42,11 +42,15 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LibraryPath>$(ProjectDir)\el;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LibraryPath>$(ProjectDir)\el;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -60,35 +64,34 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>glew32.lib;glut32.lib;SDL.lib;SDL_image.lib;OpenGL32.lib;SDL_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AIHelp.cpp" />
     <ClCompile Include="AssetManager.cpp" />
     <ClCompile Include="CollisionSystem.cpp" />
-    <ClCompile Include="CreatureAbilities.cpp" />
-    <ClCompile Include="CreatureAIComponent.cpp" />
-    <ClCompile Include="CreatureAISystem.cpp" />
-    <ClCompile Include="CreatureManager.cpp" />
+    <ClCompile Include="DataStructs.cpp" />
+    <ClCompile Include="DebugHelp.cpp" />
     <ClCompile Include="EntityManager.cpp" />
     <ClCompile Include="GameData.cpp" />
+    <ClCompile Include="MaterialTypeMap.cpp" />
     <ClCompile Include="GunAssetGenerator.cpp" />
-    <ClCompile Include="IAbility.cpp" />
-    <ClCompile Include="IStatEffect.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Material.cpp" />
+    <ClCompile Include="MaterialTemplateLib.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="PlayerControlSystem.cpp" />
     <ClCompile Include="ProcGenHelp.cpp" />
-    <ClCompile Include="ProjectileSystem.cpp" />
     <ClCompile Include="Render.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderTypes.cpp" />
-    <ClCompile Include="StatSystem.cpp" />
     <ClCompile Include="SubShader.cpp" />
     <ClCompile Include="RenderSystem.cpp" />
     <ClCompile Include="Terrain.cpp" />
@@ -97,42 +100,35 @@
     <ClCompile Include="Timer_Win.cpp" />
     <ClCompile Include="Transform.cpp" />
     <ClCompile Include="Update.cpp" />
+    <ClCompile Include="VertexFormat.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AbilityEffects.h" />
     <ClInclude Include="AIHelp.h" />
     <ClInclude Include="Asset.h" />
     <ClInclude Include="AssetManager.h" />
     <ClInclude Include="AssetSubManagerBase.h" />
     <ClInclude Include="BoundingBox.h" />
-    <ClInclude Include="BulletComponent.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CameraComponent.h" />
     <ClInclude Include="CollisionComponent.h" />
     <ClInclude Include="CollisionFilters.h" />
     <ClInclude Include="CollisionSystem.h" />
     <ClInclude Include="Component.h" />
-    <ClInclude Include="CreatureAbilities.h" />
-    <ClInclude Include="CreatureAIComponent.h" />
-    <ClInclude Include="CreatureAISystem.h" />
-    <ClInclude Include="CreatureManager.h" />
+    <ClInclude Include="Console.h" />
+    <ClInclude Include="DebugHelp.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="EntityManager.h" />
     <ClInclude Include="Frustum.h" />
     <ClInclude Include="GameData.h" />
-    <ClInclude Include="GroundWaveComponent.h" />
-    <ClInclude Include="IAbility.h" />
-    <ClInclude Include="IStatEffect.h" />
+    <ClInclude Include="MaterialTypeMap.h" />
     <ClInclude Include="GunAssetGenerator.h" />
+    <ClInclude Include="HeightmapManager.h" />
+    <ClInclude Include="Material.h" />
+    <ClInclude Include="MaterialTemplateLib.h" />
     <ClInclude Include="ProcGenHelp.h" />
-    <ClInclude Include="ProjectileComponent.h" />
-    <ClInclude Include="ProjectileSystem.h" />
-    <ClInclude Include="ProjectileTypes.h" />
     <ClInclude Include="Ray.h" />
-    <ClInclude Include="StatsComponent.h" />
     <ClInclude Include="InGame.h" />
-    <ClInclude Include="Map.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="PlayerControlSystem.h" />
     <ClInclude Include="RenderComponent.h" />
@@ -145,7 +141,6 @@
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderTypes.h" />
     <ClInclude Include="DataStructs.h" />
-    <ClInclude Include="StatSystem.h" />
     <ClInclude Include="SubShader.h" />
     <ClInclude Include="System.h" />
     <ClInclude Include="Terrain.h" />
@@ -159,13 +154,14 @@
     <ClInclude Include="VertexFormat.h" />
     <ClInclude Include="VisibilityComponent.h" />
     <ClInclude Include="CullingSystem.h" />
-    <ClInclude Include="VitalsComponent.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="forLuis.tem" />
     <None Include="HMapGen.frag" />
     <None Include="HMapGen.vert" />
+    <None Include="Materials\ConstColorMat.frag" />
+    <None Include="Materials\ConstColorMat.vert" />
     <None Include="terrain.frag" />
     <None Include="terrain.vert" />
     <None Include="terrain2.frag" />
@@ -175,6 +171,7 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="BehaviourDump.txt" />
+    <Text Include="Materials.mat" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

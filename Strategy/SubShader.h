@@ -6,22 +6,22 @@
 class SubShader
 {
 private:
-	GLuint shader;
-	bool isFragment;
+	GLuint	m_shader;
+	bool	m_isFragment;
 
 public:
-	inline SubShader(GLuint _shader, bool _isFragment) : shader(_shader), isFragment(_isFragment)
+	inline SubShader(GLuint shader, bool isFragment) : m_shader(shader), m_isFragment(isFragment)
 	{
 	}
 
 	inline bool isFrag()
 	{
-		return isFragment;
+		return m_isFragment;
 	}
 
 	inline GLuint getShader() const
 	{
-		return shader;
+		return m_shader;
 	}
 };
 
@@ -33,22 +33,22 @@ template<>
 class AssetKey<SubShader>
 {
 public:
-	std::string name;
-	bool isfrag;
+	std::string m_name;
+	bool		m_isfrag;
 
 
 	std::string toString() const
 	{
-		return "<SubShader>:" + name;
+		return "<SubShader>:" + m_name;
 	}
 
 
 	inline bool operator==(const SubShaderKey& other) const
 	{
-		return name == other.name && isfrag == other.isfrag;
+		return m_name == other.m_name && m_isfrag == other.m_isfrag;
 	}
 
-	AssetKey(const std::string& _name, bool _isfrag) : name(_name), isfrag(_isfrag)
+	AssetKey(const std::string& name, bool isfrag) : m_name(name), m_isfrag(isfrag)
 	{
 
 	}
@@ -56,13 +56,12 @@ public:
 
 namespace std
 {
-
 	template <>
 	struct hash<SubShaderKey>
 	{
 		std::size_t operator()(const SubShaderKey& k) const
 		{
-			return hash<std::string>()(k.name) ^ (k.isfrag ? unsigned int(1) : unsigned int(0));
+			return hash<std::string>()(k.m_name) ^ (k.m_isfrag ? unsigned int(1) : unsigned int(0));
 		}
 	};
 

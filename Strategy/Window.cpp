@@ -19,25 +19,26 @@ void Window::initSDL()
 
 	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 0);
 
-	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
+	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 0);
 
 	SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, 0);
 }
 
 void Window::initGL()
 {
-	SDL_WM_SetCaption(title.c_str(), NULL);
+	SDL_WM_SetCaption(m_title.c_str(), NULL);
 
 	Uint32 flags = SDL_OPENGL | SDL_GL_DOUBLEBUFFER;
 
-	if (fullscreen)
+	if (m_fullscreen)
 	{
 		flags |= SDL_FULLSCREEN;
 	}
 
-	surface = SDL_SetVideoMode(width, height, 32, flags);
+	m_pSurface = SDL_SetVideoMode(m_width, m_height, 32, flags);
 
 	glClearColor(100.0f / 255.0f, 149.0f / 255.0f, 237.0f / 255.0f, 1.0f);
+	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 	glClearDepth(1.0f);
 
 	glDepthFunc(GL_LESS);
@@ -54,7 +55,7 @@ void Window::initGL()
 }
 
 
-Window::Window(unsigned int _width, unsigned int _height, std::string _title, bool _fullscreen) : width(_width), height(_height), title(_title), fullscreen(_fullscreen)
+Window::Window(unsigned int _width, unsigned int _height, std::string _title, bool _fullscreen) : m_width(_width), m_height(_height), m_title(_title), m_fullscreen(_fullscreen)
 {
 	initSDL();
 	initGL();
@@ -62,17 +63,17 @@ Window::Window(unsigned int _width, unsigned int _height, std::string _title, bo
 
 unsigned int Window::getWidth()
 {
-	return width;
+	return m_width;
 }
 
 unsigned int Window::getHeight()
 {
-	return height;
+	return m_height;
 }
 
 std::string Window::getTile()
 {
-	return title;
+	return m_title;
 }
 
 Window::~Window()

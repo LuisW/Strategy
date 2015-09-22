@@ -6,22 +6,22 @@
 class CollisionComponent : public Component
 {
 private:
-	OBB collisionBox;
+	OBB m_collisionBox;
 
 public:
 
-	CollisionComponent(EntityID owner, const OBB& _collisionBox) : collisionBox(_collisionBox), Component(CT_Collision, owner, "")
+	CollisionComponent(EntityID owner, const OBB& collisionBox) : m_collisionBox(collisionBox), Component(CT_COLLISION, owner, "")
 	{
 	}
 
 	OBB& getCollisionVolume()
 	{
-		return collisionBox;
+		return m_collisionBox;
 	}
 
 	static ComponentType getComponentType()
 	{
-		return CT_Collision;
+		return CT_COLLISION;
 	}
 
 	~CollisionComponent()
