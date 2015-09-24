@@ -10,8 +10,9 @@ in vec2 UV;
 in vec3 toLight;
 in vec3 toCam;
 in mat3 TBN;
+in vec3 world;
 
-const vec3 clight = vec3(5.0, 5.0, 5.0);
+const vec3 clight = vec3(8.0, 8.0, 8.0);
 const float lightRadius = 10.0;
 
 out vec4 outColor;
@@ -24,14 +25,14 @@ void main(void)
 
 	float falloff = max(1 - (sq_dist * sq_dist) / pow(lightRadius, 4.0), 0.0) / (sq_dist + 1.0);
 
-	vec3 N = normalize(TBN * texture2D(norMap, UV).xyz);
+	vec3 N = normalize(TBN * texture2D(norMap, UV*4.0).xyz);
 	vec3 V = normalize(toCam);
 	vec3 L = normalize(toLight);
 	vec3 H = normalize(L+V);
 
-	float NH = dot(N, H);
-	float LH = dot(L, H);
-	float NV = dot(N, V);
+	float NH = max(dot(N, H), 0.0);
+	float LH = max(dot(L, H), 0.0);
+	float NV = max(dot(N, V), 0.0);
 	float NL = max(dot(N, L), 0.0);
 
 	float sq_r = roughness * roughness;
@@ -54,5 +55,5 @@ void main(void)
 	vec3 light = clight * falloff;
 
 	outColor = vec4(camb * cdiff + (spec + diff) * light * NL, 1.0);
-	outColor = texture2D(norMap, 5.0*UV);
+	outColor = vec4(world ,1.0);
 }

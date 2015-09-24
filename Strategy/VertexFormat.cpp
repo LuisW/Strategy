@@ -4,12 +4,6 @@
 #include <algorithm>
 #include "Mesh.h"
 
-const char* SemanticNames[] = { "in_Position", "in_Normal", "in_TexCoord", "in_Tangent", "in_Color", "in_Weight", "in_User" };
-unsigned int SemNameLen[] = { strlen(SemanticNames[0]), strlen(SemanticNames[1]), strlen(SemanticNames[2]), strlen(SemanticNames[3]), strlen(SemanticNames[4]),
-strlen(SemanticNames[5]), strlen(SemanticNames[6]) };
-char semId[] = { 'P', 'N', 'X', 'T', 'C', 'W', 'U' };
-
-
 #pragma region FormatElems
 
 bool ShaderFormatElem::operator<(const ShaderFormatElem& other) const
@@ -148,7 +142,6 @@ size_t VertexAttribFormat::getVertSize() const
 
 ShaderAttribFormat::ShaderAttribFormat(ShaderAsset_const shader)
 {
-	GLint loc;
 	GLint count;
 	GLsizei len;
 	GLint size;

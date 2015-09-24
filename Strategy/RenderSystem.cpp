@@ -39,6 +39,7 @@ void RenderSystem::onEntityRemoved(EntityID entity)
 
 void RenderSystem::Tick(const Camera& cam) const
 {
+	static float timef = 0.0f;
 	for (unsigned int n = 0; n < m_entities.size(); n++)
 	{
 		RenderComponent& Comp = m_rEntityManager.entityGetComponent<RenderComponent>(m_entities[n]);
@@ -82,6 +83,10 @@ void RenderSystem::Tick(const Camera& cam) const
 			objData.setUniform(loc_v, cam.getView());
 
 		}
+
+		UniformID time = objData.checkUniform("time");
+		objData.setUniform(time, timef);
+		timef += 0.0001f;
 
 		mat.BindObjectParams(objData);
 

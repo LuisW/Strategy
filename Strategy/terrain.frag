@@ -1,3 +1,4 @@
+#version 150
 const vec3 light = vec3(1.0, -1.0, 0.0);
 
 uniform sampler2D grass;

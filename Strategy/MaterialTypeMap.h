@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ei/GL/glew.h"
+#include <string>
 
 template < typename T > GLenum getShaderType();
 template < GLenum type > size_t getShaderTypeSize();
@@ -13,3 +14,6 @@ template < GLenum type > size_t getShaderTypeSize();
 size_t getShaderTypeSize(GLenum type);
 GLenum getShaderBaseType(GLenum type);
 size_t getShaderBaseTypeSize(GLenum type);
+
+const char* SemanticNames[];
+unsigned int SemNameLen[];

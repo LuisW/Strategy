@@ -204,3 +204,7 @@ size_t getShaderBaseTypeSize(GLenum type)
 		return 16;
 	}
 }
+
+const char* SemanticNames[] = { "in_Position", "in_Normal", "in_TexCoord", "in_Tangent", "in_Color", "in_Weight", "in_User" };
+unsigned int SemNameLen[] = { strlen(SemanticNames[0]), strlen(SemanticNames[1]), strlen(SemanticNames[2]), strlen(SemanticNames[3]), strlen(SemanticNames[4]),
+strlen(SemanticNames[5]), strlen(SemanticNames[6]) };

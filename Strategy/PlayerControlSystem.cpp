@@ -68,7 +68,7 @@ void PlayerControlSystem::Tick(EntityID player, double deltaT)
 	{
 		if (activeCam.getPos().y < (h + 1.8001f))
 		{
-			vel += glm::vec3(0.0f, 4.4294f, 0.0f);
+			vel += glm::vec3(0.0f, 2.0f * 4.4294f, 0.0f);
 		}
 	}
 
